@@ -2,14 +2,14 @@
 
 This is my setting files
 
-## First setting before creating dotfiles directory in Github
+## Before creating dotfiles directory in Github
     
     $ gem install homesick
     $ mkdir ~/dotfiles && cd ~/dotfiles
     $ git init
     $ mkdir home && cd home
 
-    // if dotfiles are already existed, copy them to here
+    // if dotfiles are already existed in local, copy them to here
     $ cp ~/.vimrc .
     $ cp ~/.tmux.conf .
     $ cp ~/brewfile .
@@ -24,12 +24,19 @@ This is my setting files
     $ git remote add origin git@github.com:dangerousanimal/dotfiles.git
     $ git push -u origin master
     
-## Using in other PC
+## Using homesick
     $ gem install homesick
     $ homesick clone dangerousanimal/dotfiles
     $ cd ~ && homesick symlink dotfiles
     
 ## If dotfiles are updated
+    // in current pc
+    $ cd ~/.homesick/repos/dotfiles
+    $ git add -A .
+    $ homesick commit dotfiles
+    $ homesick push dotfiles
+
+    // in other pc
     $ homesick pull dotfiles
-    $ homesick symlink dotfiles
+    $ cd ~ && homesick symlink dotfiles
 
