@@ -1,0 +1,55 @@
+# Make sure using latest Homebrew
+update
+
+# Update already-installed formula
+upgrade
+
+# Add repository
+tap phinze/homebrew-cask || true
+tap homebrew/binary || true
+tap homebrew/versions || true
+
+# Install brew packages
+install brew-cask
+install git
+install hub
+install vim
+install tmux
+install tree
+install wget
+install curl
+install bash-completion
+install heroku-toolbelt
+install ctags
+install node
+install jenkins
+install mecab
+install mysql
+install postgresql
+install mongodb
+install rbenv
+install rbenv-binstubs
+install ruby-build
+install openssl
+install readline
+install ricty
+
+# Install cask packages
+cask install google-chrome
+cask install firefox
+cask install iterm2
+cask install sublime-text
+cask install kobito
+cask install virtualbox
+cask install vagrant
+cask install appcleaner
+cask install alfred
+cask install filezilla
+cask install dropbox
+cask install evernote
+cask install imageoptim
+cask install xtrafinder
+cask install the-unarchiver
+
+# Remove outdated versions
+cleanup
