@@ -45,6 +45,7 @@ set shiftwidth=2
 set expandtab
 set autoindent
 set smartindent
+set backspace=indent,eol,start
 
 "Search
 set incsearch
