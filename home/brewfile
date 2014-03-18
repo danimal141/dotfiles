@@ -33,6 +33,7 @@ install rbenv-binstubs
 install ruby-build
 install openssl
 install readline
+install imagemagick
 install ricty
 
 # Install cask packages
