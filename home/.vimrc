@@ -22,6 +22,7 @@ NeoBundle 'vim-scripts/closetag.vim'
 NeoBundle 'pangloss/vim-javascript'
 NeoBundle 'jelera/vim-javascript-syntax'
 NeoBundle 'kchmck/vim-coffee-script'
+NeoBundle 'vim-ruby/vim-ruby'
 NeoBundle 'slim-template/vim-slim.git'
 
 "If there are uninstalled bundles found on startup,
@@ -47,6 +48,16 @@ set autoindent
 set smartindent
 set backspace=indent,eol,start
 
+"HighlitTrailingSpaces
+augroup HighlightTrailingSpaces
+  autocmd!
+  autocmd VimEnter,WinEnter,ColorScheme * highlight TrailingSpaces term=underline guibg=Red ctermbg=Red
+  autocmd VimEnter,WinEnter * match TrailingSpaces /\s\+$/
+augroup END
+
+"Delete Spaces on save
+autocmd BufWritePre * :%s/\s\+$//ge
+
 "Search
 set incsearch
 set ignorecase
@@ -55,14 +66,6 @@ set wrapscan
 
 "For clipboard
 set clipboard+=unnamed,autoselect
-
-"HighlitTrailingSpaces
-augroup HighlightTrailingSpaces
-  autocmd!
-  autocmd VimEnter,WinEnter,ColorScheme * highlight TrailingSpaces term=underline guibg=Red ctermbg=Red
-  autocmd VimEnter,WinEnter * match TrailingSpaces /\s\+$/
-augroup END
-
 
 "Setting neocomplcache:
 
