@@ -10,7 +10,6 @@ endif
 "Plugins
 NeoBundle 'Shougo/neobundle.vim'
 NeoBundle 'Shougo/vimproc'
-NeoBundle 'VimClojure'
 NeoBundle 'Shougo/vimshell'
 NeoBundle 'Shougo/unite.vim'
 NeoBundle 'Shougo/neocomplcache'
