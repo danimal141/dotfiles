@@ -39,6 +39,7 @@ set number
 set title
 set showmatch
 set noswapfile
+set eol
 
 "Indent, Tab, Space
 set tabstop=2
