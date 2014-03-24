@@ -20,11 +20,11 @@ NeoBundle 'scrooloose/nerdtree'
 NeoBundle 'tpope/vim-surround'
 NeoBundle 'vim-scripts/closetag.vim'
 NeoBundle 'rking/ag.vim'
-NeoBundle 'pangloss/vim-javascript'
+NeoBundle 'airblade/vim-gitgutter'
 NeoBundle 'jelera/vim-javascript-syntax'
 NeoBundle 'kchmck/vim-coffee-script'
 NeoBundle 'vim-ruby/vim-ruby'
-NeoBundle 'slim-template/vim-slim.git'
+NeoBundle 'slim-template/vim-slim'
 
 "If there are uninstalled bundles found on startup,
 "this will conveniently prompt you to install them.
@@ -69,6 +69,7 @@ set wrapscan
 
 "For clipboard
 set clipboard+=unnamed,autoselect
+
 
 "Setting neocomplcache:
 
