@@ -32,6 +32,7 @@ install rbenv
 install rbenv-binstubs
 install ruby-build
 install openssl
+install the_silver_searcher
 install readline
 install imagemagick
 install ricty
