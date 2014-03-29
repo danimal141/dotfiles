@@ -19,7 +19,7 @@ fpath=(/usr/local/share/zsh-completions $fpath)
 
 ## complementation
 autoload -U compinit
-compinit
+compinit -u
 
 unsetopt auto_menu
 

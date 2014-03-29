@@ -23,7 +23,6 @@ install zsh-completions
 install bash-completion
 install heroku-toolbelt
 install ctags
-install node
 install phantomjs
 install jenkins
 install mecab
