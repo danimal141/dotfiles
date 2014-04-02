@@ -12,6 +12,7 @@ tap homebrew/versions || true
 # Install brew packages
 install brew-cask
 install git
+install tig
 install hub
 install vim
 install tmux
