@@ -7,9 +7,6 @@ export LC_ALL=en_US.UTF-8
 
 export EDITOR=/usr/local/bin/vim
 
-export PAGER=/usr/local/bin/vimpager
-export MANPAGER=/usr/local/bin/vimpager
-
 # -------------------------------------
 # zsh options
 # -------------------------------------
