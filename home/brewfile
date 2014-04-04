@@ -15,6 +15,7 @@ install git
 install tig
 install hub
 install vim
+install vimpager
 install tmux
 install tree
 install wget
