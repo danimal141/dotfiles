@@ -3,7 +3,7 @@
 This is my setting files
 
 ## Before creating dotfiles directory in Github
-    
+
     $ gem install homesick
     $ mkdir ~/dotfiles && cd ~/dotfiles
     $ git init
@@ -11,6 +11,7 @@ This is my setting files
 
     // if dotfiles are already existed in local, copy them to here
     $ cp ~/.vimrc .
+    $ cp ~/.zshrc .
     $ cp ~/.tmux.conf .
     $ cp ~/brewfile .
 
@@ -23,12 +24,12 @@ This is my setting files
     $ git commit
     $ git remote add origin git@github.com:dangerousanimal/dotfiles.git
     $ git push -u origin master
-    
+
 ## Using homesick
     $ gem install homesick
     $ homesick clone dangerousanimal/dotfiles
     $ cd ~ && homesick symlink dotfiles
-    
+
 ## If dotfiles are updated
     // in current pc
     $ cd ~/.homesick/repos/dotfiles
