@@ -106,3 +106,6 @@ export PATH="/usr/local/heroku/bin:$PATH"
 
 # wp-cli
 export PATH="$HOME/.wp-cli/bin:$PATH"
+
+# postgresql
+export PGDATA=/usr/local/var/postgres

@@ -22,6 +22,7 @@ NeoBundle 'jelera/vim-javascript-syntax'
 NeoBundle 'kchmck/vim-coffee-script'
 NeoBundle 'vim-ruby/vim-ruby'
 NeoBundle 'slim-template/vim-slim'
+NeoBundle 'tpope/vim-markdown'
 
 "If there are uninstalled bundles found on startup,
 "this will conveniently prompt you to install them.
