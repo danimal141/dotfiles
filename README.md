@@ -22,12 +22,12 @@ This is my setting files
 
     $ git add -A .
     $ git commit
-    $ git remote add origin git@github.com:dangerousanimal/dotfiles.git
+    $ git remote add origin git@github.com:danimal141/dotfiles.git
     $ git push -u origin master
 
 ## Using homesick
     $ gem install homesick
-    $ homesick clone dangerousanimal/dotfiles
+    $ homesick clone danimal141/dotfiles
     $ cd ~ && homesick symlink dotfiles
 
 ## If dotfiles are updated
