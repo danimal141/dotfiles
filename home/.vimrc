@@ -66,9 +66,7 @@ set smartcase
 set wrapscan
 
 "For clipboard
-if $TMUX == ''
-  set clipboard+=unnamed,autoselect
-endif
+set clipboard+=unnamed,autoselect
 
 "Setting neocomplcache:
 
