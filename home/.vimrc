@@ -97,3 +97,6 @@ if !exists('g:neocomplcache_keyword_patterns')
     let g:neocomplcache_keyword_patterns = {}
 endif
 let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
+
+"Automatically set slimbars filetype
+autocmd BufRead,BufNewFile *.slimbars setlocal filetype=slim
