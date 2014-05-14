@@ -69,6 +69,17 @@ set wrapscan
 "For clipboard
 set clipboard+=unnamed,autoselect
 
+"Automatically set slimbars filetype
+autocmd BufRead,BufNewFile *.slimbars setlocal filetype=slim
+
+"Setting nerdtree:
+"
+"Display hidden file
+let g:NERDTreeShowHidden = 1
+
+"Display nerdtree when opening a new tab
+let g:nerdtree_tabs_open_on_new_tab=1
+
 "Setting neocomplcache:
 
 "Disable AutoComplPop.
@@ -98,5 +109,3 @@ if !exists('g:neocomplcache_keyword_patterns')
 endif
 let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 
-"Automatically set slimbars filetype
-autocmd BufRead,BufNewFile *.slimbars setlocal filetype=slim
