@@ -26,7 +26,6 @@ This is my setting files
     $ git push -u origin master
 
 ## Using homesick
-    $ gem install homesick
     $ homesick clone danimal141/dotfiles
     $ cd ~ && homesick symlink dotfiles
 
