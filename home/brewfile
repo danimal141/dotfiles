@@ -30,6 +30,7 @@ install mecab
 install mysql
 install postgresql
 install mongodb
+install redis
 install rbenv
 install rbenv-binstubs
 install ruby-build
