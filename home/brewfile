@@ -20,6 +20,7 @@ install tree
 install wget
 install curl
 install zsh
+install watch
 install zsh-completions
 install bash-completion
 install heroku-toolbelt
