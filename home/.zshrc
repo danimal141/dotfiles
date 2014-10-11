@@ -1,7 +1,6 @@
 # -------------------------------------
 # Environment variable
 # -------------------------------------
-
 export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
@@ -40,7 +39,6 @@ setopt hist_ignore_dups
 # -------------------------------------
 # Path
 # -------------------------------------
-
 typeset -U path cdpath fpath manpath
 
 path=(
@@ -53,7 +51,6 @@ path=(
 # -------------------------------------
 # Prompt
 # -------------------------------------
-
 autoload -U promptinit; promptinit
 autoload -Uz colors; colors
 autoload -Uz is-at-least
@@ -68,7 +65,6 @@ PS1='%F{5}[%F{2}%n%F{5}] %F{3}%3~ ${vcs_info_msg_0_}%f%# '
 # -------------------------------------
 # alias
 # -------------------------------------
-
 alias grep="grep --color -n -I --exclude='*.svn-*' --exclude='entries' --exclude='*/cache/*'"
 
 # ls
