@@ -35,6 +35,9 @@ filetype plugin indent on
 "Syntax
 syntax on
 
+"Colorscheme'
+colorscheme solarized
+
 set number
 set title
 set showmatch
