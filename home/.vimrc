@@ -32,10 +32,12 @@ NeoBundleCheck
 "Automatically detect file types.
 filetype plugin indent on
 
-"Syntax
-syntax on
+"Colorscheme and syntax
+"Refer to https://github.com/altercation/vim-colors-solarized/blob/master/README.mkd
+let g:solarized_termtrans=1
 
-"Colorscheme'
+syntax enable
+set background=dark
 colorscheme solarized
 
 set number
