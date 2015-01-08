@@ -38,5 +38,5 @@ This is my setting files
 
     // in other pc
     $ homesick pull dotfiles
-    $ cd ~ && homesick symlink dotfiles
+    $ homesick symlink dotfiles
 
