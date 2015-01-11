@@ -105,3 +105,7 @@ export PATH="$HOME/.wp-cli/bin:$PATH"
 
 # postgresql
 export PGDATA=/usr/local/var/postgres
+
+# Android SDK
+export PATH="$HOME/Library/Android/sdk/platform-tools:$PATH"
+export PATH="$HOME/Library/Android/sdk/tools:$PATH"
