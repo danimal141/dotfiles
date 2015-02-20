@@ -106,6 +106,7 @@ export PATH="$HOME/.wp-cli/bin:$PATH"
 # postgresql
 export PGDATA=/usr/local/var/postgres
 
-# Android SDK
-export PATH="$HOME/Library/Android/sdk/platform-tools:$PATH"
-export PATH="$HOME/Library/Android/sdk/tools:$PATH"
+# docker
+export DOCKER_HOST=tcp://192.168.59.103:2376
+export DOCKER_CERT_PATH=/Users/hideaki/.boot2docker/certs/boot2docker-vm
+export DOCKER_TLS_VERIFY=1
