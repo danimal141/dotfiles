@@ -22,6 +22,7 @@ NeoBundle 'jelera/vim-javascript-syntax'
 NeoBundle 'kchmck/vim-coffee-script'
 NeoBundle 'burnettk/vim-angular'
 NeoBundle 'vim-ruby/vim-ruby'
+NeoBundle 'ngmy/vim-rubocop'
 NeoBundle 'slim-template/vim-slim'
 NeoBundle 'tpope/vim-markdown'
 
