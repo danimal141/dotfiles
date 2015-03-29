@@ -40,6 +40,7 @@ install the_silver_searcher
 install readline
 install imagemagick
 install ricty
+install ansible
 
 # Install cask packages
 cask install google-chrome
