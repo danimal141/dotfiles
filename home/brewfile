@@ -25,6 +25,7 @@ install zsh-completions
 install bash-completion
 install heroku-toolbelt
 install ctags
+install jq
 install phantomjs
 install jenkins
 install mecab
