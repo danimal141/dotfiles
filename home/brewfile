@@ -36,6 +36,7 @@ install redis
 install rbenv
 install rbenv-binstubs
 install ruby-build
+install reattach-to-user-namespace
 install openssl
 install the_silver_searcher
 install readline
