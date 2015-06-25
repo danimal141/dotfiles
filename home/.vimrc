@@ -25,6 +25,7 @@ NeoBundle 'vim-ruby/vim-ruby'
 NeoBundle 'vim-jp/vim-cpp'
 NeoBundle 'slim-template/vim-slim'
 NeoBundle 'tpope/vim-markdown'
+NeoBundle 'digitaltoad/vim-jade'
 
 "If there are uninstalled bundles found on startup,
 "this will conveniently prompt you to install them.
