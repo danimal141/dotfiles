@@ -37,7 +37,7 @@ setopt hist_ignore_dups
 
 
 # -------------------------------------
-# Path
+# path
 # -------------------------------------
 typeset -U path cdpath fpath manpath
 
@@ -49,7 +49,7 @@ path=(
 )
 
 # -------------------------------------
-# Prompt
+# prompt
 # -------------------------------------
 autoload -U promptinit; promptinit
 autoload -Uz colors; colors
@@ -61,6 +61,19 @@ zstyle ':vcs_info:*' formats       '%F{5}(%f%s%F{5})%F{3}-%F{5}[%F{2}%b%F{5}]%f 
 zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat '%b%F{1}:%F{3}%r'
 precmd () { vcs_info }
 PS1='%F{5}[%F{2}%n%F{5}] %F{3}%3~ ${vcs_info_msg_0_}%f%# '
+
+# -------------------------------------
+# key binding
+# -------------------------------------
+bindkey -d
+bindkey -e
+
+# -------------------------------------
+# edit command line
+# -------------------------------------
+autoload -Uz edit-command-line
+zle -N edit-command-line
+bindkey '^xe' edit-command-line
 
 # -------------------------------------
 # alias
@@ -75,11 +88,6 @@ alias l1="ls -1"
 
 # tree
 alias tree="tree -NC"
-
-# -------------------------------------
-# key binding
-# -------------------------------------
-bindkey -e
 
 # -------------------------------------
 # other settings
