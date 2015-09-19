@@ -27,7 +27,7 @@ This is my setting files
 
 ## Using homesick
     $ homesick clone danimal141/dotfiles
-    $ cd ~ && homesick symlink dotfiles
+    $ homesick symlink dotfiles
 
 ## If dotfiles are updated
     // in current pc
