@@ -43,6 +43,7 @@ install readline
 install imagemagick
 install ricty
 install ansible
+install peco
 
 # Install cask packages
 cask install google-chrome
