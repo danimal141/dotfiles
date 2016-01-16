@@ -26,6 +26,7 @@ NeoBundle 'vim-jp/vim-cpp'
 NeoBundle 'slim-template/vim-slim'
 NeoBundle 'tpope/vim-markdown'
 NeoBundle 'digitaltoad/vim-jade'
+NeoBundle 'mrtazz/simplenote.vim'
 
 "If there are uninstalled bundles found on startup,
 "this will conveniently prompt you to install them.
@@ -116,3 +117,8 @@ if !exists('g:neocomplcache_keyword_patterns')
     let g:neocomplcache_keyword_patterns = {}
 endif
 let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
+
+"For Simplenote
+if filereadable(expand('~/.simplenoterc'))
+  source ~/.simplenoterc
+endif
