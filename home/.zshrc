@@ -105,6 +105,10 @@ fi
 export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
 eval "$(rbenv init -)"
 
+# golang
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
+
 # Added by the Heroku Toolbelt
 export PATH="/usr/local/heroku/bin:$PATH"
 
