@@ -58,7 +58,12 @@ set autoindent
 set smartindent
 set backspace=indent,eol,start
 set cursorcolumn
+
 highlight CursorColumn ctermbg=darkgray
+
+inoremap {<Enter> {}<Left><CR><ESC><S-o>
+inoremap [<Enter> []<Left><CR><ESC><S-o>
+inoremap (<Enter> ()<Left><CR><ESC><S-o>
 
 "HighlitTrailingSpaces
 augroup HighlightTrailingSpaces
