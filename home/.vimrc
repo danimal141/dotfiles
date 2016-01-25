@@ -1,5 +1,5 @@
-" NeoBundle
-set nocompatible " be iMproved
+"NeoBundle
+set nocompatible
 filetype off
 
 if has('vim_starting')
@@ -128,11 +128,3 @@ let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 if filereadable(expand('~/.simplenoterc'))
   source ~/.simplenoterc
 endif
-
-"For Golang
-let g:go_highlight_functions = 1
-let g:go_highlight_methods = 1
-let g:go_highlight_structs = 1
-let g:go_highlight_interfaces = 1
-let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
-let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
