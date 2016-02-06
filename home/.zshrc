@@ -3,8 +3,29 @@
 # -------------------------------------
 export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
-
 export EDITOR=/usr/local/bin/vim
+
+# rbenv
+export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
+eval "$(rbenv init -)"
+
+# golang
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
+
+# Heroku Toolbelt
+export PATH="/usr/local/heroku/bin:$PATH"
+
+# wp-cli
+export PATH="$HOME/.wp-cli/bin:$PATH"
+
+# postgresql
+export PGDATA=/usr/local/var/postgres
+
+# docker
+export DOCKER_HOST=tcp://192.168.59.103:2376
+export DOCKER_CERT_PATH=/Users/hideaki/.boot2docker/certs/boot2docker-vm
+export DOCKER_TLS_VERIFY=1
 
 # -------------------------------------
 # zsh options
@@ -96,34 +117,12 @@ alias tree="tree -NC"
 # auto enter 'ls' after enter 'cd'
 function chpwd() { ls -1 }
 
-# nvm
-if [ -f ~/.nvm/nvm.sh ]; then
-    source ~/.nvm/nvm.sh
-fi
-
-# rbenv
-export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
-eval "$(rbenv init -)"
-
-# golang
-export GOPATH=$HOME/go
-export PATH=$PATH:$GOPATH/bin
-
-# Added by the Heroku Toolbelt
-export PATH="/usr/local/heroku/bin:$PATH"
-
-# wp-cli
-export PATH="$HOME/.wp-cli/bin:$PATH"
-
-# postgresql
-export PGDATA=/usr/local/var/postgres
-
-# docker
-export DOCKER_HOST=tcp://192.168.59.103:2376
-export DOCKER_CERT_PATH=/Users/hideaki/.boot2docker/certs/boot2docker-vm
-export DOCKER_TLS_VERIFY=1
-
 # tmuxinator
 if [ -f ~/.tmuxinator/tmuxinator.zsh ]; then
   source ~/.tmuxinator/tmuxinator.zsh
+fi
+
+# nvm
+if [ -f ~/.nvm/nvm.sh ]; then
+  source ~/.nvm/nvm.sh
 fi
