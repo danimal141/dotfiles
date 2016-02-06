@@ -1,13 +1,15 @@
 "NeoBundle
-set nocompatible
-filetype off
-
-if has('vim_starting')
-  set runtimepath+=~/.vim/bundle/neobundle.vim
-  call neobundle#rc(expand('~/.vim/bundle/'))
+if &compatible
+  set nocompatible
 endif
 
-"Plugins
+"Required:
+set runtimepath^=~/.vim/bundle/neobundle.vim/
+
+"Required:
+call neobundle#begin(expand('~/.vim/bundle/'))
+
+"NeoBundle Plugins
 NeoBundle 'Shougo/neobundle.vim'
 NeoBundle 'Shougo/unite.vim'
 NeoBundle 'Shougo/neocomplcache'
@@ -29,12 +31,15 @@ NeoBundle 'digitaltoad/vim-jade'
 NeoBundle 'fatih/vim-go'
 NeoBundle 'mrtazz/simplenote.vim'
 
+call neobundle#end()
+
+"Required:
+filetype plugin indent on "Automatically detect file types.
+
 "If there are uninstalled bundles found on startup,
 "this will conveniently prompt you to install them.
 NeoBundleCheck
 
-"Automatically detect file types.
-filetype plugin indent on
 
 "Colorscheme and syntax
 "Refer to https://github.com/altercation/vim-colors-solarized/blob/master/README.mkd
@@ -113,14 +118,14 @@ let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
 
 "Define dictionary.
 let g:neocomplcache_dictionary_filetype_lists = {
-    \ 'default' : '',
-    \ 'vimshell' : $HOME.'/.vimshell_hist',
-    \ 'scheme' : $HOME.'/.gosh_completions'
-        \ }
+\ 'default' : '',
+\ 'vimshell' : $HOME.'/.vimshell_hist',
+\ 'scheme' : $HOME.'/.gosh_completions'
+\ }
 
 "Define keyword.
 if !exists('g:neocomplcache_keyword_patterns')
-    let g:neocomplcache_keyword_patterns = {}
+  let g:neocomplcache_keyword_patterns = {}
 endif
 let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 
