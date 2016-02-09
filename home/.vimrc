@@ -26,10 +26,12 @@ NeoBundle 'burnettk/vim-angular'
 NeoBundle 'vim-ruby/vim-ruby'
 NeoBundle 'vim-jp/vim-cpp'
 NeoBundle 'slim-template/vim-slim'
-NeoBundle 'tpope/vim-markdown'
 NeoBundle 'digitaltoad/vim-jade'
 NeoBundle 'fatih/vim-go'
 NeoBundle 'mrtazz/simplenote.vim'
+NeoBundle 'plasticboy/vim-markdown'
+NeoBundle 'kannokanno/previm'
+NeoBundle 'tyru/open-browser.vim'
 
 call neobundle#end()
 
@@ -133,3 +135,6 @@ let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 if filereadable(expand('~/.simplenoterc'))
   source ~/.simplenoterc
 endif
+
+"For Markdown
+au BufRead,BufNewFile *.md set filetype=markdown
