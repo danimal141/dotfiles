@@ -125,6 +125,9 @@ let g:neocomplcache_dictionary_filetype_lists = {
 \ 'scheme' : $HOME.'/.gosh_completions'
 \ }
 
+"Disable vim-markdown folding configuration
+let g:vim_markdown_folding_disabled = 1
+
 "Define keyword.
 if !exists('g:neocomplcache_keyword_patterns')
   let g:neocomplcache_keyword_patterns = {}
