@@ -28,7 +28,6 @@ NeoBundle 'vim-jp/vim-cpp'
 NeoBundle 'slim-template/vim-slim'
 NeoBundle 'digitaltoad/vim-jade'
 NeoBundle 'fatih/vim-go'
-NeoBundle 'mrtazz/simplenote.vim'
 NeoBundle 'plasticboy/vim-markdown'
 NeoBundle 'kannokanno/previm'
 NeoBundle 'tyru/open-browser.vim'
@@ -134,10 +133,10 @@ if !exists('g:neocomplcache_keyword_patterns')
 endif
 let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 
-"For Simplenote
-if filereadable(expand('~/.simplenoterc'))
-  source ~/.simplenoterc
-endif
-
 "For Markdown
 au BufRead,BufNewFile *.md set filetype=markdown
+
+"For Syntastic
+let g:syntastic_mode_map = { 'mode': 'passive',
+            \ 'passive_filetypes': ['ruby'] }
+let g:syntastic_ruby_checkers = ['rubocop']
