@@ -1,42 +1,50 @@
-# dotfiles
+# Dotfiles
 
-This is my setting files
+## Get started
 
-## Before creating dotfiles directory in Github
+### Before creating dotfiles directory in Github
 
-    $ gem install homesick
-    $ mkdir ~/dotfiles && cd ~/dotfiles
-    $ git init
-    $ mkdir home && cd home
+```
+$ gem install homesick
+$ mkdir ~/dotfiles && cd ~/dotfiles
+$ git init
+$ mkdir home && cd home
 
-    // if dotfiles are already existed in local, copy them to here
-    $ cp ~/.vimrc .
-    $ cp ~/.zshrc .
-    $ cp ~/.tmux.conf .
-    $ cp ~/brewfile .
+# If dotfiles already exist in local, copy them to here.
+$ cp ~/.vimrc .
+$ cp ~/.zshrc .
+$ cp ~/.tmux.conf .
+$ cp ~/brewfile .
 
-    // for vim plugins
-    $ mkdir .vim && cd .vim
-    $ mkdir bundle && cd bundle
-    $ git submodule add git@github.com:Shougo/neobundle.vim.git
+# For managing vim plugins using dein.vim
+$ mkdir .vim && cd .vim
+$ curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > dein_installer.sh
+$ mkdir dein
+$ sh ./dein_installer.sh ./dein
 
-    $ git add -A .
-    $ git commit
-    $ git remote add origin git@github.com:danimal141/dotfiles.git
-    $ git push -u origin master
+$ git add -A .
+$ git commit
+$ git remote add origin git@github.com:danimal141/dotfiles.git
+$ git push -u origin master
+```
 
-## Using homesick
-    $ homesick clone danimal141/dotfiles
-    $ homesick symlink dotfiles
+### Using homesick
 
-## If dotfiles are updated
-    // in current pc
-    $ cd ~/.homesick/repos/dotfiles
-    $ git add -A .
-    $ homesick commit dotfiles
-    $ homesick push dotfiles
+```
+$ homesick clone danimal141/dotfiles
+$ homesick symlink dotfiles
+```
 
-    // in other pc
-    $ homesick pull dotfiles
-    $ homesick symlink dotfiles
+### If dotfiles are updated
 
+```
+# In current PC
+$ cd ~/.homesick/repos/dotfiles
+$ git add -A .
+$ homesick commit dotfiles
+$ homesick push dotfiles
+
+# In other PC
+$ homesick pull dotfiles
+$ homesick symlink dotfiles
+```

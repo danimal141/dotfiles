@@ -1,46 +1,41 @@
-"NeoBundle
+"Dein.vim
 if &compatible
   set nocompatible
 endif
 
-"Required:
-set runtimepath^=~/.vim/bundle/neobundle.vim/
+set runtimepath^=~/.vim/dein/repos/github.com/Shougo/dein.vim/
 
-"Required:
-call neobundle#begin(expand('~/.vim/bundle/'))
+call dein#begin(expand('~/.vim/dein'))
+call dein#add('Shougo/dein.vim')
+call dein#add('Shougo/unite.vim')
+call dein#add('Shougo/neocomplcache')
+call dein#add('Shougo/neosnippet')
+call dein#add('scrooloose/syntastic')
+call dein#add('tpope/vim-surround')
+call dein#add('vim-scripts/closetag.vim')
+call dein#add('rking/ag.vim')
+call dein#add('airblade/vim-gitgutter')
+call dein#add('jelera/vim-javascript-syntax')
+call dein#add('kchmck/vim-coffee-script')
+call dein#add('burnettk/vim-angular')
+call dein#add('vim-ruby/vim-ruby')
+call dein#add('vim-jp/vim-cpp')
+call dein#add('slim-template/vim-slim')
+call dein#add('digitaltoad/vim-jade')
+call dein#add('fatih/vim-go')
+call dein#add('plasticboy/vim-markdown')
+call dein#add('kannokanno/previm')
+call dein#add('tyru/open-browser.vim')
+"Lazy load on command executed
+call dein#add('scrooloose/nerdtree',
+      \{ 'on_cmd': 'NERDTreeToggle' })
+call dein#end()
 
-"NeoBundle Plugins
-NeoBundle 'Shougo/neobundle.vim'
-NeoBundle 'Shougo/unite.vim'
-NeoBundle 'Shougo/neocomplcache'
-NeoBundle 'Shougo/neosnippet'
-NeoBundle 'scrooloose/syntastic'
-NeoBundle 'scrooloose/nerdtree'
-NeoBundle 'tpope/vim-surround'
-NeoBundle 'vim-scripts/closetag.vim'
-NeoBundle 'rking/ag.vim'
-NeoBundle 'airblade/vim-gitgutter'
-NeoBundle 'jelera/vim-javascript-syntax'
-NeoBundle 'kchmck/vim-coffee-script'
-NeoBundle 'burnettk/vim-angular'
-NeoBundle 'vim-ruby/vim-ruby'
-NeoBundle 'vim-jp/vim-cpp'
-NeoBundle 'slim-template/vim-slim'
-NeoBundle 'digitaltoad/vim-jade'
-NeoBundle 'fatih/vim-go'
-NeoBundle 'plasticboy/vim-markdown'
-NeoBundle 'kannokanno/previm'
-NeoBundle 'tyru/open-browser.vim'
-
-call neobundle#end()
-
-"Required:
 filetype plugin indent on "Automatically detect file types.
 
-"If there are uninstalled bundles found on startup,
-"this will conveniently prompt you to install them.
-NeoBundleCheck
-
+if dein#check_install()
+  call dein#install()
+endif
 
 "Colorscheme and syntax
 "Refer to https://github.com/altercation/vim-colors-solarized/blob/master/README.mkd
