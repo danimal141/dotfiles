@@ -10,6 +10,7 @@ call dein#add('Shougo/dein.vim')
 call dein#add('Shougo/unite.vim')
 call dein#add('Shougo/neocomplcache')
 call dein#add('Shougo/neosnippet')
+call dein#add('Shougo/vimproc.vim', {'build' : 'make'})
 call dein#add('scrooloose/syntastic')
 call dein#add('tpope/vim-surround')
 call dein#add('vim-scripts/closetag.vim')
@@ -23,6 +24,8 @@ call dein#add('vim-jp/vim-cpp')
 call dein#add('slim-template/vim-slim')
 call dein#add('digitaltoad/vim-jade')
 call dein#add('fatih/vim-go')
+call dein#add('leafgarland/typescript-vim')
+call dein#add('Quramy/tsuquyomi')
 call dein#add('plasticboy/vim-markdown')
 call dein#add('kannokanno/previm')
 call dein#add('tyru/open-browser.vim')
@@ -87,6 +90,9 @@ set clipboard+=unnamed,autoselect
 
 "Automatically set slimbars filetype
 autocmd BufRead,BufNewFile *.slimbars setlocal filetype=slim
+"Automatically set ts, tsx filetype
+autocmd BufNewFile,BufRead *.ts     set filetype=typescript
+autocmd BufNewFile,BufRead *.tsx    set filetype=typescript
 
 "Setting nerdtree:
 
