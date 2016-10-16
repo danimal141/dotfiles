@@ -45,6 +45,7 @@ install ricty
 install ansible
 install peco
 install go
+install direnv
 
 # Install cask packages
 cask install google-chrome
