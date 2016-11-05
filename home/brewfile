@@ -21,6 +21,7 @@ install wget
 install curl
 install zsh
 install watch
+install htop
 install zsh-completions
 install bash-completion
 install heroku-toolbelt
