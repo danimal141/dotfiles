@@ -46,6 +46,7 @@ install ricty
 install ansible
 install peco
 install go
+install glide
 install direnv
 
 # Install cask packages
