@@ -11,4 +11,4 @@ let g:go_highlight_build_constraints = 1
 let g:go_fmt_command = 'goimports'
 
 let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
-let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
+let g:syntastic_mode_map = { 'mode': 'passive', 'passive_filetypes': ['go'] }

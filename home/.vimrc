@@ -137,8 +137,3 @@ let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 
 "For Markdown
 au BufRead,BufNewFile *.md set filetype=markdown
-
-"For Syntastic
-let g:syntastic_mode_map = { 'mode': 'passive',
-            \ 'passive_filetypes': ['ruby'] }
-let g:syntastic_ruby_checkers = ['rubocop']
