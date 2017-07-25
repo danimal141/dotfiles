@@ -48,6 +48,8 @@ install peco
 install go
 install glide
 install direnv
+install pstree
+install qemu
 
 # Install cask packages
 cask install google-chrome
