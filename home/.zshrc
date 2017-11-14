@@ -7,7 +7,7 @@ export EDITOR=/usr/local/bin/vim
 
 # rbenv
 export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
-eval "$(rbenv init -)"
+eval "$(rbenv init - zsh)"
 
 # golang
 export GOPATH=$HOME/go
