@@ -50,6 +50,8 @@ install glide
 install direnv
 install pstree
 install qemu
+install ffmpeg
+install parallel
 
 # Install cask packages
 cask install google-chrome
