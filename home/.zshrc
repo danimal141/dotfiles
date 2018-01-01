@@ -9,6 +9,13 @@ export EDITOR=/usr/local/bin/vim
 export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
 eval "$(rbenv init - zsh)"
 
+# pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+export VIRTUAL_ENV_DISABLE_PROMPT=1
+
 # golang
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin
@@ -44,19 +51,12 @@ compinit -u
 unsetopt auto_menu
 
 setopt auto_pushd
-
 setopt auto_cd
-
 setopt correct
-
 setopt nobeep
-
 setopt prompt_subst
-
 setopt ignoreeof
-
 setopt no_tify
-
 setopt hist_ignore_dups
 
 # -------------------------------------
