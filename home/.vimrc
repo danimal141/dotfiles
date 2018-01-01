@@ -29,6 +29,9 @@ call dein#add('Quramy/tsuquyomi')
 call dein#add('plasticboy/vim-markdown')
 call dein#add('kannokanno/previm')
 call dein#add('tyru/open-browser.vim')
+call dein#add('Yggdroot/indentLine')
+call dein#add('szw/vim-tags')
+call dein#add('davidhalter/jedi-vim')
 
 "Lazy load on command executed
 call dein#add('scrooloose/nerdtree',
@@ -107,15 +110,15 @@ let g:nerdtree_tabs_open_on_new_tab=1
 
 "Disable AutoComplPop.
 let g:acp_enableAtStartup = 0
-" Use neocomplcache.
+"Use neocomplcache.
 let g:neocomplcache_enable_at_startup = 1
-" Use smartcase.
+"Use smartcase.
 let g:neocomplcache_enable_smart_case = 1
-" Use camel case completion.
+"Use camel case completion.
 let g:neocomplcache_enable_camel_case_completion = 1
-" Use underbar completion.
+"Use underbar completion.
 let g:neocomplcache_enable_underbar_completion = 1
-" Set minimum syntax keyword length.
+"Set minimum syntax keyword length.
 let g:neocomplcache_min_syntax_length = 3
 let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
 
@@ -137,3 +140,20 @@ let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 
 "For Markdown
 au BufRead,BufNewFile *.md set filetype=markdown
+
+"indentLine
+let g:indentLine_enabled = 1
+let g:indentLine_concealcursor = 0
+let g:indentLine_char = '┆'
+let g:indentLine_faster = 1
+if $COLORTERM == 'gnome-terminal'
+  set term=gnome-256color
+else
+  if $TERM == 'xterm'
+    set term=xterm-256color
+  endif
+endif
+
+"ctags
+let g:vim_tags_project_tags_command = "/usr/local/bin/ctags -R {OPTIONS} {DIRECTORY} 2>/dev/null"
+let g:vim_tags_gems_tags_command = "/usr/local/bin/ctags -R {OPTIONS} `bundle show --paths` 2>/dev/null"
