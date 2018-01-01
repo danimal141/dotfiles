@@ -52,6 +52,8 @@ install pstree
 install qemu
 install ffmpeg
 install parallel
+install pyenv
+install pyenv-virtualenv
 
 # Install cask packages
 cask install google-chrome
