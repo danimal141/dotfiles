@@ -146,7 +146,7 @@ let g:indentLine_enabled = 1
 let g:indentLine_concealcursor = 0
 let g:indentLine_char = '┆'
 let g:indentLine_faster = 1
-let g:indentLine_fileTypeExclude = ['help', 'markdown']
+let g:indentLine_fileTypeExclude = ['help', 'markdown', 'slim']
 if $COLORTERM == 'gnome-terminal'
   set term=gnome-256color
 else
