@@ -29,7 +29,6 @@ call dein#add('Quramy/tsuquyomi')
 call dein#add('plasticboy/vim-markdown')
 call dein#add('kannokanno/previm')
 call dein#add('tyru/open-browser.vim')
-call dein#add('Yggdroot/indentLine')
 call dein#add('szw/vim-tags')
 call dein#add('davidhalter/jedi-vim')
 
@@ -140,20 +139,6 @@ let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 
 "For Markdown
 au BufRead,BufNewFile *.md set filetype=markdown
-
-"indentLine
-let g:indentLine_enabled = 1
-let g:indentLine_concealcursor = 0
-let g:indentLine_char = '┆'
-let g:indentLine_faster = 1
-let g:indentLine_fileTypeExclude = ['help', 'markdown', 'slim']
-if $COLORTERM == 'gnome-terminal'
-  set term=gnome-256color
-else
-  if $TERM == 'xterm'
-    set term=xterm-256color
-  endif
-endif
 
 "ctags
 let g:vim_tags_project_tags_command = "/usr/local/bin/ctags -R {OPTIONS} {DIRECTORY} 2>/dev/null"
