@@ -5,9 +5,17 @@ export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 export EDITOR=/usr/local/bin/vim
 
-# rbenv
-export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
-eval "$(rbenv init - zsh)"
+# -------------------------------------
+# path
+# -------------------------------------
+typeset -U path cdpath fpath manpath
+
+path=(
+  $HOME/bin(N-/)
+  /usr/local/bin(N-/)
+  /usr/local/sbin(N-/)
+  $path
+)
 
 # pyenv
 export PYENV_ROOT="$HOME/.pyenv"
@@ -28,6 +36,10 @@ export PATH="$HOME/.wp-cli/bin:$PATH"
 
 # postgresql
 export PGDATA=/usr/local/var/postgres
+
+# rbenv
+export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
+eval "$(rbenv init - zsh)"
 
 # docker
 # export DOCKER_HOST=tcp://192.168.59.103:2376
@@ -58,18 +70,6 @@ setopt prompt_subst
 setopt ignoreeof
 setopt no_tify
 setopt hist_ignore_dups
-
-# -------------------------------------
-# path
-# -------------------------------------
-typeset -U path cdpath fpath manpath
-
-path=(
-    $HOME/bin(N-/)
-    /usr/local/bin(N-/)
-    /usr/local/sbin(N-/)
-    $path
-)
 
 # -------------------------------------
 # prompt
