@@ -1,5 +1,5 @@
 set encoding=utf-8
-let g:python3_host_prog = $PYENV_ROOT.'/shims/python3'
+" let g:python3_host_prog = $PYENV_ROOT.'/shims/python3'
 
 "Dein.vim
 if &compatible
@@ -116,14 +116,12 @@ autocmd BufNewFile,BufRead *.ts     set filetype=typescript
 autocmd BufNewFile,BufRead *.tsx    set filetype=typescript
 
 "Setting nerdtree:
+"Open nerdtree automatically
 autocmd vimenter * if !argc() | NERDTree | endif
-
 "Display hidden file
 let g:NERDTreeShowHidden = 1
-
 "Display nerdtree when opening a new tab
 let g:nerdtree_tabs_open_on_new_tab=1
-
 "Disable vim-markdown folding configuration
 let g:vim_markdown_folding_disabled = 1
 
