@@ -11,15 +11,16 @@ if dein#load_state('~/.vim/dein')
   call dein#begin('~/.vim/dein')
   call dein#add('Shougo/dein.vim')
 
-  call dein#add('Shougo/deoplete.nvim')
-  if !has('nvim')
-    " These depend on python3
-    call dein#add('roxma/nvim-yarp')
-    call dein#add('roxma/vim-hug-neovim-rpc')
-  endif
-  " call dein#add('Shougo/neocomplcache')
-  " call dein#add('Shougo/neosnippet')
-  " call dein#add('Shougo/neosnippet-snippets')
+  " deoplete
+  " call dein#add('Shougo/deoplete.nvim')
+  " if !has('nvim')
+  "   " These depend on python3
+  "   call dein#add('roxma/nvim-yarp')
+  "   call dein#add('roxma/vim-hug-neovim-rpc')
+  " endif
+  call dein#add('Shougo/neocomplcache')
+  call dein#add('Shougo/neosnippet')
+  call dein#add('Shougo/neosnippet-snippets')
 
   call dein#add('scrooloose/nerdtree')
   call dein#add('Shougo/unite.vim')
@@ -54,9 +55,10 @@ if dein#check_install()
   call dein#install()
 endif
 
-if dein#tap('deoplete.nvim')
-  let g:deoplete#enable_at_startup = 1
-endif
+" deoplete
+" if dein#tap('deoplete.nvim')
+"   let g:deoplete#enable_at_startup = 1
+" endif
 
 "Colorscheme and syntax
 "Refer to https://github.com/altercation/vim-colors-solarized/blob/master/README.mkd
@@ -126,14 +128,31 @@ let g:nerdtree_tabs_open_on_new_tab=1
 let g:vim_markdown_folding_disabled = 1
 
 "Setting neocomplcache:
-"
-"Define keyword.
-" if !exists('g:neocomplcache_keyword_patterns')
-"   let g:neocomplcache_keyword_patterns = {}
-" endif
-" let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
+
 "Disable AutoComplPop.
-" let g:acp_enableAtStartup = 0
+let g:acp_enableAtStartup = 0
+"Use neocomplcache.
+let g:neocomplcache_enable_at_startup = 1
+"Use smartcase.
+let g:neocomplcache_enable_smart_case = 1
+"Use camel case completion.
+let g:neocomplcache_enable_camel_case_completion = 1
+"Use underbar completion.
+let g:neocomplcache_enable_underbar_completion = 1
+"Set minimum syntax keyword length.
+let g:neocomplcache_min_syntax_length = 3
+let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
+"Define dictionary.
+let g:neocomplcache_dictionary_filetype_lists = {
+\ 'default' : '',
+\ 'vimshell' : $HOME.'/.vimshell_hist',
+\ 'scheme' : $HOME.'/.gosh_completions'
+\ }
+"Define keyword.
+if !exists('g:neocomplcache_keyword_patterns')
+  let g:neocomplcache_keyword_patterns = {}
+endif
+let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 
 "For Markdown
 au BufRead,BufNewFile *.md set filetype=markdown
