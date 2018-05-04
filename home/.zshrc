@@ -28,6 +28,9 @@ export VIRTUAL_ENV_DISABLE_PROMPT=1
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin
 
+# rust
+export PATH="$HOME/.cargo/bin:$PATH"
+
 # Heroku Toolbelt
 export PATH="/usr/local/heroku/bin:$PATH"
 

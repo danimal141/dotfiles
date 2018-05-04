@@ -47,6 +47,8 @@ if dein#load_state('~/.vim/dein')
   call dein#add('szw/vim-tags')
   call dein#add('lambdalisue/vim-pyenv')
   call dein#add('davidhalter/jedi-vim')
+  call dein#add('rust-lang/rust.vim')
+  call dein#add('racer-rust/vim-racer')
 
   call dein#end()
   call dein#save_state()
