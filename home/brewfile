@@ -35,7 +35,7 @@ install postgresql
 install mongodb
 install redis
 install rbenv
-install rbenv-binstubs
+install rbenv-bundler
 install ruby-build
 install reattach-to-user-namespace
 install openssl
