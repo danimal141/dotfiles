@@ -54,6 +54,7 @@ install ffmpeg
 install parallel
 install pyenv
 install pyenv-virtualenv
+install bat
 
 # Install cask packages
 cask install google-chrome
