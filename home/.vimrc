@@ -121,7 +121,7 @@ autocmd BufNewFile,BufRead *.tsx    set filetype=typescript
 
 "Setting nerdtree:
 "Open nerdtree automatically
-autocmd vimenter * if !argc() | NERDTree | endif
+"autocmd vimenter * if !argc() | NERDTree | endif
 "Display hidden file
 let g:NERDTreeShowHidden = 1
 "Display nerdtree when opening a new tab
