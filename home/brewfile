@@ -55,6 +55,8 @@ install parallel
 install pyenv
 install pyenv-virtualenv
 install bat
+install gdb
+install automake
 
 # Install cask packages
 cask install google-chrome
