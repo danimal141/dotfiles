@@ -25,7 +25,7 @@ if dein#load_state('~/.vim/dein')
   call dein#add('scrooloose/nerdtree')
   call dein#add('Shougo/unite.vim')
   call dein#add('Shougo/vimproc.vim', {'build' : 'make'})
-  call dein#add('scrooloose/syntastic')
+  call dein#add('vim-syntastic/syntastic')
   call dein#add('tpope/vim-surround')
   call dein#add('vim-scripts/closetag.vim')
   call dein#add('rking/ag.vim')
@@ -171,6 +171,9 @@ let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 
 "For Markdown
 au BufRead,BufNewFile *.md set filetype=markdown
+
+"For cron
+set backupskip+=/home/tmp/*,/private/tmp/*
 
 "ctags
 let g:vim_tags_project_tags_command = "/usr/local/bin/ctags -R {OPTIONS} {DIRECTORY} 2>/dev/null"
