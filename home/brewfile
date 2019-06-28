@@ -57,6 +57,7 @@ install pyenv-virtualenv
 install bat
 install gdb
 install automake
+install terraform
 
 # Install cask packages
 cask install google-chrome
