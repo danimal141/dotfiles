@@ -2,7 +2,7 @@
 
 ## Get started
 
-### Before creating dotfiles directory in Github
+### Preparation
 
 ```
 $ gem install homesick
@@ -10,7 +10,7 @@ $ mkdir ~/dotfiles && cd ~/dotfiles
 $ git init
 $ mkdir home && cd home
 
-# If dotfiles already exist in local, copy them to here.
+# If dotfiles already exist in your local, copy them to here.
 $ cp ~/.vimrc .
 $ cp ~/.zshrc .
 $ cp ~/.tmux.conf .
@@ -24,18 +24,18 @@ $ sh ./dein_installer.sh ./dein
 
 $ git add -A .
 $ git commit
-$ git remote add origin git@github.com:danimal141/dotfiles.git
+$ git remote add origin YOUR_REPOSITORY
 $ git push -u origin master
 ```
 
-### Using homesick
+### How to use with homesick
 
 ```
 $ homesick clone danimal141/dotfiles
 $ homesick symlink dotfiles
 ```
 
-### If dotfiles are updated
+### When dotfiles are updated
 
 ```
 # In current PC
@@ -44,7 +44,7 @@ $ git add -A .
 $ homesick commit dotfiles
 $ homesick push dotfiles
 
-# In other PC
+# In another PC
 $ homesick pull dotfiles
 $ homesick symlink dotfiles
 ```
