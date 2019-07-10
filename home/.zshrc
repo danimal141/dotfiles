@@ -48,6 +48,9 @@ eval "$(rbenv init - zsh)"
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
 
+# imagemagick@6
+export PATH="/usr/local/opt/imagemagick@6/bin:$PATH"
+
 # direnv
 eval "$(direnv hook zsh)"
 
