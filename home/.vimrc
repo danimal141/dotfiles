@@ -74,10 +74,13 @@ set background=dark
 colorscheme solarized
 
 set number
-set title
+set notitle
 set showmatch
 set noswapfile
 set eol
+set ttyfast
+set nobackup
+set noswapfile
 
 "Indent, Tab, Space
 set tabstop=2
