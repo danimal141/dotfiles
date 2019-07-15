@@ -1,67 +1,44 @@
 set encoding=utf-8
 " let g:python3_host_prog = $PYENV_ROOT.'/shims/python3'
 
-"Dein.vim
-if &compatible
-  set nocompatible
-endif
-set runtimepath^=~/.vim/dein/repos/github.com/Shougo/dein.vim/
+" vim-plug
+" Specify a directory for plugins
+" - For Neovim: ~/.local/share/nvim/plugged
+" - Avoid using standard Vim directory names like 'plugin'
+call plug#begin('~/.vim/plugged')
+Plug 'Shougo/neocomplcache'
+Plug 'Shougo/neosnippet'
+Plug 'Shougo/neosnippet-snippets'
 
-if dein#load_state('~/.vim/dein')
-  call dein#begin('~/.vim/dein')
-  call dein#add('Shougo/dein.vim')
-
-  " deoplete
-  " call dein#add('Shougo/deoplete.nvim')
-  " if !has('nvim')
-  "   " These depend on python3
-  "   call dein#add('roxma/nvim-yarp')
-  "   call dein#add('roxma/vim-hug-neovim-rpc')
-  " endif
-  call dein#add('Shougo/neocomplcache')
-  call dein#add('Shougo/neosnippet')
-  call dein#add('Shougo/neosnippet-snippets')
-
-  call dein#add('scrooloose/nerdtree')
-  call dein#add('Shougo/unite.vim')
-  call dein#add('Shougo/vimproc.vim', {'build' : 'make'})
-  call dein#add('vim-syntastic/syntastic')
-  call dein#add('tpope/vim-surround')
-  call dein#add('vim-scripts/closetag.vim')
-  call dein#add('rking/ag.vim')
-  " call dein#add('ctrlpvim/ctrlp.vim')
-  call dein#add('airblade/vim-gitgutter')
-  call dein#add('pangloss/vim-javascript')
-  call dein#add('mxw/vim-jsx')
-  call dein#add('kchmck/vim-coffee-script')
-  call dein#add('vim-ruby/vim-ruby')
-  call dein#add('vim-jp/vim-cpp')
-  call dein#add('justmao945/vim-clang')
-  call dein#add('slim-template/vim-slim')
-  call dein#add('digitaltoad/vim-jade')
-  call dein#add('fatih/vim-go')
-  call dein#add('leafgarland/typescript-vim')
-  " call dein#add('Quramy/tsuquyomi')
-  call dein#add('plasticboy/vim-markdown')
-  call dein#add('kannokanno/previm')
-  call dein#add('tyru/open-browser.vim')
-  call dein#add('szw/vim-tags')
-  call dein#add('lambdalisue/vim-pyenv')
-  call dein#add('davidhalter/jedi-vim')
-  call dein#add('rust-lang/rust.vim')
-  call dein#add('racer-rust/vim-racer')
-
-  call dein#end()
-  call dein#save_state()
-endif
-if dein#check_install()
-  call dein#install()
-endif
-
-" deoplete
-" if dein#tap('deoplete.nvim')
-"   let g:deoplete#enable_at_startup = 1
-" endif
+Plug 'scrooloose/nerdtree'
+Plug 'Shougo/unite.vim'
+Plug 'Shougo/vimproc.vim', {'build' : 'make'}
+Plug 'vim-syntastic/syntastic'
+Plug 'tpope/vim-surround'
+Plug 'vim-scripts/closetag.vim'
+Plug 'rking/ag.vim'
+" Plug 'ctrlpvim/ctrlp.vim'
+Plug 'airblade/vim-gitgutter'
+Plug 'pangloss/vim-javascript'
+Plug 'mxw/vim-jsx'
+Plug 'kchmck/vim-coffee-script'
+Plug 'vim-ruby/vim-ruby'
+Plug 'vim-jp/vim-cpp'
+Plug 'justmao945/vim-clang'
+Plug 'slim-template/vim-slim'
+Plug 'digitaltoad/vim-jade'
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+Plug 'leafgarland/typescript-vim'
+" Plug 'Quramy/tsuquyomi'
+Plug 'plasticboy/vim-markdown'
+Plug 'kannokanno/previm'
+Plug 'tyru/open-browser.vim'
+Plug 'szw/vim-tags'
+Plug 'lambdalisue/vim-pyenv'
+Plug 'davidhalter/jedi-vim'
+Plug 'rust-lang/rust.vim'
+Plug 'racer-rust/vim-racer'
+call plug#end() " Initialize plugin system
 
 "Colorscheme and syntax
 "Refer to https://github.com/altercation/vim-colors-solarized/blob/master/README.mkd
