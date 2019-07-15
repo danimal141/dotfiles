@@ -93,7 +93,16 @@ set wrapscan
 " For clipboard
 set clipboard+=unnamed,autoselect
 
-" Setting nerdtree:
+" Define keyword
+if !exists('g:neocomplcache_keyword_patterns')
+  let g:neocomplcache_keyword_patterns = {}
+endif
+let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
+
+" Cron
+set backupskip+=/home/tmp/*,/private/tmp/*
+
+" nerdtree:
 " Open nerdtree automatically
 " autocmd vimenter * if !argc() | NERDTree | endif
 " Display hidden file
@@ -103,8 +112,7 @@ let g:nerdtree_tabs_open_on_new_tab=1
 " Disable vim-markdown folding configuration
 let g:vim_markdown_folding_disabled = 1
 
-" Setting neocomplcache:
-
+" neocomplcache:
 " Disable AutoComplPop
 let g:acp_enableAtStartup = 0
 " Use neocomplcache
@@ -135,15 +143,6 @@ let g:clang_use_library = 1
 " default 'longest' can not work with neocomplete
 let g:clang_c_completeopt   = 'menuone'
 let g:clang_cpp_completeopt = 'menuone'
-
-" Define keyword
-if !exists('g:neocomplcache_keyword_patterns')
-  let g:neocomplcache_keyword_patterns = {}
-endif
-let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
-
-" Cron
-set backupskip+=/home/tmp/*,/private/tmp/*
 
 " ctags
 let g:vim_tags_project_tags_command = "/usr/local/bin/ctags -R {OPTIONS} {DIRECTORY} 2>/dev/null"
