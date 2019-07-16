@@ -58,6 +58,9 @@ install bat
 install gdb
 install automake
 install terraform
+install cmake
+install macvim
+install zlib
 
 # Install cask packages
 cask install google-chrome
