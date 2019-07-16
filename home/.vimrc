@@ -39,6 +39,7 @@ Plug 'lambdalisue/vim-pyenv'
 Plug 'davidhalter/jedi-vim'
 Plug 'rust-lang/rust.vim'
 Plug 'racer-rust/vim-racer'
+Plug 'simeji/winresizer'
 call plug#end() " Initialize plugin system
 
 " Colorscheme and syntax
@@ -169,3 +170,7 @@ let g:closetag_regions = {
 let g:closetag_shortcut = '>'
 " Add > at current position without closing the current tag, default is ''
 let g:closetag_close_shortcut = '<leader>>'
+
+" winresizer
+let g:winresizer_vert_resize = 1
+let g:winresizer_horiz_resize = 1
