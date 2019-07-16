@@ -1,5 +1,9 @@
 # Dotfiles
 
+## Requirements
+
+- [homesick](https://github.com/technicalpickles/homesick)
+
 ## Get started
 
 ### Preparation
@@ -16,11 +20,10 @@ $ cp ~/.zshrc .
 $ cp ~/.tmux.conf .
 $ cp ~/brewfile .
 
-# For managing vim plugins using dein.vim
-$ mkdir .vim && cd .vim
-$ curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > dein_installer.sh
-$ mkdir dein
-$ sh ./dein_installer.sh ./dein
+# For managing vim plugins
+$ mkdir -p .vim
+$ curl -fLo ${ROOT_DIR}/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
 $ git add -A .
 $ git commit
