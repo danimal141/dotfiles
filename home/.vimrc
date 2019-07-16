@@ -175,8 +175,8 @@ let g:closetag_close_shortcut = '<leader>>'
 
 
 " winresizer
-let g:winresizer_vert_resize = 1
-let g:winresizer_horiz_resize = 1
+let g:winresizer_vert_resize = 2
+let g:winresizer_horiz_resize = 2
 
 
 " YouCompleteMe
