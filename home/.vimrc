@@ -39,6 +39,7 @@ Plug 'davidhalter/jedi-vim'
 Plug 'rust-lang/rust.vim'
 Plug 'racer-rust/vim-racer'
 Plug 'simeji/winresizer'
+Plug 'mechatroner/rainbow_csv'
 call plug#end() " Initialize plugin system
 
 " Colorscheme and syntax
