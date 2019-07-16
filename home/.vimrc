@@ -166,9 +166,9 @@ let g:closetag_emptyTags_caseSensitive = 1
 " dict
 " Disables auto-close if not in a "valid" region (based on filetype)
 let g:closetag_regions = {
-    \ 'typescript.tsx': 'jsxRegion,tsxRegion',
-    \ 'javascript.jsx': 'jsxRegion',
-    \ }
+  \ 'typescript.tsx': 'jsxRegion,tsxRegion',
+  \ 'javascript.jsx': 'jsxRegion',
+  \ }
 " Shortcut for closing tags, default is '>'
 let g:closetag_shortcut = '>'
 " Add > at current position without closing the current tag, default is ''
@@ -182,7 +182,15 @@ let g:winresizer_horiz_resize = 2
 
 " YouCompleteMe
 set splitbelow
-let g:ycm_global_ycm_extra_conf = '${HOME}/.vim/plugged/YouCompleteMe/.ycm_extra_conf.py'
+let g:ycm_global_ycm_extra_conf = expand('$HOME/.vim/plugged/YouCompleteMe/.ycm_extra_conf.py')
 let g:ycm_auto_trigger = 1
 let g:ycm_min_num_of_chars_for_completion = 2
 let g:ycm_autoclose_preview_window_after_insertion = 1
+" rbenv and `gem install solargraph` is needed
+let g:ycm_language_server = [
+  \   {
+  \     'name': 'ruby',
+  \     'cmdline': [ expand('$HOME/.rbenv/shims/solargraph'), 'stdio' ],
+  \     'filetypes': [ 'ruby' ]
+  \   }
+  \ ]
