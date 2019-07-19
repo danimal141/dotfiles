@@ -6,9 +6,6 @@ set encoding=utf-8
 " - For Neovim: ~/.local/share/nvim/plugged
 " - Avoid using standard Vim directory names like 'plugin'
 call plug#begin('~/.vim/plugged')
-" Plug 'Shougo/neocomplcache'
-" Plug 'Shougo/neosnippet'
-" Plug 'Shougo/neosnippet-snippets'
 Plug 'ycm-core/YouCompleteMe'
 Plug 'scrooloose/nerdtree'
 Plug 'Shougo/unite.vim'
@@ -17,7 +14,6 @@ Plug 'vim-syntastic/syntastic'
 Plug 'tpope/vim-surround'
 Plug 'alvan/vim-closetag'
 Plug 'rking/ag.vim'
-" Plug 'ctrlpvim/ctrlp.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'pangloss/vim-javascript'
 Plug 'jason0x43/vim-js-indent'
@@ -109,34 +105,6 @@ let g:nerdtree_tabs_open_on_new_tab=1
 let g:vim_markdown_folding_disabled = 1
 
 
-" neocomplcache:
-" Disable AutoComplPop
-" let g:acp_enableAtStartup = 0
-" Use neocomplcache
-" let g:neocomplcache_enable_at_startup = 1
-" Use smartcase
-" let g:neocomplcache_enable_smart_case = 1
-" Use camel case completion
-" let g:neocomplcache_enable_camel_case_completion = 1
-" Use underbar completion
-" let g:neocomplcache_enable_underbar_completion = 1
-" Set minimum syntax keyword length
-" let g:neocomplcache_min_syntax_length = 3
-" let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
-" Define dictionary
-" let g:neocomplcache_dictionary_filetype_lists = {
-" \ 'default' : '',
-" \ 'vimshell' : $HOME.'/.vimshell_hist',
-" \ 'scheme' : $HOME.'/.gosh_completions'
-" \ }
-"let g:neocomplcache_force_overwrite_completefunc=1
-" Define keyword
-" if !exists('g:neocomplcache_keyword_patterns')
-"   let g:neocomplcache_keyword_patterns = {}
-" endif
-" let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
-
-
 " vim-clang
 " disable auto completion for vim-clang
 let g:clang_auto = 0
@@ -187,10 +155,10 @@ let g:ycm_auto_trigger = 1
 let g:ycm_min_num_of_chars_for_completion = 2
 let g:ycm_autoclose_preview_window_after_insertion = 1
 " rbenv and `gem install solargraph` is needed
-let g:ycm_language_server = [
-  \   {
-  \     'name': 'ruby',
-  \     'cmdline': [ expand('$HOME/.rbenv/shims/solargraph'), 'stdio' ],
-  \     'filetypes': [ 'ruby' ]
-  \   }
-  \ ]
+" let g:ycm_language_server = [
+"   \   {
+"   \     'name': 'ruby',
+"   \     'cmdline': [ expand('$HOME/.rbenv/shims/solargraph'), 'stdio' ],
+"   \     'filetypes': [ 'ruby' ]
+"   \   }
+"   \ ]
