@@ -36,6 +36,17 @@ Plug 'rust-lang/rust.vim'
 Plug 'racer-rust/vim-racer'
 Plug 'simeji/winresizer'
 Plug 'mechatroner/rainbow_csv'
+Plug 'prettier/vim-prettier', {
+  \ 'do': 'yarn install',
+  \ 'branch': 'release/1.x',
+  \ 'for': [
+    \ 'javascript',
+    \ 'typescript',
+    \ 'css',
+    \ 'scss',
+    \ 'json',
+    \ 'markdown',
+    \ 'html' ] }
 call plug#end() " Initialize plugin system
 
 " Colorscheme and syntax
@@ -146,6 +157,12 @@ let g:closetag_close_shortcut = '<leader>>'
 " winresizer
 let g:winresizer_vert_resize = 2
 let g:winresizer_horiz_resize = 2
+
+
+" vim-prettier
+let g:prettier#config#semi = 'false'
+let g:prettier#config#single_quote = 'true'
+let g:prettier#config#trailing_comma = 'all'
 
 
 " YouCompleteMe
