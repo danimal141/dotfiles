@@ -66,8 +66,6 @@ install zlib
 cask install google-chrome
 cask install firefox
 cask install iterm2
-cask install sublime-text
-cask install kobito
 cask install virtualbox
 cask install vagrant
 cask install appcleaner
@@ -78,6 +76,7 @@ cask install evernote
 cask install imageoptim
 cask install xtrafinder
 cask install the-unarchiver
+cask install react-native-debugger
 
 # Remove outdated versions
 cleanup
