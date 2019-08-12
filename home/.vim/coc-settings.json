@@ -4,6 +4,7 @@
   "javascript.preferences.noSemicolons": true,
   "yaml.format.enable": true,
   "yaml.format.singleQuote": true,
+  "yaml.validate": false,
   "languageserver": {
     "golang": {
       "command": "go-langserver",
