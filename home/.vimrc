@@ -16,7 +16,6 @@ Plug 'alvan/vim-closetag'
 Plug 'rking/ag.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'pangloss/vim-javascript'
-Plug 'jason0x43/vim-js-indent'
 Plug 'mxw/vim-jsx'
 Plug 'kchmck/vim-coffee-script'
 Plug 'vim-ruby/vim-ruby'
@@ -36,17 +35,11 @@ Plug 'rust-lang/rust.vim'
 Plug 'racer-rust/vim-racer'
 Plug 'simeji/winresizer'
 Plug 'mechatroner/rainbow_csv'
+Plug 'tpope/vim-endwise'
 Plug 'prettier/vim-prettier', {
   \ 'do': 'yarn install',
   \ 'branch': 'release/1.x',
-  \ 'for': [
-    \ 'javascript',
-    \ 'typescript',
-    \ 'css',
-    \ 'scss',
-    \ 'json',
-    \ 'markdown',
-    \ 'html' ] }
+  \ 'for': ['javascript', 'typescript', 'css', 'scss', 'json', 'markdown', 'html'] }
 call plug#end() " Initialize plugin system
 
 " Colorscheme and syntax
