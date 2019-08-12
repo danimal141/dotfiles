@@ -18,4 +18,6 @@ augroup filetypedetect
   au BufRead,BufNewFile *.md setfiletype markdown
   au BufRead,BufNewFile *.c setfiletype clang
   au BufRead,BufNewFile *.cpp setfiletype clang
+  au BufRead,BufNewFile *.yml setfiletype yaml
+  au BufRead,BufNewFile *.yaml setfiletype yaml
 augroup END
