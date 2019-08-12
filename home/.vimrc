@@ -6,7 +6,7 @@ set encoding=utf-8
 " - For Neovim: ~/.local/share/nvim/plugged
 " - Avoid using standard Vim directory names like 'plugin'
 call plug#begin('~/.vim/plugged')
-Plug 'ycm-core/YouCompleteMe'
+Plug 'neoclide/coc.nvim', { 'branch': 'release' } " Extensions: https://github.com/neoclide/coc.nvim#extensions
 Plug 'scrooloose/nerdtree'
 Plug 'Shougo/unite.vim'
 Plug 'Shougo/vimproc.vim', { 'do' : 'make' }
@@ -105,19 +105,6 @@ set backupskip+=/home/tmp/*,/private/tmp/*
 let g:NERDTreeShowHidden = 1
 " Display nerdtree when opening a new tab
 let g:nerdtree_tabs_open_on_new_tab=1
-" Disable vim-markdown folding configuration
-let g:vim_markdown_folding_disabled = 1
-
-
-" vim-clang
-" disable auto completion for vim-clang
-let g:clang_auto = 0
-let g:clang_complete_auto = 0
-let g:clang_auto_select = 0
-let g:clang_use_library = 1
-" default 'longest' can not work with neocomplete
-let g:clang_c_completeopt   = 'menuone'
-let g:clang_cpp_completeopt = 'menuone'
 
 
 " ctags
@@ -156,19 +143,3 @@ let g:winresizer_horiz_resize = 2
 let g:prettier#config#semi = 'false'
 let g:prettier#config#single_quote = 'true'
 let g:prettier#config#trailing_comma = 'all'
-
-
-" YouCompleteMe
-set splitbelow
-let g:ycm_global_ycm_extra_conf = expand('$HOME/.vim/plugged/YouCompleteMe/.ycm_extra_conf.py')
-let g:ycm_auto_trigger = 1
-let g:ycm_min_num_of_chars_for_completion = 2
-let g:ycm_autoclose_preview_window_after_insertion = 1
-" rbenv and `gem install solargraph` is needed
-" let g:ycm_language_server = [
-"   \   {
-"   \     'name': 'ruby',
-"   \     'cmdline': [ expand('$HOME/.rbenv/shims/solargraph'), 'stdio' ],
-"   \     'filetypes': [ 'ruby' ]
-"   \   }
-"   \ ]

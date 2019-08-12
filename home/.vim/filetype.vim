@@ -16,4 +16,6 @@ augroup filetypedetect
   au BufRead,BufNewFile *.py setfiletype python
   au BufRead,BufNewFile *.rs setfiletype rust
   au BufRead,BufNewFile *.md setfiletype markdown
+  au BufRead,BufNewFile *.c setfiletype clang
+  au BufRead,BufNewFile *.cpp setfiletype clang
 augroup END
