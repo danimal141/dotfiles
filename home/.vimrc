@@ -39,7 +39,7 @@ Plug 'tpope/vim-endwise'
 Plug 'prettier/vim-prettier', {
   \ 'do': 'yarn install',
   \ 'branch': 'release/1.x',
-  \ 'for': ['javascript', 'typescript', 'css', 'scss', 'json', 'markdown', 'html'] }
+  \ 'for': ['javascript', 'typescript', 'css', 'scss', 'json', 'markdown', 'html', 'yaml'] }
 call plug#end() " Initialize plugin system
 
 " Colorscheme and syntax
