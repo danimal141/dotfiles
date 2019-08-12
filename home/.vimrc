@@ -106,11 +106,9 @@ let g:NERDTreeShowHidden = 1
 " Display nerdtree when opening a new tab
 let g:nerdtree_tabs_open_on_new_tab=1
 
-
 " ctags
 let g:vim_tags_project_tags_command = "/usr/local/bin/ctags -R {OPTIONS} {DIRECTORY} 2>/dev/null"
 let g:vim_tags_gems_tags_command = "/usr/local/bin/ctags -R {OPTIONS} `bundle show --paths` 2>/dev/null"
-
 
 " closetag.vim
 " filenames like *.xml, *.html, *.xhtml, ...
@@ -133,11 +131,9 @@ let g:closetag_shortcut = '>'
 " Add > at current position without closing the current tag, default is ''
 let g:closetag_close_shortcut = '<leader>>'
 
-
 " winresizer
 let g:winresizer_vert_resize = 2
 let g:winresizer_horiz_resize = 2
-
 
 " vim-prettier
 let g:prettier#config#semi = 'false'

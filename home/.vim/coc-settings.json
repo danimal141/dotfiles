@@ -1,5 +1,5 @@
 {
-  "suggest.noselect":false,
+  "suggest.noselect": false,
   "typescript.preferences.noSemicolons": true,
   "javascript.preferences.noSemicolons": true,
   "yaml.format.enable": true,
