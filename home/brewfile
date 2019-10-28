@@ -46,6 +46,7 @@ install ricty
 install ansible
 install peco
 install go
+install rust
 install kotlin
 install glide
 install direnv
