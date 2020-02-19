@@ -6,12 +6,9 @@
   "yaml.validate": false,
   "languageserver": {
     "golang": {
-      "command": "go-langserver",
-      "filetypes": ["go"],
-      "initializationOptions": {
-        "gocodeCompletionEnabled": true,
-        "diagnosticsEnabled": true
-      }
+      "command": "gopls",
+      "rootPatterns": ["go.mod"],
+      "filetypes": ["go"]
     },
     "bash": {
       "command": "bash-language-server",
