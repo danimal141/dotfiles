@@ -37,6 +37,7 @@ Plug 'simeji/winresizer'
 Plug 'mechatroner/rainbow_csv'
 Plug 'tpope/vim-endwise'
 Plug 'udalov/kotlin-vim'
+Plug 'hashivim/vim-terraform'
 Plug 'prettier/vim-prettier', {
   \ 'do': 'yarn install',
   \ 'branch': 'release/1.x',
