@@ -64,6 +64,8 @@ install cmake
 install macvim
 install zlib
 install hugo
+install minikube
+install kubernetes-cli
 
 # Install cask packages
 cask install google-chrome
