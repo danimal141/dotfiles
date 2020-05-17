@@ -66,6 +66,7 @@ install zlib
 install hugo
 install minikube
 install kubernetes-cli
+install kubectx
 
 # Install cask packages
 cask install google-chrome
