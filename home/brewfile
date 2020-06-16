@@ -64,6 +64,7 @@ install cmake
 install macvim
 install zlib
 install hugo
+install docker-machine
 install minikube
 install kubernetes-cli
 install kubectx
