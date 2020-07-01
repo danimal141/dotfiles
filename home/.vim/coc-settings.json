@@ -1,9 +1,8 @@
 {
-  "typescript.preferences.noSemicolons": true,
-  "javascript.preferences.noSemicolons": true,
   "yaml.format.enable": true,
   "yaml.format.singleQuote": true,
   "yaml.validate": false,
+  "tsserver.npm": "/usr/local/bin/npm",
   "languageserver": {
     "golang": {
       "command": "gopls",
