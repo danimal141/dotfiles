@@ -142,3 +142,13 @@ let g:winresizer_horiz_resize = 2
 let g:prettier#config#semi = 'false'
 let g:prettier#config#single_quote = 'true'
 let g:prettier#config#trailing_comma = 'all'
+
+" Unite
+" grep shortcut
+nnoremap <silent> ,g  :<C-u>Unite grep -buffer-name=search-buffer<CR>
+" Use jvgrep
+if executable('jvgrep')
+    let g:unite_source_grep_command = 'jvgrep'
+    let g:unite_source_grep_default_opts = '-r'
+    let g:unite_source_grep_recursive_opt = '-R'
+endif

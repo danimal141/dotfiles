@@ -27,7 +27,7 @@ install bash-completion
 install heroku-toolbelt
 install ctags
 install jq
-install phantomjs
+install jvgrep
 install jenkins
 install mecab
 install mysql
