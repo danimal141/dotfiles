@@ -51,6 +51,9 @@ export NVM_DIR="$HOME/.nvm"
 # imagemagick@6
 export PATH="/usr/local/opt/imagemagick@6/bin:$PATH"
 
+# Added by serverless binary installer
+export PATH="$HOME/.serverless/bin:$PATH"
+
 # direnv
 eval "$(direnv hook zsh)"
 
@@ -139,4 +142,3 @@ if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]; then
   . "$HOME/google-cloud-sdk/completion.zsh.inc";
   . "$HOME/google-cloud-sdk/path.zsh.inc";
 fi
-
