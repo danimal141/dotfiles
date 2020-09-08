@@ -110,6 +110,9 @@ let g:NERDTreeShowHidden = 1
 let g:nerdtree_tabs_open_on_new_tab=1
 
 " ctags
+" Also should setup:
+" https://github.com/tpope/gem-ctags
+" https://github.com/tpope/rbenv-ctags
 let g:vim_tags_project_tags_command = "/usr/local/bin/ctags -R {OPTIONS} {DIRECTORY} 2>/dev/null"
 let g:vim_tags_gems_tags_command = "/usr/local/bin/ctags -R {OPTIONS} `bundle show --paths` 2>/dev/null"
 
