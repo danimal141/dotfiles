@@ -15,31 +15,31 @@ Plug 'tpope/vim-surround'
 Plug 'alvan/vim-closetag'
 Plug 'rking/ag.vim'
 Plug 'airblade/vim-gitgutter'
-Plug 'pangloss/vim-javascript'
-Plug 'maxmellon/vim-jsx-pretty'
-Plug 'kchmck/vim-coffee-script'
-Plug 'vim-ruby/vim-ruby'
-Plug 'vim-jp/vim-cpp'
-Plug 'justmao945/vim-clang'
-Plug 'slim-template/vim-slim'
-Plug 'digitaltoad/vim-jade'
-Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+Plug 'szw/vim-tags'
+Plug 'simeji/winresizer'
+Plug 'tpope/vim-endwise'
+Plug 'pangloss/vim-javascript', { 'for': ['javascript', 'typescript'] }
+Plug 'maxmellon/vim-jsx-pretty', { 'for': ['javascript', 'typescript'] }
+Plug 'kchmck/vim-coffee-script', { 'for': 'coffeescript' }
+Plug 'vim-ruby/vim-ruby', { 'for': 'ruby' }
+Plug 'vim-jp/vim-cpp', { 'for': 'clang' }
+Plug 'justmao945/vim-clang', { 'for': 'clang' }
+Plug 'slim-template/vim-slim', { 'for': 'slim' }
+Plug 'digitaltoad/vim-jade', { 'for': 'jade' }
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries', 'for': 'go' }
 " Plug 'leafgarland/typescript-vim'
 " Plug 'peitalin/vim-jsx-typescript'
-Plug 'plasticboy/vim-markdown'
-Plug 'kannokanno/previm'
-Plug 'tyru/open-browser.vim'
-Plug 'szw/vim-tags'
-Plug 'lambdalisue/vim-pyenv'
+Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
+Plug 'kannokanno/previm', { 'for': 'markdown' }
+Plug 'tyru/open-browser.vim', { 'for': 'markdown' }
+Plug 'lambdalisue/vim-pyenv', { 'for': 'python' }
 " Plug 'davidhalter/jedi-vim'
-Plug 'rust-lang/rust.vim'
-Plug 'racer-rust/vim-racer'
-Plug 'simeji/winresizer'
-Plug 'mechatroner/rainbow_csv'
-Plug 'tpope/vim-endwise'
-Plug 'udalov/kotlin-vim'
-Plug 'tpope/vim-rails'
-Plug 'hashivim/vim-terraform'
+Plug 'rust-lang/rust.vim', { 'for': 'rust' }
+Plug 'racer-rust/vim-racer', { 'for': 'rust' }
+Plug 'mechatroner/rainbow_csv', { 'for': 'csv' }
+Plug 'udalov/kotlin-vim', { 'for': 'kotlin' }
+Plug 'tpope/vim-rails', { 'for': 'ruby' }
+Plug 'hashivim/vim-terraform', { 'for': 'terraform' }
 Plug 'prettier/vim-prettier', {
   \ 'do': 'yarn install',
   \ 'branch': 'release/1.x',

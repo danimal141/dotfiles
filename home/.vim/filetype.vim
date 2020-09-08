@@ -12,6 +12,7 @@ augroup filetypedetect
   au BufRead,BufNewFile *.jsx setfiletype javascript.jsx
   au BufRead,BufNewFile *.ts setfiletype typescript.tsx
   au BufRead,BufNewFile *.tsx setfiletype typescript.tsx
+  au BufRead,BufNewFile *.coffee setfiletype coffeescript
   au BufRead,BufNewFile *.scss setfiletype scss
   au BufRead,BufNewFile *.py setfiletype python
   au BufRead,BufNewFile *.rs setfiletype rust
@@ -20,4 +21,10 @@ augroup filetypedetect
   au BufRead,BufNewFile *.cpp setfiletype clang
   au BufRead,BufNewFile *.yml setfiletype yaml
   au BufRead,BufNewFile *.yaml setfiletype yaml
+  au BufRead,BufNewFile *.json setfiletype json
+  au BufRead,BufNewFile *.kt setfiletype kotlin
+  au BufRead,BufNewFile *.tf setfiletype terraform
+  au BufRead,BufNewFile *.csv setfiletype csv
+  au BufRead,BufNewFile *.jade setfiletype jade
+  au BufRead,BufNewFile *.slim setfiletype slim
 augroup END
