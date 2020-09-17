@@ -142,3 +142,6 @@ if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]; then
   . "$HOME/google-cloud-sdk/completion.zsh.inc";
   . "$HOME/google-cloud-sdk/path.zsh.inc";
 fi
+
+# kubectl
+[[ /usr/local/bin/kubectl ]] && source <(kubectl completion zsh)
