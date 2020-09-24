@@ -63,6 +63,9 @@ export PATH="$HOME/.serverless/bin:$PATH"
 # direnv
 eval "$(direnv hook zsh)"
 
+# java
+export _JAVA_OPTIONS="-Duser.language=en -Duser.country=US"
+
 # -------------------------------------
 # zsh options
 # -------------------------------------
