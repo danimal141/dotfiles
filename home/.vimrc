@@ -40,6 +40,7 @@ Plug 'mechatroner/rainbow_csv', { 'for': 'csv' }
 Plug 'udalov/kotlin-vim', { 'for': 'kotlin' }
 Plug 'tpope/vim-rails', { 'for': 'ruby' }
 Plug 'hashivim/vim-terraform', { 'for': 'terraform' }
+Plug 'jparise/vim-graphql'
 Plug 'prettier/vim-prettier', {
   \ 'do': 'yarn install',
   \ 'branch': 'release/1.x',
