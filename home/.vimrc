@@ -11,6 +11,7 @@ Plug 'scrooloose/nerdtree'
 Plug 'Shougo/unite.vim'
 Plug 'Shougo/vimproc.vim', { 'do' : 'make' }
 Plug 'vim-syntastic/syntastic'
+Plug 'mtscout6/syntastic-local-eslint.vim'
 Plug 'tpope/vim-surround'
 Plug 'alvan/vim-closetag'
 Plug 'rking/ag.vim'

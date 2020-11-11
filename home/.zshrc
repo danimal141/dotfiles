@@ -154,3 +154,4 @@ fi
 
 # kubectl
 [[ /usr/local/bin/kubectl ]] && source <(kubectl completion zsh)
+[[ -s "$HOME/.avn/bin/avn.sh" ]] && source "$HOME/.avn/bin/avn.sh" # load avn
