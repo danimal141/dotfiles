@@ -6,67 +6,6 @@ export LC_ALL=en_US.UTF-8
 export EDITOR=/usr/local/bin/vim
 
 # -------------------------------------
-# path
-# -------------------------------------
-typeset -U path cdpath fpath manpath
-
-path=(
-  $HOME/bin(N-/)
-  /usr/local/bin(N-/)
-  /usr/local/sbin(N-/)
-  $path
-)
-
-# pyenv
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-export VIRTUAL_ENV_DISABLE_PROMPT=1
-
-# golang
-export GOPATH=$HOME/go
-export PATH=$PATH:$GOPATH/bin
-
-# rust
-export PATH="$HOME/.cargo/bin:$PATH"
-
-# Heroku Toolbelt
-export PATH="/usr/local/heroku/bin:$PATH"
-
-# wp-cli
-export PATH="$HOME/.wp-cli/bin:$PATH"
-
-# postgresql
-export PGDATA=/usr/local/var/postgres
-
-# rbenv
-export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
-eval "$(rbenv init - zsh)"
-
-# mysql
-export PATH="/usr/local/opt/mysql@5.6/bin:$PATH"
-
-# node
-# export NVM_DIR="$HOME/.nvm"
-# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
- export NVM_DIR="$HOME/.nvm"
-  [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
-  [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
-
-# imagemagick@6
-export PATH="/usr/local/opt/imagemagick@6/bin:$PATH"
-
-# Added by serverless binary installer
-export PATH="$HOME/.serverless/bin:$PATH"
-
-# direnv
-eval "$(direnv hook zsh)"
-
-# java
-export _JAVA_OPTIONS="-Duser.language=en -Duser.country=US"
-
-# -------------------------------------
 # zsh options
 # -------------------------------------
 
@@ -154,4 +93,64 @@ fi
 
 # kubectl
 [[ /usr/local/bin/kubectl ]] && source <(kubectl completion zsh)
-[[ -s "$HOME/.avn/bin/avn.sh" ]] && source "$HOME/.avn/bin/avn.sh" # load avn
+
+# -------------------------------------
+# path
+# -------------------------------------
+typeset -U path cdpath fpath manpath
+
+path=(
+  $HOME/bin(N-/)
+  /usr/local/bin(N-/)
+  /usr/local/sbin(N-/)
+  $path
+)
+
+# pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+export VIRTUAL_ENV_DISABLE_PROMPT=1
+
+# golang
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
+
+# rust
+export PATH="$HOME/.cargo/bin:$PATH"
+
+# Heroku Toolbelt
+export PATH="/usr/local/heroku/bin:$PATH"
+
+# wp-cli
+export PATH="$HOME/.wp-cli/bin:$PATH"
+
+# postgresql
+export PGDATA=/usr/local/var/postgres
+
+# rbenv
+export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
+eval "$(rbenv init - zsh)"
+
+# mysql
+export PATH="/usr/local/opt/mysql@5.6/bin:$PATH"
+
+# node
+# export NVM_DIR="$HOME/.nvm"
+# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+ export NVM_DIR="$HOME/.nvm"
+  [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
+  [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
+# imagemagick@6
+export PATH="/usr/local/opt/imagemagick@6/bin:$PATH"
+
+# Added by serverless binary installer
+export PATH="$HOME/.serverless/bin:$PATH"
+
+# direnv
+eval "$(direnv hook zsh)"
+
+# java
+export _JAVA_OPTIONS="-Duser.language=en -Duser.country=US"
