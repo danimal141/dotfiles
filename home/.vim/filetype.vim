@@ -2,16 +2,15 @@ set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
 
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_check_on_wq = 0
+runtime! ftdetect/*.vim
 
 augroup filetypedetect
   au BufRead,BufNewFile *.go setfiletype go
   au BufRead,BufNewFile *.rb setfiletype ruby
-  au BufRead,BufNewFile *.js setfiletype javascript.jsx
   au BufRead,BufNewFile *.jsx setfiletype javascript.jsx
-  au BufRead,BufNewFile *.ts setfiletype typescript.tsx
+  au BufRead,BufNewFile *.js setfiletype javascript.jsx
   au BufRead,BufNewFile *.tsx setfiletype typescript.tsx
+  au BufRead,BufNewFile *.ts setfiletype typescript.tsx
   au BufRead,BufNewFile *.coffee setfiletype coffeescript
   au BufRead,BufNewFile *.scss setfiletype scss
   au BufRead,BufNewFile *.py setfiletype python
@@ -28,3 +27,6 @@ augroup filetypedetect
   au BufRead,BufNewFile *.jade setfiletype jade
   au BufRead,BufNewFile *.slim setfiletype slim
 augroup END
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_check_on_wq = 0

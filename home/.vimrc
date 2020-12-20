@@ -1,4 +1,5 @@
 set encoding=utf-8
+set runtimepath^=~/.vim/
 " let g:python3_host_prog = $PYENV_ROOT.'/shims/python3'
 
 " vim-plug
@@ -19,8 +20,8 @@ Plug 'airblade/vim-gitgutter'
 Plug 'szw/vim-tags'
 Plug 'simeji/winresizer'
 Plug 'tpope/vim-endwise'
-Plug 'pangloss/vim-javascript', { 'for': ['javascript', 'typescript'] }
-Plug 'maxmellon/vim-jsx-pretty', { 'for': ['javascript', 'typescript'] }
+Plug 'pangloss/vim-javascript', { 'for': ['javascript.jsx'] }
+Plug 'maxmellon/vim-jsx-pretty', { 'for': ['javascript.jsx', 'typescript.tsx'] }
 Plug 'kchmck/vim-coffee-script', { 'for': 'coffeescript' }
 Plug 'vim-ruby/vim-ruby', { 'for': 'ruby' }
 Plug 'vim-jp/vim-cpp', { 'for': 'clang' }
@@ -45,7 +46,7 @@ Plug 'jparise/vim-graphql'
 Plug 'prettier/vim-prettier', {
   \ 'do': 'yarn install',
   \ 'branch': 'release/1.x',
-  \ 'for': ['javascript', 'typescript', 'css', 'scss', 'json', 'markdown', 'html', 'yaml'] }
+  \ 'for': ['javascript.jsx', 'typescript.tsx', 'css', 'scss', 'json', 'markdown', 'html', 'yaml'] }
 call plug#end() " Initialize plugin system
 
 " Colorscheme and syntax
