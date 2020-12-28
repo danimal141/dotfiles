@@ -27,6 +27,7 @@ setopt prompt_subst
 setopt ignoreeof
 setopt no_tify
 setopt hist_ignore_dups
+setopt share_history
 
 # -------------------------------------
 # prompt
