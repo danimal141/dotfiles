@@ -4,6 +4,7 @@ cask_args appdir: '/Applications'
 tap 'heroku/brew'
 tap 'sanemat/font'
 tap 'AdoptOpenJDK/openjdk'
+tap 'homebrew/cask-fonts'
 
 brew 'git'
 brew 'coreutils'
@@ -81,3 +82,4 @@ cask 'imageoptim'
 # cask xtrafinder
 cask 'the-unarchiver'
 cask 'react-native-debugger'
+cask 'font-ricty-diminished'
