@@ -3,6 +3,7 @@
   "yaml.format.singleQuote": true,
   "yaml.validate": false,
   "python.jediEnabled": false,
+  "http.proxyStrictSSL": false,
   "languageserver": {
     "golang": {
       "command": "gopls",
