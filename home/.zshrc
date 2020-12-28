@@ -10,10 +10,10 @@ export VISUAL=/usr/local/bin/vim
 # zsh options
 # -------------------------------------
 
-#for zsh-completions
+# for zsh-completions
 fpath=(/usr/local/share/zsh-completions $fpath)
 
-## complementation
+# complementation
 autoload -U compinit
 compinit -u
 
@@ -95,6 +95,15 @@ fi
 # kubectl
 [[ /usr/local/bin/kubectl ]] && source <(kubectl completion zsh)
 
+# peco
+function peco-history-selection() {
+  BUFFER=$(history 1 | sort -k1,1nr | perl -ne 'BEGIN { my @lines = (); } s/^\s*\d+\*?\s*//; $in=$_; if (!(grep {$in eq $_} @lines)) { push(@lines, $in); print $in; }' | peco --query "$LBUFFER")
+  CURSOR=${#BUFFER}
+  zle reset-prompt
+}
+zle -N peco-history-selection
+bindkey '^R' peco-history-selection
+
 # -------------------------------------
 # path
 # -------------------------------------
@@ -155,12 +164,3 @@ eval "$(direnv hook zsh)"
 
 # java
 export _JAVA_OPTIONS="-Duser.language=en -Duser.country=US"
-
-#peco
-function peco-history-selection() {
-  BUFFER=$(history 1 | sort -k1,1nr | perl -ne 'BEGIN { my @lines = (); } s/^\s*\d+\*?\s*//; $in=$_; if (!(grep {$in eq $_} @lines)) { push(@lines, $in); print $in; }' | peco --query "$LBUFFER")
-  CURSOR=${#BUFFER}
-  zle reset-prompt
-}
-zle -N peco-history-selection
-bindkey '^R' peco-history-selection
