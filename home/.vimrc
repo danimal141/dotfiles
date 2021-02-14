@@ -44,6 +44,7 @@ Plug 'udalov/kotlin-vim', { 'for': 'kotlin' }
 Plug 'tpope/vim-rails', { 'for': 'ruby' }
 Plug 'hashivim/vim-terraform', { 'for': 'terraform' }
 Plug 'jparise/vim-graphql'
+Plug 'aklt/plantuml-syntax'
 Plug 'prettier/vim-prettier', {
   \ 'do': 'yarn install',
   \ 'branch': 'release/1.x',
