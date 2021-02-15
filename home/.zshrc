@@ -78,7 +78,7 @@ zle -N edit-command-line
 # bindkey '^xe' edit-command-line
 
 # viins
-bindkey -M vicmd v edit-command-line
+bindkey -M vicmd i edit-command-line
 
 # -------------------------------------
 # alias
