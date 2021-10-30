@@ -20,7 +20,7 @@ Plug 'rking/ag.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'szw/vim-tags'
 Plug 'simeji/winresizer'
-Plug 'tpope/vim-endwise'
+" Plug 'tpope/vim-endwise'
 Plug 'pangloss/vim-javascript', { 'for': ['javascript.jsx'] }
 Plug 'maxmellon/vim-jsx-pretty', { 'for': ['javascript.jsx', 'typescript.tsx'] }
 Plug 'kchmck/vim-coffee-script', { 'for': 'coffeescript' }
@@ -155,6 +155,15 @@ let g:winresizer_horiz_resize = 2
 let g:prettier#config#semi = 'false'
 let g:prettier#config#single_quote = 'true'
 let g:prettier#config#trailing_comma = 'all'
+
+" Completion like IDE
+" Reference: https://note.com/yasukotelin/n/na87dc604e042
+set showmatch
+set completeopt=menuone,noinsert
+" It conflicts with vim-endwise...
+inoremap <expr><CR> pumvisible() ? "<C-y>" : "<CR>"
+inoremap <expr><C-n> pumvisible() ? "<Down>" : "<C-n>"
+inoremap <expr><C-p> pumvisible() ? "<Up>" : "<C-p>"
 
 " Unite
 " Shortcuts

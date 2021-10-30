@@ -4,6 +4,7 @@
   "yaml.validate": false,
   "python.jediEnabled": false,
   "http.proxyStrictSSL": false,
+  "suggest.keepCompleteopt": true,
   "languageserver": {
     "golang": {
       "command": "gopls",
