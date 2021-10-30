@@ -20,7 +20,7 @@ Plug 'rking/ag.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'szw/vim-tags'
 Plug 'simeji/winresizer'
-" Plug 'tpope/vim-endwise'
+Plug 'tpope/vim-endwise'
 Plug 'pangloss/vim-javascript', { 'for': ['javascript.jsx'] }
 Plug 'maxmellon/vim-jsx-pretty', { 'for': ['javascript.jsx', 'typescript.tsx'] }
 Plug 'kchmck/vim-coffee-script', { 'for': 'coffeescript' }
@@ -160,10 +160,12 @@ let g:prettier#config#trailing_comma = 'all'
 " Reference: https://note.com/yasukotelin/n/na87dc604e042
 set showmatch
 set completeopt=menuone,noinsert
+
 " It conflicts with vim-endwise...
-inoremap <expr><CR> pumvisible() ? "<C-y>" : "<CR>"
-inoremap <expr><C-n> pumvisible() ? "<Down>" : "<C-n>"
-inoremap <expr><C-p> pumvisible() ? "<Up>" : "<C-p>"
+" Reference: https://github.com/tpope/vim-endwise/issues/22#issuecomment-554685904
+let g:endwise_no_mappings = v:true
+inoremap <expr> <Plug>CustomCocCR pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+imap <CR> <Plug>CustomCocCR<Plug>DiscretionaryEnd
 
 " Unite
 " Shortcuts
