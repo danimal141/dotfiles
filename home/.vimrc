@@ -85,9 +85,25 @@ set cursorcolumn
 
 highlight CursorColumn ctermbg=darkgray
 
+" Complementation
+" Brackets
+inoremap { {}<Left>
 inoremap {<Enter> {}<Left><CR><ESC><S-o>
-inoremap [<Enter> []<Left><CR><ESC><S-o>
+inoremap () ()
+inoremap ( ()<ESC>i
 inoremap (<Enter> ()<Left><CR><ESC><S-o>
+inoremap [ []<ESC>i
+inoremap [<Enter> []<Left><CR><ESC><S-o>
+
+" Behaves like IDE
+" Reference: https://note.com/yasukotelin/n/na87dc604e042
+set showmatch
+set completeopt=menuone,noinsert
+" it conflicts with vim-endwise...
+" Reference: https://github.com/tpope/vim-endwise/issues/22#issuecomment-554685904
+let g:endwise_no_mappings = v:true
+inoremap <expr> <Plug>CustomCocCR pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+imap <CR> <Plug>CustomCocCR<Plug>DiscretionaryEnd
 
 " HighlitTrailingSpaces
 augroup HighlightTrailingSpaces
@@ -155,17 +171,6 @@ let g:winresizer_horiz_resize = 2
 let g:prettier#config#semi = 'false'
 let g:prettier#config#single_quote = 'true'
 let g:prettier#config#trailing_comma = 'all'
-
-" Completion like IDE
-" Reference: https://note.com/yasukotelin/n/na87dc604e042
-set showmatch
-set completeopt=menuone,noinsert
-
-" It conflicts with vim-endwise...
-" Reference: https://github.com/tpope/vim-endwise/issues/22#issuecomment-554685904
-let g:endwise_no_mappings = v:true
-inoremap <expr> <Plug>CustomCocCR pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-imap <CR> <Plug>CustomCocCR<Plug>DiscretionaryEnd
 
 " Unite
 " Shortcuts
