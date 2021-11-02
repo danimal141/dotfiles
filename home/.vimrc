@@ -48,7 +48,7 @@ Plug 'aklt/plantuml-syntax'
 Plug 'prettier/vim-prettier', {
   \ 'do': 'yarn install',
   \ 'branch': 'release/1.x',
-  \ 'for': ['javascript.jsx', 'typescript.tsx', 'css', 'scss', 'json', 'markdown', 'html', 'yaml'] }
+  \ 'for': ['javascript.jsx', 'typescript.tsx', 'javascript', 'typescript', 'css', 'scss', 'json', 'markdown', 'html', 'yaml'] }
 call plug#end() " Initialize plugin system
 
 " Colorscheme and syntax
