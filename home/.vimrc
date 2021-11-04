@@ -193,4 +193,4 @@ let g:coc_global_extensions = [
 \ ]
 
 " fuzzy search
-nnoremap <C-p> :CocList files<CR>
+nnoremap <C-p> :CocList files --hidden<CR>
