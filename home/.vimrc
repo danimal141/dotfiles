@@ -74,6 +74,7 @@ set eol
 set ttyfast
 set nobackup
 set noswapfile
+set hlsearch
 
 " Indent, Tab, Space
 set tabstop=2
@@ -197,17 +198,18 @@ endtry
 
 " COC
 let g:coc_global_extensions = [
-  \ 'coc-json',
   \ 'coc-yaml',
   \ 'coc-html',
   \ 'coc-git',
-  \ 'coc-eslint',
+  \ 'coc-json',
   \ 'coc-tsserver',
   \ 'coc-solargraph',
   \ 'coc-rls',
   \ 'coc-python',
-  \ 'coc-json',
   \ 'coc-go',
   \ 'coc-css',
-  \ 'coc-sh'
+  \ 'coc-vetur',
+  \ 'coc-sh',
+  \ 'coc-docker',
+  \ 'coc-dictionary'
 \ ]
