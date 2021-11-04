@@ -193,3 +193,20 @@ try
   call unite#filters#matcher_default#use(['matcher_fuzzy'])
 catch
 endtry
+
+" COC
+let g:coc_global_extensions = [
+  \'coc-json',
+  \'coc-yaml',
+  \'coc-html',
+  \'coc-git',
+  \'coc-eslint',
+  \'coc-tsserver',
+  \'coc-solargraph',
+  \'coc-rls',
+  \'coc-python',
+  \'coc-json',
+  \'coc-go',
+  \'coc-css',
+  \'coc-sh'
+\]
