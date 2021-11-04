@@ -5,6 +5,16 @@
   "python.jediEnabled": false,
   "http.proxyStrictSSL": false,
   "suggest.keepCompleteopt": true,
+  "list.source.files.excludePatterns": [
+    "**/.git/**",
+    "**/tmp/**",
+    "**/node_modules/**",
+    "**/*.log",
+    "**/*.png",
+    "**/*.jpg",
+    "**/*.jpeg",
+    "**/*.gif"
+  ],
   "go.goplsOptions": {
     "usePlaceholders": true
   }

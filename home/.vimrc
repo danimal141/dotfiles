@@ -9,7 +9,6 @@ set runtimepath^=~/.vim/
 call plug#begin('~/.vim/plugged')
 Plug 'neoclide/coc.nvim', { 'branch': 'release' } " Extensions: https://github.com/neoclide/coc.nvim#extensions
 Plug 'scrooloose/nerdtree'
-Plug 'Shougo/unite.vim'
 Plug 'Shougo/vimproc.vim', { 'do' : 'make' }
 Plug 'vim-syntastic/syntastic'
 Plug 'mtscout6/syntastic-local-eslint.vim'
@@ -174,28 +173,6 @@ let g:prettier#config#semi = 'false'
 let g:prettier#config#single_quote = 'true'
 let g:prettier#config#trailing_comma = 'all'
 
-" Unite
-" Shortcuts
-nnoremap <silent> ,ub :<C-u>Unite file buffer<CR>
-nnoremap <silent> ,uf  :<C-u>Unite -start-insert file_rec/async<CR>
-nnoremap <silent> ,ufn  :<C-u>Unite -start-insert file/new<CR>
-nnoremap <silent> ,ug  :<C-u>Unite grep -buffer-name=search-buffer<CR>
-nnoremap <silent> ,ur :<C-u>Unite -buffer-name=register register<CR>
-
-let g:unite_source_rec_max_cache_files = 3000
-" let g:unite_enable_start_insert=1 " Starts with insert-mode
-" let g:unite_source_history_yank_enable = 1
-if executable('ag')
-  let g:unite_source_grep_command = 'ag'
-  let g:unite_source_grep_default_opts = '--nogroup --nocolor --column'
-  let g:unite_source_grep_recursive_opt = ''
-endif
-try
-  let g:unite_source_rec_async_command = 'ag --nocolor --nogroup -g ""'
-  call unite#filters#matcher_default#use(['matcher_fuzzy'])
-catch
-endtry
-
 " COC
 let g:coc_global_extensions = [
   \ 'coc-yaml',
@@ -211,5 +188,9 @@ let g:coc_global_extensions = [
   \ 'coc-vetur',
   \ 'coc-sh',
   \ 'coc-docker',
-  \ 'coc-dictionary'
+  \ 'coc-dictionary',
+  \ 'coc-lists'
 \ ]
+
+" fuzzy search
+nnoremap <C-p> :CocList files<CR>
