@@ -48,7 +48,8 @@ Plug 'aklt/plantuml-syntax'
 Plug 'prettier/vim-prettier', {
   \ 'do': 'yarn install',
   \ 'branch': 'release/1.x',
-  \ 'for': ['javascript.jsx', 'typescript.tsx', 'javascript', 'typescript', 'css', 'scss', 'json', 'markdown', 'html', 'yaml'] }
+  \ 'for': ['javascript.jsx', 'typescript.tsx', 'javascript', 'typescript', 'css', 'scss', 'json', 'markdown', 'html', 'yaml']
+\ }
 call plug#end() " Initialize plugin system
 
 " Colorscheme and syntax
@@ -157,7 +158,7 @@ let g:closetag_emptyTags_caseSensitive = 1
 let g:closetag_regions = {
   \ 'typescript.tsx': 'jsxRegion,tsxRegion',
   \ 'javascript.jsx': 'jsxRegion',
-  \ }
+\ }
 " Shortcut for closing tags, default is '>'
 let g:closetag_shortcut = '>'
 " Add > at current position without closing the current tag, default is ''
@@ -196,17 +197,17 @@ endtry
 
 " COC
 let g:coc_global_extensions = [
-  \'coc-json',
-  \'coc-yaml',
-  \'coc-html',
-  \'coc-git',
-  \'coc-eslint',
-  \'coc-tsserver',
-  \'coc-solargraph',
-  \'coc-rls',
-  \'coc-python',
-  \'coc-json',
-  \'coc-go',
-  \'coc-css',
-  \'coc-sh'
-\]
+  \ 'coc-json',
+  \ 'coc-yaml',
+  \ 'coc-html',
+  \ 'coc-git',
+  \ 'coc-eslint',
+  \ 'coc-tsserver',
+  \ 'coc-solargraph',
+  \ 'coc-rls',
+  \ 'coc-python',
+  \ 'coc-json',
+  \ 'coc-go',
+  \ 'coc-css',
+  \ 'coc-sh'
+\ ]
