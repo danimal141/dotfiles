@@ -68,6 +68,7 @@ brew 'kubernetes-cli'
 brew 'kubectx'
 brew 'tfenv'
 brew 'tokei'
+brew 'ripgrep'
 
 # Install cask packages
 cask 'adoptopenjdk8'

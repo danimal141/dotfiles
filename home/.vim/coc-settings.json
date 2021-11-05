@@ -5,6 +5,7 @@
   "python.jediEnabled": false,
   "http.proxyStrictSSL": false,
   "suggest.keepCompleteopt": true,
+  "list.source.files.args": ["--hidden", "--files"],
   "list.source.files.excludePatterns": [
     "**/.git/**",
     "**/tmp/**",

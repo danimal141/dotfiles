@@ -176,7 +176,9 @@ let g:prettier#config#trailing_comma = 'all'
 " COC
 let g:coc_global_extensions = [
   \ 'coc-yaml',
+  \ 'coc-toml',
   \ 'coc-html',
+  \ 'coc-htmlhint',
   \ 'coc-git',
   \ 'coc-json',
   \ 'coc-tsserver',
@@ -187,10 +189,13 @@ let g:coc_global_extensions = [
   \ 'coc-css',
   \ 'coc-vetur',
   \ 'coc-sh',
+  \ 'coc-sql',
   \ 'coc-docker',
+  \ 'coc-graphql',
   \ 'coc-dictionary',
   \ 'coc-lists'
 \ ]
 
 " fuzzy search
-nnoremap <C-p> :CocList files --hidden<CR>
+" ripgrep is used if it exists
+nnoremap <C-p> :CocList files <CR>
