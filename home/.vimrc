@@ -73,7 +73,7 @@ set eol
 set ttyfast
 set nobackup
 set noswapfile
-set hlsearch
+" set hlsearch
 
 " Indent, Tab, Space
 set tabstop=2
