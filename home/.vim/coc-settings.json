@@ -6,6 +6,7 @@
   "http.proxyStrictSSL": false,
   "suggest.keepCompleteopt": true,
   "list.source.files.args": ["--hidden", "--files"],
+  "list.source.tags.command": "ctags -R -f .tags",
   "list.source.files.excludePatterns": [
     "**/.git/**",
     "**/tmp/**",

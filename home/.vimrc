@@ -18,6 +18,7 @@ Plug 'rizzatti/dash.vim'
 Plug 'rking/ag.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'szw/vim-tags'
+Plug 'preservim/tagbar'
 Plug 'simeji/winresizer'
 Plug 'tpope/vim-endwise'
 Plug 'pangloss/vim-javascript', { 'for': ['javascript.jsx'] }
@@ -142,6 +143,35 @@ let g:nerdtree_tabs_open_on_new_tab=1
 " https://github.com/tpope/rbenv-ctags
 let g:vim_tags_project_tags_command = "/usr/local/bin/ctags -R {OPTIONS} {DIRECTORY} 2>/dev/null"
 let g:vim_tags_gems_tags_command = "/usr/local/bin/ctags -R {OPTIONS} `bundle show --paths` 2>/dev/null"
+" universal-ctags
+" Reference: https://qiita.com/aratana_tamutomo/items/59fb4c377863a385e032
+set fileformats=unix,dos,mac
+set fileencodings=utf-8,sjis
+set tags=.tags;$HOME
+let g:vim_tags_main_file = '.tags'
+" Stop using, it seems heavy.
+" function! s:execute_ctags() abort
+"   let tag_name = '.tags'
+"   let tags_path = findfile(tag_name, '.;')
+"   if tags_path ==# ''
+"     return
+"   endif
+"   let tags_dirpath = fnamemodify(tags_path, ':p:h')
+"   execute 'silent !cd' tags_dirpath '&& ctags -R -f' tag_name '2> /dev/null &'
+" endfunction
+"
+" augroup ctags
+"   autocmd!
+"   autocmd BufWritePost * call s:execute_ctags()
+" augroup END
+
+" tagbar
+" default: width=40
+let g:tagbar_width = 30
+let g:tagbar_autoshowtag = 1
+" nnoremap <silent> <Leader>t :<C-u>TagbarToggle<CR>
+nnoremap <silent> tt :TagbarToggle<CR>
+set statusline=%F%m%r%h%w\%=%{tagbar#currenttag('[%s]','')}\[Pos=%v,%l]\[Len=%L]
 
 " closetag.vim
 " filenames like *.xml, *.html, *.xhtml, ...
@@ -172,29 +202,6 @@ let g:winresizer_horiz_resize = 2
 let g:prettier#config#semi = 'false'
 let g:prettier#config#single_quote = 'true'
 let g:prettier#config#trailing_comma = 'all'
-
-" universal-ctags
-" Reference: https://qiita.com/aratana_tamutomo/items/59fb4c377863a385e032
-set fileformats=unix,dos,mac
-set fileencodings=utf-8,sjis
-set tags=.tags;$HOME
-let g:vim_tags_main_file = '.tags'
-
-" function! s:execute_ctags() abort
-"   let tag_name = '.tags'
-"   let tags_path = findfile(tag_name, '.;')
-"   if tags_path ==# ''
-"     return
-"   endif
-"
-"   let tags_dirpath = fnamemodify(tags_path, ':p:h')
-"   execute 'silent !cd' tags_dirpath '&& ctags -R -f' tag_name '2> /dev/null &'
-" endfunction
-"
-" augroup ctags
-"   autocmd!
-"   autocmd BufWritePost * call s:execute_ctags()
-" augroup END
 
 " COC
 let g:coc_global_extensions = [
