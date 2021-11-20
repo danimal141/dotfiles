@@ -22,7 +22,6 @@ brew 'htop'
 brew 'zsh-completions'
 brew 'bash-completion'
 brew 'heroku'
-brew 'ctags'
 brew 'jq'
 brew 'jenkins'
 brew 'mecab'
@@ -69,6 +68,8 @@ brew 'kubectx'
 brew 'tfenv'
 brew 'tokei'
 brew 'ripgrep'
+# https://github.com/universal-ctags/homebrew-universal-ctags
+# brew install --HEAD universal-ctags/universal-ctags/universal-ctags
 
 # Install cask packages
 cask 'adoptopenjdk8'
