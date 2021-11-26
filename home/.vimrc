@@ -89,9 +89,9 @@ highlight CursorColumn ctermbg=darkgray
 
 " Complementation
 " Brackets
-inoremap { {}<Left>
+"inoremap { {}<Left>
 inoremap {<Enter> {}<Left><CR><ESC><S-o>
-inoremap () ()
+"inoremap () ()
 inoremap ( ()<ESC>i
 inoremap (<Enter> ()<Left><CR><ESC><S-o>
 inoremap [ []<ESC>i
