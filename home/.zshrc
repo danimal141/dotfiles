@@ -3,8 +3,10 @@
 # -------------------------------------
 export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
-export EDITOR=/usr/local/bin/vim
-export VISUAL=/usr/local/bin/vim
+# export EDITOR=/usr/local/bin/vim
+export EDITOR=/usr/bin/vim
+# export VISUAL=/usr/local/bin/vim
+export VISUAL=/usr/bin/vim
 
 # -------------------------------------
 # zsh options
@@ -122,6 +124,9 @@ fi
 
 # kubectx
 alias kc="kubectx | peco | xargs kubectx"
+
+# kubens
+alias kns="kubens | peco | xargs kubens"
 
 # peco
 function peco-history-selection() {
