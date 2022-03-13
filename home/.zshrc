@@ -163,6 +163,12 @@ export PATH=$PATH:$GOPATH/bin
 # rust
 export PATH="$HOME/.cargo/bin:$PATH"
 
+# deno
+export PATH="$HOME/.deno/bin:$PATH"
+
+# java
+export _JAVA_OPTIONS="-Duser.language=en -Duser.country=US"
+
 # Heroku Toolbelt
 export PATH="/usr/local/heroku/bin:$PATH"
 
@@ -194,6 +200,3 @@ export PATH="$HOME/.serverless/bin:$PATH"
 
 # direnv
 eval "$(direnv hook zsh)"
-
-# java
-export _JAVA_OPTIONS="-Duser.language=en -Duser.country=US"
