@@ -223,6 +223,7 @@ let g:coc_global_extensions = [
   \ 'coc-docker',
   \ 'coc-graphql',
   \ 'coc-dictionary',
+  \ 'coc-deno',
   \ 'coc-lists'
 \ ]
 
