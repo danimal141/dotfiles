@@ -69,6 +69,7 @@ brew 'stern'
 brew 'tfenv'
 brew 'tokei'
 brew 'ripgrep'
+brew 'deno'
 # https://github.com/universal-ctags/homebrew-universal-ctags
 # brew install --HEAD universal-ctags/universal-ctags/universal-ctags
 
