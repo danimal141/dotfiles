@@ -69,6 +69,7 @@ brew 'tfenv'
 brew 'tokei'
 brew 'ripgrep'
 brew 'deno'
+brew 'mutagen-io/mutagen/mutagen-compose'
 # https://github.com/universal-ctags/homebrew-universal-ctags
 # brew install --HEAD universal-ctags/universal-ctags/universal-ctags
 
