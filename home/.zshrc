@@ -200,7 +200,3 @@ export PATH="$HOME/.serverless/bin:$PATH"
 
 # direnv
 eval "$(direnv hook zsh)"
-
-### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
-export PATH="/Users/hideaki.ishii/.rd/bin:$PATH"
-### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
