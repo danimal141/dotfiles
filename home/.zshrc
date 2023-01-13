@@ -96,6 +96,9 @@ alias l1="ls -1"
 # tree
 alias tree="tree -NC"
 
+# pyenv
+alias brew='env PATH="${PATH//$(pyenv root)\/shims:/}" brew'
+
 # -------------------------------------
 # other settings
 # -------------------------------------
@@ -143,18 +146,18 @@ bindkey '^R' peco-history-selection
 typeset -U path cdpath fpath manpath
 
 path=(
-  $HOME/bin(N-/)
   /usr/local/bin(N-/)
   /usr/local/sbin(N-/)
+  /usr/bin(N-/)
+  $HOME/bin(N-/)
   $path
 )
 
 # pyenv
 export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
+# export PATH="$PYENV_ROOT/bin:$PATH"
+echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"'
 eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-export VIRTUAL_ENV_DISABLE_PROMPT=1
 
 # golang
 export GOPATH=$HOME/go
