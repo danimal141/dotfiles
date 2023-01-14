@@ -76,6 +76,11 @@ set nobackup
 set noswapfile
 " set hlsearch
 
+" For nvim
+if !has('nvim')
+  set ttymouse=xterm2
+endif
+
 " Indent, Tab, Space
 set tabstop=2
 set shiftwidth=2

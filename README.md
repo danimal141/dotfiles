@@ -35,7 +35,7 @@ $ git push -u origin master
 
 ```
 $ homesick clone danimal141/dotfiles
-$ homesick symlink dotfiles
+$ homesick link dotfiles
 ```
 
 ### When dotfiles are updated
@@ -49,5 +49,5 @@ $ homesick push dotfiles
 
 # In another PC
 $ homesick pull dotfiles
-$ homesick symlink dotfiles
+$ homesick link dotfiles
 ```
