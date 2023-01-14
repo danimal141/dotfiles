@@ -3,10 +3,13 @@
 # -------------------------------------
 export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
-export EDITOR=/usr/local/bin/vim
+export EDITOR=/usr/local/bin/nvim
+export VISUAL=/usr/local/bin/nvim
+
+# export EDITOR=/usr/local/bin/vim
+# export VISUAL=/usr/local/bin/vim
 # export EDITOR=/usr/bin/vim
-export VISUAL=/usr/local/bin/vim
-#export VISUAL=/usr/bin/vim
+# export VISUAL=/usr/bin/vim
 
 # -------------------------------------
 # zsh options
