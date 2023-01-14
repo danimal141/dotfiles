@@ -2,7 +2,6 @@
   "yaml.format.enable": true,
   "yaml.format.singleQuote": true,
   "yaml.validate": false,
-  "python.jediEnabled": false,
   "http.proxyStrictSSL": false,
   "suggest.keepCompleteopt": true,
   "list.source.files.args": ["--hidden", "--files"],

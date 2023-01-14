@@ -1,8 +1,6 @@
-setlocal tabstop=4
-setlocal shiftwidth=4
-setlocal expandtab
-setlocal autoindent
-setlocal formatoptions=croql
+setl tabstop=4 expandtab shiftwidth=4 softtabstop=4
+setl autoindent
+setl smartindent cinwords=if,elif,else,for,while,try,except,finally,def,class
 
 let python_highlight_all=1
 

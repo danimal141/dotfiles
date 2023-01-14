@@ -35,7 +35,6 @@ Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries', 'for': 'go' }
 Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
 Plug 'kannokanno/previm', { 'for': 'markdown' }
 Plug 'tyru/open-browser.vim', { 'for': 'markdown' }
-Plug 'lambdalisue/vim-pyenv', { 'for': 'python' }
 " Plug 'davidhalter/jedi-vim'
 Plug 'rust-lang/rust.vim', { 'for': 'rust' }
 Plug 'racer-rust/vim-racer', { 'for': 'rust' }
@@ -129,7 +128,11 @@ set smartcase
 set wrapscan
 
 " For clipboard
-set clipboard+=unnamed,autoselect
+if has('nvim')
+  set clipboard=unnamed
+else
+  set clipboard=unnamed,autoselect
+endif
 
 " Cron
 set backupskip+=/home/tmp/*,/private/tmp/*
@@ -218,8 +221,8 @@ let g:coc_global_extensions = [
   \ 'coc-json',
   \ 'coc-tsserver',
   \ 'coc-solargraph',
+  \ 'coc-jedi',
   \ 'coc-rls',
-  \ 'coc-python',
   \ 'coc-go',
   \ 'coc-css',
   \ 'coc-vetur',

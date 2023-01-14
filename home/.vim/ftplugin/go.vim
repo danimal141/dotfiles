@@ -1,6 +1,6 @@
-set noexpandtab
-set tabstop=4
-set shiftwidth=4
+setl noexpandtab
+setl tabstop=4
+setl shiftwidth=4
 
 let g:go_highlight_functions = 1
 let g:go_highlight_methods = 1
