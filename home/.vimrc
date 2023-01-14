@@ -1,6 +1,5 @@
 set encoding=utf-8
 set runtimepath^=~/.vim/
-" let g:python3_host_prog = $PYENV_ROOT.'/shims/python3'
 
 " vim-plug
 " Specify a directory for plugins
@@ -30,12 +29,9 @@ Plug 'justmao945/vim-clang', { 'for': 'clang' }
 Plug 'slim-template/vim-slim', { 'for': 'slim' }
 Plug 'digitaltoad/vim-jade', { 'for': 'jade' }
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries', 'for': 'go' }
-" Plug 'leafgarland/typescript-vim'
-" Plug 'peitalin/vim-jsx-typescript'
 Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
 Plug 'kannokanno/previm', { 'for': 'markdown' }
 Plug 'tyru/open-browser.vim', { 'for': 'markdown' }
-" Plug 'davidhalter/jedi-vim'
 Plug 'rust-lang/rust.vim', { 'for': 'rust' }
 Plug 'racer-rust/vim-racer', { 'for': 'rust' }
 Plug 'mechatroner/rainbow_csv', { 'for': 'csv' }
@@ -73,7 +69,6 @@ set eol
 set ttyfast
 set nobackup
 set noswapfile
-" set hlsearch
 
 " For nvim
 if !has('nvim')
@@ -93,12 +88,8 @@ highlight CursorColumn ctermbg=darkgray
 
 " Complementation
 " Brackets
-"inoremap { {}<Left>
 inoremap {<Enter> {}<Left><CR><ESC><S-o>
-"inoremap () ()
-"inoremap ( ()<ESC>i
 inoremap (<Enter> ()<Left><CR><ESC><S-o>
-"inoremap [ []<ESC>i
 inoremap [<Enter> []<Left><CR><ESC><S-o>
 
 " Behaves like IDE
@@ -151,27 +142,13 @@ let g:nerdtree_tabs_open_on_new_tab=1
 " https://github.com/tpope/rbenv-ctags
 let g:vim_tags_project_tags_command = "/usr/local/bin/ctags -R {OPTIONS} {DIRECTORY} 2>/dev/null"
 let g:vim_tags_gems_tags_command = "/usr/local/bin/ctags -R {OPTIONS} `bundle show --paths` 2>/dev/null"
+
 " universal-ctags
 " Reference: https://qiita.com/aratana_tamutomo/items/59fb4c377863a385e032
 set fileformats=unix,dos,mac
 set fileencodings=utf-8,sjis
 set tags=.tags;$HOME
 let g:vim_tags_main_file = '.tags'
-" Stop using, it seems heavy.
-" function! s:execute_ctags() abort
-"   let tag_name = '.tags'
-"   let tags_path = findfile(tag_name, '.;')
-"   if tags_path ==# ''
-"     return
-"   endif
-"   let tags_dirpath = fnamemodify(tags_path, ':p:h')
-"   execute 'silent !cd' tags_dirpath '&& ctags -R -f' tag_name '2> /dev/null &'
-" endfunction
-"
-" augroup ctags
-"   autocmd!
-"   autocmd BufWritePost * call s:execute_ctags()
-" augroup END
 
 " tagbar
 " default: width=40
