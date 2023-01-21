@@ -82,9 +82,9 @@ set expandtab
 set autoindent
 set smartindent
 set backspace=indent,eol,start
-set cursorcolumn
 
-highlight CursorColumn ctermbg=darkgray
+" set cursorcolumn
+" highlight CursorColumn cterm=NONE ctermbg=242
 
 " Complementation
 " Brackets
