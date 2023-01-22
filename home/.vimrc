@@ -91,16 +91,19 @@ set backspace=indent,eol,start
 inoremap {<Enter> {}<Left><CR><ESC><S-o>
 inoremap (<Enter> ()<Left><CR><ESC><S-o>
 inoremap [<Enter> []<Left><CR><ESC><S-o>
+" https://qiita.com/totto2727/items/d0844c79f97ab601f13b
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
 
 " Behaves like IDE
-" Reference: https://note.com/yasukotelin/n/na87dc604e042
+" https://note.com/yasukotelin/n/na87dc604e042
 set showmatch
 set completeopt=menuone,noinsert
+
 " it conflicts with vim-endwise...
-" Reference: https://github.com/tpope/vim-endwise/issues/22#issuecomment-554685904
-let g:endwise_no_mappings = v:true
-inoremap <expr> <Plug>CustomCocCR pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-imap <CR> <Plug>CustomCocCR<Plug>DiscretionaryEnd
+" https://github.com/tpope/vim-endwise/issues/22#issuecomment-554685904
+" let g:endwise_no_mappings = v:true
+" inoremap <expr> <Plug>CustomCocCR pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+" imap <CR> <Plug>CustomCocCR<Plug>DiscretionaryEnd
 
 " HighlitTrailingSpaces
 augroup HighlightTrailingSpaces
