@@ -217,4 +217,7 @@ let g:coc_global_extensions = [
 
 " fuzzy search
 " ripgrep is used if it exists
+
+" memo: How to set ctrl+n and ctrl+p to up or down list
+" https://github.com/neoclide/coc-lists/issues/139
 nnoremap <C-p> :CocList files <CR>

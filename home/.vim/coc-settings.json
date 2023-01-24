@@ -18,6 +18,14 @@
     "**/*.jpeg",
     "**/*.gif"
   ],
+  "list.insertMappings": {
+    "<C-n>": "feedkeys:\\<Down>",
+    "<C-p>": "feedkeys:\\<Up>"
+  },
+  "list.normalMappings": {
+    "<C-n>": "feedkeys:\\<Down>",
+    "<C-p>": "feedkeys:\\<Up>"
+  },
   "go.goplsOptions": {
     "usePlaceholders": true
   },

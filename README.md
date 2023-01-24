@@ -51,3 +51,9 @@ $ homesick push dotfiles
 $ homesick pull dotfiles
 $ homesick link dotfiles
 ```
+
+### Share coc-settings
+```
+# Manage coc-settings under .vim and share the symlink under .config/nvim
+$ ln -s ~/.vim/coc-settings.json ~/.config/nvim
+```
