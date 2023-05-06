@@ -3,13 +3,9 @@
 # -------------------------------------
 export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
+
 export EDITOR=/usr/local/bin/nvim
 export VISUAL=/usr/local/bin/nvim
-
-# export EDITOR=/usr/local/bin/vim
-# export VISUAL=/usr/local/bin/vim
-# export EDITOR=/usr/bin/vim
-# export VISUAL=/usr/bin/vim
 
 # -------------------------------------
 # zsh options
@@ -99,9 +95,6 @@ alias l1="ls -1"
 # tree
 alias tree="tree -NC"
 
-# pyenv
-alias brew='env PATH="${PATH//$(pyenv root)\/shims:/}" brew'
-
 # -------------------------------------
 # other settings
 # -------------------------------------
@@ -112,11 +105,6 @@ function chpwd() { ls -1 }
 # tmuxinator
 if [ -f ~/.tmuxinator/tmuxinator.zsh ]; then
   source ~/.tmuxinator/tmuxinator.zsh
-fi
-
-# nvm
-if [ -f ~/.nvm/nvm.sh ]; then
-  source ~/.nvm/nvm.sh
 fi
 
 # The next line enables shell command completion for gcloud.
@@ -159,6 +147,16 @@ path=(
 # asdf
 . /usr/local/opt/asdf/libexec/asdf.sh
 
+# -------------------------------------
+
+# pyenv
+# alias brew='env PATH="${PATH//$(pyenv root)\/shims:/}" brew'
+
+# nvm
+# if [ -f ~/.nvm/nvm.sh ]; then
+#   source ~/.nvm/nvm.sh
+# fi
+
 # pyenv
 # export PYENV_ROOT="$HOME/.pyenv"
 # export PATH="$PYENV_ROOT/bin:$PATH"
@@ -167,8 +165,8 @@ path=(
 # eval "$(pyenv init -)"
 
 # rbenv
-export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
-eval "$(rbenv init - zsh)"
+# export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
+# eval "$(rbenv init - zsh)"
 
 # nvm
 # export NVM_DIR="$HOME/.nvm"
@@ -179,8 +177,8 @@ eval "$(rbenv init - zsh)"
 
 # golang
 # export GOPATH=$HOME/go
-export GOPATH=$(go env GOPATH)
-export PATH=$PATH:$GOPATH/bin
+# export GOPATH=$(go env GOPATH)
+# export PATH=$PATH:$GOPATH/bin
 
 # rust
 # export PATH="$HOME/.cargo/bin:$PATH"
