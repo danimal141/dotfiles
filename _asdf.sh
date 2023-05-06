@@ -9,7 +9,7 @@ install_language() {
 }
 
 # install programming languages
-languages=("ruby" "nodejs" "python" "golang" "rust" "terraform" "kubectl")
+languages=("ruby" "nodejs" "python" "golang" "rust" "deno" "terraform" "kubectl" "awscli")
 
 for lang in "${languages[@]}"; do
   echo "Start installing ${lang}..."

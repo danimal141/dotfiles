@@ -156,51 +156,46 @@ path=(
   $path
 )
 
+# asdf
+. /usr/local/opt/asdf/libexec/asdf.sh
+
 # pyenv
-export PYENV_ROOT="$HOME/.pyenv"
+# export PYENV_ROOT="$HOME/.pyenv"
 # export PATH="$PYENV_ROOT/bin:$PATH"
 # Reference: https://github.com/pyenv/pyenv#set-up-your-shell-environment-for-pyenv
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-
-# golang
-export GOPATH=$HOME/go
-export PATH=$PATH:$GOPATH/bin
-
-# rust
-export PATH="$HOME/.cargo/bin:$PATH"
-
-# deno
-export PATH="$HOME/.deno/bin:$PATH"
-
-# java
-export _JAVA_OPTIONS="-Duser.language=en -Duser.country=US"
-
-# wp-cli
-export PATH="$HOME/.wp-cli/bin:$PATH"
-
-# postgresql
-export PGDATA=/usr/local/var/postgres
+# command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+# eval "$(pyenv init -)"
 
 # rbenv
 export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
 eval "$(rbenv init - zsh)"
 
-# mysql
-export PATH="/usr/local/opt/mysql@5.6/bin:$PATH"
-
-# node
+# nvm
 # export NVM_DIR="$HOME/.nvm"
 # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
- export NVM_DIR="$HOME/.nvm"
-  [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
-  [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+# export NVM_DIR="$HOME/.nvm"
+#  [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
+#  [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 
-# imagemagick@6
-export PATH="/usr/local/opt/imagemagick@6/bin:$PATH"
+# golang
+# export GOPATH=$HOME/go
+export GOPATH=$(go env GOPATH)
+export PATH=$PATH:$GOPATH/bin
 
-# Added by serverless binary installer
-export PATH="$HOME/.serverless/bin:$PATH"
+# rust
+# export PATH="$HOME/.cargo/bin:$PATH"
+
+# deno
+# export PATH="$HOME/.deno/bin:$PATH"
+
+# java
+# export _JAVA_OPTIONS="-Duser.language=en -Duser.country=US"
+
+# postgresql
+# export PGDATA=/usr/local/var/postgres
+
+# mysql
+# export PATH="/usr/local/opt/mysql@5.6/bin:$PATH"
 
 # direnv
-eval "$(direnv hook zsh)"
+# eval "$(direnv hook zsh)"
