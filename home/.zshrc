@@ -176,9 +176,6 @@ export PATH="$HOME/.deno/bin:$PATH"
 # java
 export _JAVA_OPTIONS="-Duser.language=en -Duser.country=US"
 
-# Heroku Toolbelt
-export PATH="/usr/local/heroku/bin:$PATH"
-
 # wp-cli
 export PATH="$HOME/.wp-cli/bin:$PATH"
 
