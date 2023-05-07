@@ -1,6 +1,7 @@
 #!/bin/sh
 
-# install programming languages
+# Dependency: asdf (need to execute `brew install asdf` before)
+# Install programming languages with asdf
 
 # Function to install a programming language using asdf
 install_language() {

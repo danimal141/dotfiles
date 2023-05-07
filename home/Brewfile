@@ -27,7 +27,7 @@ brew 'bash-completion'
 brew 'jq'
 brew 'mecab'
 brew 'mysql'
-brew 'postgresql'
+# brew 'postgresql@xx' # need to specify the version
 brew 'redis'
 brew 'openssl'
 brew 'ruby-build'
@@ -75,23 +75,21 @@ brew 'k1LoW/tap/tbls'
 # brew install --HEAD universal-ctags/universal-ctags/universal-ctags
 
 # Install cask packages
+# cask 'iterm2' # insatll manually
+# cask 'dropbox' # install manually
 cask 'google-chrome'
-cask 'google-japanese-ime'
 cask 'firefox'
 cask 'brave-browser'
 cask 'alfred'
-cask 'dropbox'
 cask 'the-unarchiver'
 cask 'react-native-debugger'
 cask 'dash'
-cask 'iterm2'
 cask 'visual-studio-code'
 cask 'intellij-idea'
 cask 'docker'
 cask 'inkdrop'
 cask 'slack'
 cask 'zoomus'
+# need to use rosetta
+cask 'google-japanese-ime'
 cask 'adoptopenjdk11'
-
-# Install App Store packages
-mas 'MenuTimer', id: 1341720217

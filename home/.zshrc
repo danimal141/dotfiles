@@ -4,15 +4,15 @@
 export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-export EDITOR=/usr/local/bin/nvim
-export VISUAL=/usr/local/bin/nvim
+# export EDITOR=$(brew --prefix nvim)
+# export VISUAL=$(brew --prefix nvim)
 
 # -------------------------------------
 # zsh options
 # -------------------------------------
 
 # for zsh-completions
-fpath=(/usr/local/share/zsh-completions $fpath)
+fpath=($(brew --prefix zsh-completions) $fpath)
 
 # complementation
 autoload -U compinit
@@ -148,7 +148,7 @@ path=(
  export PATH="/opt/homebrew/bin:$PATH"
 
 # asdf
-. /usr/local/opt/asdf/libexec/asdf.sh
+. $(brew --prefix asdf)/libexec/asdf.sh
 
 # -------------------------------------
 

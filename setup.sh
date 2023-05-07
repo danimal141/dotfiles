@@ -5,8 +5,8 @@ echo "Installing Xcode..."
 xcode-select --install || true
 
 # Install rosetta
-# echo "Installing rosetta..."
-# sudo softwareupdate --install-rosetta --agree-to-licensesudo softwareupdate --install-rosetta --agree-to-license
+echo "Installing rosetta..."
+sudo softwareupdate --install-rosetta --agree-to-licensesudo softwareupdate --install-rosetta --agree-to-license || true
 
 #------------------------------------------
 # homebrew (arm64)

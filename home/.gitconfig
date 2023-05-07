@@ -1,0 +1,11 @@
+[user]
+	name = danimal141
+	email = hideaki.ishii1204@gmail.com
+[core]
+	excludesfile = /Users/hideaki/.gitignore
+	editor = nvim
+[diff]
+	ignoreSubmodules = dirty
+[merge "mergepbx"]
+	name = Xcode project files merger
+	driver = mergepbx %O %A %B
