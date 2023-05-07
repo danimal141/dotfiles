@@ -23,13 +23,16 @@ echo "Execute brew upgrade..."
 which /opt/homebrew/bin/brew >/dev/null 2>&1 && brew upgrade --verbose
 
 echo "Installing packages written in Brewfile..."
-which /opt/homebrew/bin/brew >/dev/null 2>&1 && brew bundle --file ./.Brewfile --verbose
+which /opt/homebrew/bin/brew >/dev/null 2>&1 && brew bundle --file ./home/Brewfile --verbose
 
 echo "Execute brew cleanup..."
 which brew >/dev/null 2>&1 && brew cleanup --verbose
 
 echo "Installing programming languages..."
 ./_asdf.sh
+
+echo "Installing homesick..."
+gem install homesick --no-doc
 
 echo "Symlink dotfiles..."
 homesick link dotfiles
