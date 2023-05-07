@@ -144,6 +144,9 @@ path=(
   $path
 )
 
+# homebrew
+ export PATH="/opt/homebrew/bin:$PATH"
+
 # asdf
 . /usr/local/opt/asdf/libexec/asdf.sh
 

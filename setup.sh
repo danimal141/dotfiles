@@ -1,7 +1,8 @@
 #!/bin/bash
+set -ex
 
 echo "Installing Xcode..."
-xcode-select --install
+xcode-select --install || true
 
 # Install rosetta
 # echo "Installing rosetta..."
@@ -11,7 +12,7 @@ xcode-select --install
 # homebrew (arm64)
 #------------------------------------------
 echo "Installing homebrew..."
-which /opt/homebrew/bin/brew >/dev/null 2>&1 || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+which /opt/homebrew/bin/brew >/dev/null 2>&1 || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" && echo 'export PATH="/opt/homebrew/bin:$PATH"' >> ~/.zshrc
 
 echo "Execute brew doctor..."
 which /opt/homebrew/bin/brew >/dev/null 2>&1 && brew doctor
@@ -29,7 +30,7 @@ echo "Execute brew cleanup..."
 which brew >/dev/null 2>&1 && brew cleanup --verbose
 
 echo "Installing programming languages..."
-./_asdf.sh
+which brew >/dev/null 2>&1 && ./_asdf.sh
 
 echo "Installing homesick..."
 gem install homesick --no-doc
