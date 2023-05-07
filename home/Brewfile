@@ -91,6 +91,7 @@ cask 'inkdrop'
 cask 'slack'
 cask 'zoom'
 cask 'vlc'
+cask 'kindle'
 # need to use rosetta
 cask 'google-japanese-ime'
 cask 'adoptopenjdk11'
