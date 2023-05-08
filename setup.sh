@@ -12,26 +12,36 @@ sudo softwareupdate --install-rosetta --agree-to-licensesudo softwareupdate --in
 # homebrew (arm64)
 #------------------------------------------
 echo "Installing homebrew..."
-which /opt/homebrew/bin/brew >/dev/null 2>&1 || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" && echo 'export PATH="/opt/homebrew/bin:$PATH"' >> ~/.zshrc
+which /opt/homebrew/bin/brew >/dev/null 2>&1 || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# PATH for brew
+echo "Add PATH for homebrew..."
+export PATH="/opt/homebrew/bin:$PATH" && which brew
 
 echo "Execute brew doctor..."
-which /opt/homebrew/bin/brew >/dev/null 2>&1 && brew doctor
+brew doctor
 
 echo "Execute brew update..."
-which /opt/homebrew/bin/brew >/dev/null 2>&1 && brew update --verbose
+brew update --verbose
 
 echo "Execute brew upgrade..."
-which /opt/homebrew/bin/brew >/dev/null 2>&1 && brew upgrade --verbose
+brew upgrade --verbose
 
 echo "Installing packages written in Brewfile..."
-which /opt/homebrew/bin/brew >/dev/null 2>&1 && brew bundle --file ./home/Brewfile --verbose
+brew bundle --file ./home/Brewfile --verbose
 
 echo "Execute brew cleanup..."
-which brew >/dev/null 2>&1 && brew cleanup --verbose
+brew cleanup --verbose
 
+#------------------------------------------
+# asdf
+#------------------------------------------
 echo "Installing programming languages..."
-which brew >/dev/null 2>&1 && ./_asdf.sh
+./_asdf.sh
 
+#------------------------------------------
+# homesick
+#------------------------------------------
 echo "Installing homesick..."
 gem install homesick --no-doc
 

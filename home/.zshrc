@@ -136,6 +136,7 @@ bindkey '^R' peco-history-selection
 # -------------------------------------
 typeset -U path cdpath fpath manpath
 
+# `N` means null glob in Zsh
 path=(
   /usr/local/bin(N-/)
   /usr/local/sbin(N-/)
@@ -149,54 +150,3 @@ path=(
 
 # asdf
 . $(brew --prefix asdf)/libexec/asdf.sh
-
-# -------------------------------------
-
-# pyenv
-# alias brew='env PATH="${PATH//$(pyenv root)\/shims:/}" brew'
-
-# nvm
-# if [ -f ~/.nvm/nvm.sh ]; then
-#   source ~/.nvm/nvm.sh
-# fi
-
-# pyenv
-# export PYENV_ROOT="$HOME/.pyenv"
-# export PATH="$PYENV_ROOT/bin:$PATH"
-# Reference: https://github.com/pyenv/pyenv#set-up-your-shell-environment-for-pyenv
-# command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-# eval "$(pyenv init -)"
-
-# rbenv
-# export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
-# eval "$(rbenv init - zsh)"
-
-# nvm
-# export NVM_DIR="$HOME/.nvm"
-# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
-# export NVM_DIR="$HOME/.nvm"
-#  [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
-#  [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
-
-# golang
-# export GOPATH=$HOME/go
-# export GOPATH=$(go env GOPATH)
-# export PATH=$PATH:$GOPATH/bin
-
-# rust
-# export PATH="$HOME/.cargo/bin:$PATH"
-
-# deno
-# export PATH="$HOME/.deno/bin:$PATH"
-
-# java
-# export _JAVA_OPTIONS="-Duser.language=en -Duser.country=US"
-
-# postgresql
-# export PGDATA=/usr/local/var/postgres
-
-# mysql
-# export PATH="/usr/local/opt/mysql@5.6/bin:$PATH"
-
-# direnv
-# eval "$(direnv hook zsh)"
