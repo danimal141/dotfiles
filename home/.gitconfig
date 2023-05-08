@@ -6,6 +6,3 @@
 	editor = nvim
 [diff]
 	ignoreSubmodules = dirty
-[merge "mergepbx"]
-	name = Xcode project files merger
-	driver = mergepbx %O %A %B
