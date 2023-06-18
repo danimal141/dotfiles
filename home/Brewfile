@@ -76,6 +76,7 @@ cask 'kindle'
 # Need to use rosetta
 cask 'google-japanese-ime'
 cask 'adoptopenjdk11'
+cask 'avidemux'
 
 # Install App Store packages
 mas 'Horo - Timer for Menu Bar', id: 1437226581
