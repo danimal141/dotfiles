@@ -30,7 +30,7 @@ Plug 'slim-template/vim-slim', { 'for': 'slim' }
 Plug 'digitaltoad/vim-jade', { 'for': 'jade' }
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries', 'for': 'go' }
 Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
-Plug 'kannokanno/previm', { 'for': 'markdown' }
+Plug 'previm/previm', { 'for': 'markdown' }
 Plug 'tyru/open-browser.vim', { 'for': 'markdown' }
 Plug 'rust-lang/rust.vim', { 'for': 'rust' }
 Plug 'racer-rust/vim-racer', { 'for': 'rust' }
