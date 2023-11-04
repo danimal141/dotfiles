@@ -8,11 +8,21 @@ export LC_ALL=en_US.UTF-8
 # export VISUAL=$(brew --prefix nvim)
 
 # -------------------------------------
-# zsh options
+# path
 # -------------------------------------
+typeset -U path cdpath fpath manpath
 
-# for zsh-completions
-fpath=($(brew --prefix zsh-completions) $fpath)
+# `N` means null glob in Zsh
+path=(
+  /usr/local/bin(N-/)
+  /usr/local/sbin(N-/)
+  /usr/bin(N-/)
+  $HOME/bin(N-/)
+  $path
+)
+
+# homebrew
+ export PATH="/opt/homebrew/bin:$PATH"
 
 # complementation
 autoload -U compinit
@@ -131,22 +141,8 @@ function peco-history-selection() {
 zle -N peco-history-selection
 bindkey '^R' peco-history-selection
 
-# -------------------------------------
-# path
-# -------------------------------------
-typeset -U path cdpath fpath manpath
-
-# `N` means null glob in Zsh
-path=(
-  /usr/local/bin(N-/)
-  /usr/local/sbin(N-/)
-  /usr/bin(N-/)
-  $HOME/bin(N-/)
-  $path
-)
-
-# homebrew
- export PATH="/opt/homebrew/bin:$PATH"
+# for zsh-completions
+fpath=($(brew --prefix zsh-completions) $fpath)
 
 # asdf
 . $(brew --prefix asdf)/libexec/asdf.sh
