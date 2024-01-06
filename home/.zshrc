@@ -16,13 +16,12 @@ typeset -U path cdpath fpath manpath
 path=(
   /usr/local/bin(N-/)
   /usr/local/sbin(N-/)
+  /opt/homebrew/bin(N-/)
+  /opt/homebrew/sbin(N-/)
   /usr/bin(N-/)
   $HOME/bin(N-/)
   $path
 )
-
-# homebrew
- export PATH="/opt/homebrew/bin:$PATH"
 
 # complementation
 autoload -U compinit
