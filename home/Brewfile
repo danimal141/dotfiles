@@ -52,6 +52,7 @@ brew 'kubectx'
 brew 'stern'
 brew 'mutagen-io/mutagen/mutagen-compose'
 brew 'k1LoW/tap/tbls'
+brew 'marp-cli'
 # https://github.com/universal-ctags/homebrew-universal-ctags
 # brew install --HEAD universal-ctags/universal-ctags/universal-ctags
 
