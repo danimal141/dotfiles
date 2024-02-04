@@ -3,6 +3,7 @@ cask_args appdir: '/Applications'
 # Install brew packages
 tap 'AdoptOpenJDK/openjdk'
 tap 'homebrew/cask-fonts'
+tap 'daipeihust/tap'
 
 brew 'git'
 brew 'coreutils'
@@ -53,6 +54,8 @@ brew 'stern'
 brew 'mutagen-io/mutagen/mutagen-compose'
 brew 'k1LoW/tap/tbls'
 brew 'marp-cli'
+brew 'im-select'
+
 # https://github.com/universal-ctags/homebrew-universal-ctags
 # brew install --HEAD universal-ctags/universal-ctags/universal-ctags
 
@@ -74,6 +77,7 @@ cask 'slack'
 cask 'zoom'
 cask 'vlc'
 cask 'kindle'
+
 # Need to use rosetta
 cask 'google-japanese-ime'
 cask 'adoptopenjdk11'

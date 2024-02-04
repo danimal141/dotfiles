@@ -227,3 +227,8 @@ nnoremap <C-p> :CocList files <CR>
 " For US keyboard
 nnoremap ; :
 nnoremap : ;
+
+" im-select
+" when finishing insert mode, automatically swith the keyboard input method
+" depends on `google-japanese-ime` and `im-select`
+autocmd InsertLeave * :silent !im-select com.google.inputmethod.Japanese.Roman
