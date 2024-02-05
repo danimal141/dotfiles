@@ -45,7 +45,7 @@ Plug 'prettier/vim-prettier', {
   \ 'branch': 'release/1.x',
   \ 'for': ['javascript.jsx', 'typescript.tsx', 'javascript', 'typescript', 'css', 'scss', 'json', 'markdown', 'html', 'yaml']
 \ }
-Plug 'github/copilot.vim'
+" Plug 'github/copilot.vim'
 
 call plug#end() " Initialize plugin system
 
