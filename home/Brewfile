@@ -84,6 +84,3 @@ cask 'adoptopenjdk11'
 cask 'avidemux'
 cask 'freefilesync'
 cask 'handbrake'
-
-# Install App Store packages
-mas 'Horo - Timer for Menu Bar', id: 1437226581
