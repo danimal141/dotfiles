@@ -2,7 +2,7 @@
 	name = danimal141
 	email = hideaki.ishii1204@gmail.com
 [core]
-	excludesfile = /Users/hideaki/.gitignore
+	excludesfile = ~/.gitignore
 	editor = nvim
 [diff]
 	ignoreSubmodules = dirty
