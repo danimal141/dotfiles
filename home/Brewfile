@@ -55,6 +55,7 @@ brew 'mutagen-io/mutagen/mutagen-compose'
 brew 'k1LoW/tap/tbls'
 brew 'marp-cli'
 brew 'im-select'
+brew 'direnv'
 
 # https://github.com/universal-ctags/homebrew-universal-ctags
 # brew install --HEAD universal-ctags/universal-ctags/universal-ctags
