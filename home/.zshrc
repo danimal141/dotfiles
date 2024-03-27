@@ -145,3 +145,6 @@ fpath=($(brew --prefix zsh-completions) $fpath)
 
 # asdf
 . $(brew --prefix asdf)/libexec/asdf.sh
+
+# direnv
+eval "$(direnv hook zsh)"
