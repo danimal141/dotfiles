@@ -57,6 +57,7 @@ brew 'marp-cli'
 brew 'im-select'
 brew 'direnv'
 brew 'gnu-sed'
+brew 'yukiarrr/tap/ecsk'
 
 # https://github.com/universal-ctags/homebrew-universal-ctags
 # brew install --HEAD universal-ctags/universal-ctags/universal-ctags
