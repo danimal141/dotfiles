@@ -87,6 +87,7 @@ cask 'zoom'
 cask 'vlc'
 cask 'kindle'
 cask 'raycast'
+cask 'session-manager-plugin' # for ecspresso
 
 # Need to use rosetta
 cask 'google-japanese-ime'
