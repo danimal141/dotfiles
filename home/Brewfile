@@ -65,6 +65,7 @@ brew 'direnv'
 brew 'gnu-sed'
 brew 'yukiarrr/tap/ecsk'
 brew 'cue'
+brew 'cloc'
 
 # https://github.com/universal-ctags/homebrew-universal-ctags
 # brew install --HEAD universal-ctags/universal-ctags/universal-ctags
