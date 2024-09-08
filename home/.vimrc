@@ -54,12 +54,13 @@ call plug#end() " Initialize plugin system
 let g:solarized_termtrans=1
 
 filetype plugin indent on " Automatically detect file types.
-syntax enable
 
 " Use new regular expression engine
 " https://jameschambers.co.uk/vim-typescript-slow
 set re=0
 
+syntax enable
+set notermguicolors
 set background=dark
 colorscheme solarized
 
