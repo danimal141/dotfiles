@@ -151,3 +151,9 @@ fpath=($(brew --prefix zsh-completions) $fpath)
 
 # direnv
 eval "$(direnv hook zsh)"
+
+# For M1Mac
+# Fixing "The chromium binary is not available for arm64"
+# https://www.broddin.be/fixing-the-chromium-binary-is-not-available-for-arm64/
+export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+export PUPPETEER_EXECUTABLE_PATH=`which chromium`

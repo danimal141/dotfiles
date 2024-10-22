@@ -68,6 +68,7 @@ brew 'cue'
 brew 'cloc'
 brew 'cloudflared'
 brew 'FairwindsOps/tap/pluto'
+brew 'chromium'
 
 # https://github.com/universal-ctags/homebrew-universal-ctags
 # brew install --HEAD universal-ctags/universal-ctags/universal-ctags
