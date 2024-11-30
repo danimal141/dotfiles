@@ -152,6 +152,9 @@ fpath=($(brew --prefix zsh-completions) $fpath)
 # direnv
 eval "$(direnv hook zsh)"
 
+# llvm
+export PATH="$(brew --prefix llvm)/bin:$PATH"
+
 # For M1Mac
 # Fixing "The chromium binary is not available for arm64"
 # https://www.broddin.be/fixing-the-chromium-binary-is-not-available-for-arm64/
