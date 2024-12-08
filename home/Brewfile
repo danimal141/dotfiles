@@ -71,6 +71,7 @@ brew 'FairwindsOps/tap/pluto'
 brew 'chromium'
 brew 'llvm'
 brew 'azure-cli'
+brew 'graphviz'
 
 # https://github.com/universal-ctags/homebrew-universal-ctags
 # brew install --HEAD universal-ctags/universal-ctags/universal-ctags
@@ -96,6 +97,7 @@ cask 'vlc'
 cask 'kindle'
 cask 'raycast'
 cask 'session-manager-plugin' # for ecspresso
+cask 'temurin'
 
 # Need to use rosetta
 cask 'google-japanese-ime'
