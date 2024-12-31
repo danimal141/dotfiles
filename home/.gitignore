@@ -4,3 +4,4 @@ tags
 .tool-versions
 .summaryignore
 generate_project_summary.py
+*_project_summary.txt
