@@ -72,6 +72,7 @@ brew 'chromium'
 brew 'llvm'
 brew 'azure-cli'
 brew 'graphviz'
+brew 'libpq'
 
 # https://github.com/universal-ctags/homebrew-universal-ctags
 # brew install --HEAD universal-ctags/universal-ctags/universal-ctags

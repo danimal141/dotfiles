@@ -155,6 +155,9 @@ eval "$(direnv hook zsh)"
 # llvm
 export PATH="$(brew --prefix llvm)/bin:$PATH"
 
+# psql
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+
 # For M1Mac
 # Fixing "The chromium binary is not available for arm64"
 # https://www.broddin.be/fixing-the-chromium-binary-is-not-available-for-arm64/
