@@ -72,6 +72,7 @@ set eol
 set ttyfast
 set nobackup
 set noswapfile
+set modifiable
 
 " For nvim
 if !has('nvim')
