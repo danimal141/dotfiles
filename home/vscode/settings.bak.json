@@ -1,0 +1,69 @@
+{
+    "workbench.colorTheme": "Solarized Dark",
+    "editor.minimap.enabled": false,
+    "editor.fontFamily": "Source Han Code JP, Menlo, Monaco, 'Courier New', monospace",
+    "editor.guides.indentation": false,
+    "redhat.telemetry.enabled": true,
+    "vs-kubernetes": {
+        "vscode-kubernetes.helm-path-mac": "/Users/danimal141/.vs-kubernetes/tools/helm/darwin-arm64/helm",
+        "vscode-kubernetes.minikube-path-mac": "/Users/danimal141/.vs-kubernetes/tools/minikube/darwin-arm64/minikube"
+    },
+    "extensions.experimental.affinity": {
+        "asvetliakov.vscode-neovim": 1
+    },
+    "workbench.startupEditor": "none",
+    "files.insertFinalNewline": true,
+    "markdown.marp.exportType": "pptx",
+    "markdown.marp.pdf.noteAnnotations": true,
+    "markdown.marp.themes": [
+        "./theme/speee.css"
+    ],
+    "editor.scrollBeyondLastLine": false,
+    "files.trimTrailingWhitespace": true,
+    "editor.tabSize": 2,
+    "files.exclude": {
+        "**/.git": false
+    },
+    "window.newWindowDimensions": "inherit",
+    "terminal.integrated.enableMultiLinePasteWarning": false,
+    "terminal.integrated.cwd": "${workspaceFolder}",
+    "terminal.integrated.enablePersistentSessions": false,
+    "[ruby]": {
+        "editor.defaultFormatter": "Shopify.ruby-lsp",
+        "editor.formatOnSave": true,
+        "editor.formatOnType": true,
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "files.trimTrailingWhitespace": true,
+        "files.insertFinalNewline": true,
+        "files.trimFinalNewlines": true,
+        "editor.rulers": [
+            120
+        ],
+        "editor.semanticHighlighting.enabled": true
+    },
+    "[yaml]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml",
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2,
+        "editor.autoIndent": "advanced",
+        "editor.formatOnSave": true
+    },
+    "[github-actions-workflow]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml",
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2,
+        "editor.autoIndent": "advanced",
+        "editor.formatOnSave": true
+    },
+    "[dockercompose]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml",
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2,
+        "editor.autoIndent": "advanced",
+        "editor.formatOnSave": true
+    },
+    "workbench.iconTheme": "vscode-icons",
+    "vsicons.dontShowNewVersionMessage": true,
+}
+

@@ -72,6 +72,7 @@ set eol
 set ttyfast
 set nobackup
 set noswapfile
+set noreadonly
 set modifiable
 
 " For nvim
