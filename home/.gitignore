@@ -5,3 +5,4 @@ tags
 .summaryignore
 generate_project_summary.py
 *_project_summary.txt
+repomix-output.txt
