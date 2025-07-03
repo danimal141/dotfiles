@@ -30,7 +30,18 @@ brew bundle --file=home/Brewfile
 homesick link dotfiles  # Creates symlink ~/.newconfig -> ~/.homesick/repos/dotfiles/home/.newconfig
 
 # Update tmux config for deprecated options
-python tmux-migrate-options.py .tmux.conf
+python tmux-migrate-options.py home/.tmux.conf > home/.tmux.conf.new
+mv home/.tmux.conf.new home/.tmux.conf
+```
+
+### Common Development Commands
+```bash
+# No repository-specific build/test commands - use language-specific tools:
+# Ruby: bundle install, rake test
+# Node.js: npm install, npm test
+# Python: pip install -r requirements.txt, pytest
+# Go: go mod download, go test
+# Rust: cargo build, cargo test
 ```
 
 ## Architecture
@@ -38,19 +49,39 @@ python tmux-migrate-options.py .tmux.conf
 The repository follows homesick conventions:
 - `home/` - Contains all dotfiles that will be symlinked to ~/
 - `home/.config/` - XDG config directory (marked as subdir in .homesick_subdir)
+- `.homesick_subdir` - Declares `.config` as a subdirectory for proper symlinking
 - `setup.sh` - Main setup script that installs dependencies and links dotfiles
 - `_asdf.sh` - Installs programming languages using asdf version manager
+- `tmux-migrate-options.py` - Utility to migrate deprecated tmux options
 
 Key configurations:
-- `.zshrc` - Zsh shell with vi-mode, git branch display, asdf integration
-- `.vimrc` - Vim/Neovim config using vim-plug, CoC for LSP, language-specific plugins
-- `.tmux.conf` - tmux with custom prefix (C-t), window management, status bar
-- `Brewfile` - Homebrew packages including development tools, languages, and GUI apps
+- `.zshrc` - Zsh shell with vi-mode keybindings, git branch in prompt, asdf integration
+- `.vimrc` - Vim/Neovim config using vim-plug, CoC for LSP, Syntastic for linting
+- `.tmux.conf` - tmux with custom prefix (C-t), 256 color support, mouse support
+- `Brewfile` - Homebrew packages including development tools, CLI utilities, and GUI apps
+- `.vim/coc-settings.json` - CoC configuration for language servers
 
 ## Development Notes
 
-- Vim uses CoC (Conquer of Completion) for LSP support
-- Multiple language environments managed by asdf (Ruby, Node.js, Python, Go, Rust, etc.)
-- Syntastic provides linting in Vim
-- No repository-specific test commands - relies on individual language tooling
+### Vim/Neovim Setup
+- Plugin manager: vim-plug
+- LSP support: CoC (Conquer of Completion)
+- Linting: Syntastic with local eslint support
+- Language plugins: Go, Ruby, JavaScript/TypeScript, Rust, Terraform, etc.
 - To share coc-settings between vim and nvim: `ln -s ~/.vim/coc-settings.json ~/.config/nvim/coc-settings.json`
+
+### Shell Environment
+- Shell: Zsh with custom prompt showing git branch
+- Path management: Handles both Intel (/usr/local) and Apple Silicon (/opt/homebrew) Homebrew installations
+- Key bindings: Vi-mode with common Emacs bindings in insert mode
+
+### Language Management
+- asdf manages multiple language versions (Ruby, Node.js, Python, Go, Rust, Deno, Terraform, kubectl, AWS CLI)
+- Languages are installed globally to latest version by default
+
+### Claude MCP Manager
+- `claude-mcp-manager/` - Tool for managing Claude Code CLI's MCP (Model Context Protocol) servers
+- `mcp-servers.yaml` - MCP server configurations (Git-managed)
+- `setup-mcp.sh` - Script to apply MCP configurations
+- Setup: `cd claude-mcp-manager && ./setup-mcp.sh`
+- Manages MCP servers for Claude Code CLI with environment variable support
