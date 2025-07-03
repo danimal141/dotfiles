@@ -138,9 +138,14 @@ for ((i=0; i<$server_count; i++)); do
             # Expand environment variables (replace ${VAR} with actual value)
             if [[ "$env_value" =~ ^\$\{([^}]+)\}$ ]]; then
                 var_name="${BASH_REMATCH[1]}"
-                actual_value="${!var_name}"
-                if [[ -n "$actual_value" ]]; then
-                    claude_cmd="$claude_cmd -e $env_key=\"$actual_value\""
+                # Check if variable exists before indirect expansion
+                if [[ -v "$var_name" ]]; then
+                    actual_value="${!var_name}"
+                    if [[ -n "$actual_value" ]]; then
+                        claude_cmd="$claude_cmd -e $env_key=\"$actual_value\""
+                    else
+                        print_warn "Environment variable $var_name is empty"
+                    fi
                 else
                     print_warn "Environment variable $var_name is not set"
                 fi
