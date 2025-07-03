@@ -38,3 +38,9 @@ servers:
       - "--rm"
       - "hashicorp/terraform-mcp-server"
     env: {}
+  aws-documentation:
+    command: uvx
+    args:
+      - "awslabs.aws-documentation-mcp-server@latest"
+    env:
+      FASTMCP_LOG_LEVEL: ERROR
