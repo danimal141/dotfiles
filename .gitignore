@@ -3,6 +3,8 @@ home/.vim/.netrwhist
 home/.vim/sessions/*
 
 # Claude configuration - ignore everything except CLAUDE.md
+/.claude/*
 home/.claude/*
 !home/.claude/CLAUDE.md
 !home/.claude/settings.json
+
