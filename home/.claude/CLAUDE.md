@@ -1,22 +1,22 @@
 # Guidelines
 
-This document defines the project's rules, objectives, and progress management methods. Please proceed with the project according to the following content.
+This document defines the project rules, objectives, and progress management methods. Please follow these guidelines when working on projects.
 
 ## Top-Level Rules
 
-* To maximize efficiency, **if you need to execute multiple independent processes, invoke those tools concurrently, not sequentially**.
-* **You must think exclusively in English**. However, you are required to **respond in Japanese**.
-* To understand how to use a library, **always use the Context7 MCP** to retrieve the latest information.
+* To maximize efficiency, **when executing multiple independent processes, invoke tools concurrently rather than sequentially**.
+* **Think exclusively in English**. However, **respond in Japanese**.
+* When working with libraries, **always use Context7 MCP** to retrieve the latest documentation.
 
 ## Programming Rules
 
 * Avoid hard-coding values unless absolutely necessary.
-* Do not use `any` types in TypeScript.
-* About Complex Task Processing
-  * Break down complex tasks step by step
+* Never use `any` types in TypeScript.
+* Complex Task Processing:
+  * Break down complex tasks into manageable steps
   * Verify results at each step
-  * Divide into subtasks as needed
-* About Codebase Learning
-  * Start by understanding the architecture
+  * Divide into subtasks when needed
+* Codebase Learning:
+  * Start by understanding the overall architecture
   * Learn existing patterns and conventions
-  * Ask questions you would ask other engineers
+  * Ask the same questions you would ask fellow engineers
