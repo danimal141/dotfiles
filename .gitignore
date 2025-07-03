@@ -5,3 +5,4 @@ home/.vim/sessions/*
 # Claude configuration - ignore everything except CLAUDE.md
 home/.claude/*
 !home/.claude/CLAUDE.md
+!home/.claude/settings.json
