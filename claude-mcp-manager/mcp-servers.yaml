@@ -30,3 +30,11 @@ servers:
       - "@modelcontextprotocol/server-github"
     env:
       GITHUB_PERSONAL_ACCESS_TOKEN: ${GITHUB_PERSONAL_ACCESS_TOKEN}
+  terraform:
+    command: docker
+    args:
+      - "run"
+      - "-i"
+      - "--rm"
+      - "hashicorp/terraform-mcp-server"
+    env: {}
