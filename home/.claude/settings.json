@@ -63,19 +63,13 @@
       "Bash(npm:*)",
       "Bash(yarn:*)",
       "Bash(pip:*)",
-      "Bash(poetry:*)",
+      "Bash(uv:*)",
+      "Bash(bundle:*)",
       "Bash(docker:*)",
       "Bash(docker-compose:*)",
       "Bash(kubectl:*)",
       "Bash(helm:*)",
       "Bash(terraform:*)",
-      "Bash(aws s3 ls:*)",
-      "Bash(aws s3 cp:*)",
-      "Bash(aws sts get-caller-identity:*)",
-      "Bash(gcloud config list:*)",
-      "Bash(gcloud auth list:*)",
-      "Bash(az account show:*)",
-      "Bash(az account list:*)",
       "Bash(gh pr list:*)",
       "Bash(gh pr view:*)",
       "Bash(gh pr diff:*)",
@@ -92,9 +86,7 @@
       "mcp__github__create_pull_request",
       "mcp__github__get_issue",
       "mcp__github__add_issue_comment",
-      "mcp__github__get_issue_comments",
-      "mcp__devinwiki__read_wiki_contents",
-      "mcp__devinwiki__ask_question"
+      "mcp__github__get_issue_comments"
     ],
     "deny": []
   }
