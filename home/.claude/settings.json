@@ -224,10 +224,6 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/code-formatter.sh"
-          },
-          {
-            "type": "command",
             "command": "~/.claude/hooks/remove-trailing-spaces.sh"
           }
         ]

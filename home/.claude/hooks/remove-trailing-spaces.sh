@@ -9,8 +9,8 @@ JSON_INPUT=$(cat)
 TOOL_NAME=$(echo "$JSON_INPUT" | jq -r '.tool_name // empty')
 FILE_PATH=$(echo "$JSON_INPUT" | jq -r '.tool_input.file_path // empty')
 
-# Only process for Edit, MultiEdit, and Write tools
-if [[ "$TOOL_NAME" != "Edit" && "$TOOL_NAME" != "MultiEdit" && "$TOOL_NAME" != "Write" ]]; then
+# Only process for Edit and Write tools
+if [[ "$TOOL_NAME" != "Edit" && "$TOOL_NAME" != "Write" ]]; then
     exit 0
 fi
 
