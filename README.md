@@ -19,6 +19,7 @@ $ homesick link dotfiles
 ```
 
 ### Share coc-settings for nvim
+
 ```
 # Manage coc-settings under .vim and share the symlink under .config/nvim
 $ ln -s ~/.vim/coc-settings.json ~/.config/nvim

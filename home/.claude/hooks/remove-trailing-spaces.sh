@@ -2,9 +2,12 @@
 
 # Hook script to remove trailing spaces from files edited by Claude Code
 
-# Get tool name and file path from environment variables
-TOOL_NAME="${TOOL_NAME:-}"
-FILE_PATH="${FILE_PATH:-}"
+# Read JSON input from stdin
+JSON_INPUT=$(cat)
+
+# Extract tool name and file path from JSON
+TOOL_NAME=$(echo "$JSON_INPUT" | jq -r '.tool_name // empty')
+FILE_PATH=$(echo "$JSON_INPUT" | jq -r '.tool_input.file_path // empty')
 
 # Only process for Edit, MultiEdit, and Write tools
 if [[ "$TOOL_NAME" != "Edit" && "$TOOL_NAME" != "MultiEdit" && "$TOOL_NAME" != "Write" ]]; then

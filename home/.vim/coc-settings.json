@@ -4,8 +4,8 @@
   "yaml.validate": false,
   "http.proxyStrictSSL": false,
   "suggest.keepCompleteopt": true,
-  "suggest.noselect":false,
-  "suggest.preferCompleteThanJumpPlaceholder":true,
+  "suggest.noselect": false,
+  "suggest.preferCompleteThanJumpPlaceholder": true,
   "list.source.files.args": ["--hidden", "--files"],
   "list.source.tags.command": "ctags -R -f .tags",
   "list.source.files.excludePatterns": [

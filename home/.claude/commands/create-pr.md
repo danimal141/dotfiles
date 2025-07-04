@@ -44,16 +44,21 @@ Please provide the following information:
    - Push current branch to remote if needed
    - Create PR using GitHub CLI (`gh pr create`)
    - Include formatted description with:
+
      ```markdown
      ## Summary
+
      [Auto-generated from commit messages]
+
      - Implemented feature X
      - Fixed bug Y
      - Refactored component Z
 
      ## Related Issue
+
      https://github.com/owner/repo/issues/123 (if applicable)
      ```
+
    - Return PR URL for user reference
 
 ## Requirements

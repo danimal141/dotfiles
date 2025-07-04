@@ -20,6 +20,7 @@ cd ~/path/to/dotfiles/home/vscode
 ```
 
 This script will:
+
 1. Detect your OS (macOS or Linux)
 2. Replace environment variables like `${HOME}` with actual values
 3. Copy the processed settings to the appropriate VSCode config directory
@@ -28,6 +29,7 @@ This script will:
 ### Environment Variables
 
 The template uses the following environment variables:
+
 - `${HOME}` - Your home directory (e.g., `/Users/username` or `/home/username`)
 
 This ensures that paths like the Kubernetes extension tools work correctly regardless of username or OS.

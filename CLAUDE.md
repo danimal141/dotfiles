@@ -9,6 +9,7 @@ This is a dotfiles repository managed by homesick. All configuration files are s
 ## Essential Commands
 
 ### Setup and Installation
+
 ```bash
 # Initial setup (run from repository root)
 ./setup.sh
@@ -24,6 +25,7 @@ brew bundle --file=home/Brewfile
 ```
 
 ### Managing Dotfiles
+
 ```bash
 # Add new dotfile - place it in home/ directory first
 # Example: home/.newconfig
@@ -35,6 +37,7 @@ mv home/.tmux.conf.new home/.tmux.conf
 ```
 
 ### Common Development Commands
+
 ```bash
 # No repository-specific build/test commands - use language-specific tools:
 # Ruby: bundle install, rake test
@@ -47,6 +50,7 @@ mv home/.tmux.conf.new home/.tmux.conf
 ## Architecture
 
 The repository follows homesick conventions:
+
 - `home/` - Contains all dotfiles that will be symlinked to ~/
 - `home/.config/` - XDG config directory (marked as subdir in .homesick_subdir)
 - `.homesick_subdir` - Declares `.config` as a subdirectory for proper symlinking
@@ -55,6 +59,7 @@ The repository follows homesick conventions:
 - `tmux-migrate-options.py` - Utility to migrate deprecated tmux options
 
 Key configurations:
+
 - `.zshrc` - Zsh shell with vi-mode keybindings, git branch in prompt, asdf integration
 - `.vimrc` - Vim/Neovim config using vim-plug, CoC for LSP, Syntastic for linting
 - `.tmux.conf` - tmux with custom prefix (C-t), 256 color support, mouse support
@@ -64,6 +69,7 @@ Key configurations:
 ## Development Notes
 
 ### Vim/Neovim Setup
+
 - Plugin manager: vim-plug
 - LSP support: CoC (Conquer of Completion)
 - Linting: Syntastic with local eslint support
@@ -71,15 +77,18 @@ Key configurations:
 - To share coc-settings between vim and nvim: `ln -s ~/.vim/coc-settings.json ~/.config/nvim/coc-settings.json`
 
 ### Shell Environment
+
 - Shell: Zsh with custom prompt showing git branch
 - Path management: Handles both Intel (/usr/local) and Apple Silicon (/opt/homebrew) Homebrew installations
 - Key bindings: Vi-mode with common Emacs bindings in insert mode
 
 ### Language Management
+
 - asdf manages multiple language versions (Ruby, Node.js, Python, Go, Rust, Deno, Terraform, kubectl, AWS CLI)
 - Languages are installed globally to latest version by default
 
 ### Claude MCP Manager
+
 - `claude-mcp-manager/` - Tool for managing Claude Code CLI's MCP (Model Context Protocol) servers
 - `mcp-servers.yaml` - MCP server configurations (Git-managed)
 - `setup-mcp.sh` - Script to apply MCP configurations

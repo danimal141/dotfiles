@@ -5,6 +5,7 @@ Claude Code CLIのMCP（Model Context Protocol）サーバー設定をGitで安�
 ## 概要
 
 このツールを使うことで：
+
 - MCP設定をYAMLファイルで管理
 - 環境変数（APIキーなど）を`.env`ファイルで分離管理
 - `claude mcp add`コマンドを一括実行

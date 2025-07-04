@@ -33,21 +33,26 @@ GitHub IssueのURLを入力してください: https://github.com/owner/repo/iss
    - 例: `.claude/work/facebook-react-12345-todo.md`
    - .claude/workフォルダがない場合は自動作成
    - 以下の形式で構造化：
+
    ```markdown
    # Issue #123: [Issueタイトル]
 
    ## 概要
+
    [Issueの要約]
 
    ## 実装方針
+
    [プランモードで作成した実装方針]
 
    ## タスクリスト
+
    - [ ] タスク1: [詳細]
    - [ ] タスク2: [詳細]
    - [ ] タスク3: [詳細]
 
    ## 技術的詳細
+
    [必要な技術的考慮事項]
    ```
 

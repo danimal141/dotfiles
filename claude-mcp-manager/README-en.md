@@ -5,6 +5,7 @@ A tool for safely managing MCP (Model Context Protocol) server configurations fo
 ## Overview
 
 This tool enables you to:
+
 - Manage MCP configurations using YAML files
 - Separate environment variables (API keys, etc.) in `.env` files
 - Execute `claude mcp add` commands in batch
@@ -85,6 +86,7 @@ servers:
 ## Troubleshooting
 
 If you encounter issues:
+
 1. Ensure `claude` CLI is installed and configured
 2. Verify `yq` is installed (`brew install yq`)
 3. Check that `.env` file exists and contains required API keys
@@ -93,6 +95,7 @@ If you encounter issues:
 ## Contributing
 
 When adding new MCP servers:
+
 1. Add the configuration to `mcp-servers.yaml`
 2. Document any required environment variables in `.env.example`
 3. Test the configuration with `./setup-mcp.sh`

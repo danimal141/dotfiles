@@ -33,21 +33,26 @@ Please enter the GitHub Issue URL: https://github.com/owner/repo/issues/123
    - Example: `.claude/work/facebook-react-12345-todo.md`
    - Automatically create .claude/work folder if it doesn't exist
    - Structure in the following format:
+
    ```markdown
    # Issue #123: [Issue Title]
 
    ## Overview
+
    [Issue Summary]
 
    ## Implementation Plan
+
    [Implementation approach created in plan mode]
 
    ## Task List
+
    - [ ] Task 1: [Details]
    - [ ] Task 2: [Details]
    - [ ] Task 3: [Details]
 
    ## Technical Details
+
    [Required technical considerations]
    ```
 

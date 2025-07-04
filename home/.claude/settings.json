@@ -50,6 +50,7 @@
       "Bash(env:*)",
       "Bash(export:*)",
       "Bash(source:*)",
+      "Bash(tree:*)",
       "Bash(ln:*)",
       "Bash(touch:*)",
       "Bash(file:*)",
@@ -103,14 +104,15 @@
       "Bash(git checkout:*)",
       "Bash(git add:*)",
       "Bash(git push:*)",
-      "Bash(git checkout:*)",
       "Bash(git remote set-url:*)",
       "Bash(git pull:*)",
       "Bash(git reset:*)",
       "Bash(git cherry-pick:*)",
-      "List(**)",
+      "Glob(**)",
+      "LS(**)",
       "Read(**)",
       "Grep(**)",
+      "Edit(./**)",
       "WebFetch(domain:*)",
       "WebSearch(*)",
       "TodoRead(**)",
@@ -170,6 +172,18 @@
       "Edit(/proc/**)",
       "Edit(/sys/**)",
       "Edit(/dev/**)",
+      "Edit(.git/**)",
+      "Edit(node_modules/**)",
+      "Edit(vendor/**)",
+      "Edit(bundle/**)",
+      "Edit(.venv/**)",
+      "Edit(venv/**)",
+      "Edit(__pycache__/**)",
+      "Edit(target/**)",
+      "Edit(dist/**)",
+      "Edit(build/**)",
+      "Edit(.next/**)",
+      "Edit(coverage/**)",
       "Edit(~/.ssh/id_*)",
       "Edit(~/.ssh/*_rsa)",
       "Edit(~/.ssh/*_ecdsa)",
@@ -206,8 +220,12 @@
   "hooks": {
     "PostToolUse": [
       {
-        "matcher": "Edit|MultiEdit|Write",
+        "matcher": "Edit|Write",
         "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/code-formatter.sh"
+          },
           {
             "type": "command",
             "command": "~/.claude/hooks/remove-trailing-spaces.sh"
