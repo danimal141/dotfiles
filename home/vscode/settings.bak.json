@@ -6,7 +6,8 @@
     "redhat.telemetry.enabled": true,
     "vs-kubernetes": {
         "vscode-kubernetes.helm-path-mac": "/Users/danimal141/.vs-kubernetes/tools/helm/darwin-arm64/helm",
-        "vscode-kubernetes.minikube-path-mac": "/Users/danimal141/.vs-kubernetes/tools/minikube/darwin-arm64/minikube"
+        "vscode-kubernetes.minikube-path-mac": "/Users/danimal141/.vs-kubernetes/tools/minikube/darwin-arm64/minikube",
+        "vs-kubernetes.minikube-show-information-expiration": "2025-02-12T22:50:37.220Z"
     },
     "extensions.experimental.affinity": {
         "asvetliakov.vscode-neovim": 1
@@ -65,5 +66,22 @@
     },
     "workbench.iconTheme": "vscode-icons",
     "vsicons.dontShowNewVersionMessage": true,
+    "roo-cline.allowedCommands": [
+        "npm test",
+        "npm install",
+        "tsc",
+        "git log",
+        "git diff",
+        "git show"
+    ],
+    "workspaceExplorer.workspaceStorageDirectory": "/usr/local/vscode/workspaces",
+    "cline.preferredLanguage": "Japanese - 日本語",
+    "rubyLsp.rubyVersionManager": "asdf",
+    "rdbg.rubyVersionManager": "asdf",
+    "github.copilot.enable": {
+        "*": true,
+        "plaintext": false,
+        "scminput": false
+    },
+    "docker.extension.enableComposeLanguageServer": false
 }
-
