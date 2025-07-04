@@ -22,6 +22,7 @@
       "Bash(wc:*)",
       "Bash(sort:*)",
       "Bash(uniq:*)",
+      "Bash(xxd:*)",
       "Bash(cut:*)",
       "Bash(awk:*)",
       "Bash(sed:*)",
