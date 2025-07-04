@@ -8,6 +8,7 @@ home/.claude/*
 !home/.claude/CLAUDE.md
 !home/.claude/settings.json
 !home/.claude/commands/
+!home/.claude/hooks/
 
 # Claude local work directories
 .claude/work/

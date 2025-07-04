@@ -111,8 +111,7 @@
       "List(**)",
       "Read(**)",
       "Grep(**)",
-      "Fetch(https://*)",
-      "WebFetch(domain:https://*)",
+      "WebFetch(domain:*)",
       "WebSearch(*)",
       "TodoRead(**)",
       "TodoWrite(**)",
@@ -203,5 +202,18 @@
   "env": {
     "BASH_DEFAULT_TIMEOUT_MS": "300000",
     "BASH_MAX_TIMEOUT_MS": "1200000"
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/remove-trailing-spaces.sh"
+          }
+        ]
+      }
+    ]
   }
 }

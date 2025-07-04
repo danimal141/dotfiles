@@ -126,7 +126,7 @@ for ((i=0; i<$server_count; i++)); do
 
     # Build the claude mcp add command
     claude_cmd="claude mcp add $server_name --scope $SCOPE"
-    
+
     # Add environment variables if they exist
     env_count=$(yq eval ".servers.$server_name.env | length" "$MCP_CONFIG" 2>/dev/null || echo "0")
     if [[ $env_count -gt 0 ]]; then
@@ -154,7 +154,7 @@ for ((i=0; i<$server_count; i++)); do
             fi
         done
     fi
-    
+
     # Add the command and args
     claude_cmd="$claude_cmd -- $command $args"
 
