@@ -5,7 +5,7 @@ Automates the workflow from GitHub Issue URL to implementation.
 ## Usage
 
 ```
-/project:create-task
+/user:create-task
 ```
 
 ## Example

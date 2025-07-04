@@ -5,7 +5,7 @@ Automates the pull request creation workflow for the current branch by analyzing
 ## Usage
 
 ```
-/project:create-pr
+/user:create-pr
 ```
 
 ## Example

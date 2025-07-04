@@ -5,7 +5,7 @@ GitHub IssueのURLから実装までの一連のフローを自動化します�
 ## 使い方
 
 ```
-/project:create-task-ja
+/user:create-task-ja
 ```
 
 ## 例
