@@ -7,6 +7,12 @@ home/.vim/sessions/*
 home/.claude/*
 !home/.claude/CLAUDE.md
 !home/.claude/settings.json
+!home/.claude/commands/
+
+# Claude local work directories
+.claude/work/
+.claude/tmp/
+.claude/settings.local.json
 
 # VSCode settings backup
 home/vscode/settings.bak.json
