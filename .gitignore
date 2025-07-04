@@ -8,3 +8,6 @@ home/.claude/*
 !home/.claude/CLAUDE.md
 !home/.claude/settings.json
 
+# VSCode settings backup
+home/vscode/settings.bak.json
+
