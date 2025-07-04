@@ -50,11 +50,9 @@ Please provide the following information:
      - Implemented feature X
      - Fixed bug Y
      - Refactored component Z
-     
+
      ## Related Issue
-     Closes #[issue-number] (if applicable)
-     
-     🤖 Generated with [Claude Code](https://claude.ai/code)
+     https://github.com/owner/repo/issues/123 (if applicable)
      ```
    - Return PR URL for user reference
 

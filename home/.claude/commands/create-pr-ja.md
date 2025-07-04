@@ -50,11 +50,9 @@ gitコミットを解析して現在のブランチのプルリクエスト作�
      - 機能Xを実装
      - バグYを修正
      - コンポーネントZをリファクタリング
-     
+
      ## 関連Issue
-     Closes #[issue-number]（該当する場合）
-     
-     🤖 Generated with [Claude Code](https://claude.ai/code)
+     https://github.com/owner/repo/issues/123（該当する場合）
      ```
    - ユーザー参照用にPR URLを返す
 
