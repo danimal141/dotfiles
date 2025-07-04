@@ -5,8 +5,8 @@
     "editor.guides.indentation": false,
     "redhat.telemetry.enabled": true,
     "vs-kubernetes": {
-        "vscode-kubernetes.helm-path-mac": "/Users/danimal141/.vs-kubernetes/tools/helm/darwin-arm64/helm",
-        "vscode-kubernetes.minikube-path-mac": "/Users/danimal141/.vs-kubernetes/tools/minikube/darwin-arm64/minikube",
+        "vscode-kubernetes.helm-path-mac": "${HOME}/.vs-kubernetes/tools/helm/darwin-arm64/helm",
+        "vscode-kubernetes.minikube-path-mac": "${HOME}/.vs-kubernetes/tools/minikube/darwin-arm64/minikube",
         "vs-kubernetes.minikube-show-information-expiration": "2025-02-12T22:50:37.220Z"
     },
     "extensions.experimental.affinity": {
