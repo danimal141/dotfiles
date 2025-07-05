@@ -1,9 +1,14 @@
 {
+  // Breadcrumbs
+  "breadcrumbs.enabled": false,
+
   // Editor - General
   "editor.fontSize": 11,
   "editor.fontFamily": "Source Han Code JP, Menlo, Monaco, 'Courier New', monospace",
   "editor.tabSize": 2,
+  "editor.codeLens": false,
   "editor.minimap.enabled": false,
+  "editor.renderIndentGuides": false,
   "editor.renderWhitespace": "boundary",
   "editor.guides.bracketPairs": true,
   "editor.guides.indentation": false,
@@ -67,9 +72,9 @@
   "[markdown]": {
     "editor.wordWrap": "on",
     "editor.quickSuggestions": {
-        "comments": true,
-        "strings": true,
-        "other": true
+      "comments": true,
+      "strings": true,
+      "other": true
     }
   },
   "[go]": {
@@ -110,6 +115,14 @@
     "!Select sequence",
     "!Split",
     "!Split sequence"
+  ],
+
+  // Extensions - ESlint
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
   ],
 
   // Extensions - GitHub Copilot
