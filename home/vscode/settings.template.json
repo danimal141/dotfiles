@@ -1,11 +1,20 @@
 {
   // Editor - General
-  "editor.fontSize": 12,
+  "editor.fontSize": 11,
   "editor.fontFamily": "Source Han Code JP, Menlo, Monaco, 'Courier New', monospace",
   "editor.tabSize": 2,
   "editor.minimap.enabled": false,
+  "editor.renderWhitespace": "boundary",
+  "editor.guides.bracketPairs": true,
   "editor.guides.indentation": false,
+  "editor.detectIndentation": true,
   "editor.occurrencesHighlight": "off",
+  "editor.suggestSelection": "first",
+  "editor.acceptSuggestionOnEnter": "smart",
+  "editor.snippetSuggestions": "top",
+  "editor.wordWrap": "on",
+  "editor.wordBasedSuggestions": true,
+  "editor.defaultFormatter": null,
 
   // Workbench - UI
   "workbench.colorTheme": "Solarized Dark",
@@ -14,11 +23,14 @@
   "workbench.activityBar.location": "hidden",
 
   // Terminal
-  "terminal.integrated.fontSize": 12,
+  "terminal.integrated.fontSize": 11,
 
   // Files
   "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
+  "files.exclude": {
+    "**/.DS_Store": true
+  },
 
   // Security
   "security.workspace.trust.untrustedFiles": "open",
@@ -36,17 +48,33 @@
   "rubyLsp.rubyVersionManager": "asdf",
   "rdbg.rubyVersionManager": "asdf",
 
-  // Language Specific - Python
+  // Language Specific
   "[python]": {
-    "editor.tabSize": 4
+    "editor.tabSize": 4,
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "ms-python.python"
   },
-
-  // Language Specific - Go
+  "[javascript]": {
+    "editor.tabSize": 2,
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.tabSize": 2,
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": {
+        "comments": true,
+        "strings": true,
+        "other": true
+    }
+  },
   "[go]": {
     "editor.tabSize": 4
   },
-
-  // Language Specific - YAML
   "[yaml]": {
     "editor.defaultFormatter": "redhat.vscode-yaml",
     "editor.insertSpaces": true,
@@ -93,6 +121,8 @@
 
   // Extensions - GitLens
   "gitlens.telemetry.enabled": false,
+  "gitlens.currentLine.enabled": true,
+  "gitlens.hovers.currentLine.over": "line",
 
   // Extensions - VSCode Icons
   "vsicons.dontShowNewVersionMessage": true,
