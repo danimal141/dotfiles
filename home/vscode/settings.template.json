@@ -1,23 +1,29 @@
 {
-  "workbench.colorTheme": "Solarized Dark",
-  "editor.minimap.enabled": false,
-  "editor.fontFamily": "Source Han Code JP, Menlo, Monaco, 'Courier New', monospace",
-  "editor.guides.indentation": false,
-  "redhat.telemetry.enabled": true,
-  "vs-kubernetes": {
-    "vscode-kubernetes.helm-path-mac": "${HOME}/.vs-kubernetes/tools/helm/darwin-arm64/helm",
-    "vscode-kubernetes.minikube-path-mac": "${HOME}/.vs-kubernetes/tools/minikube/darwin-arm64/minikube",
-    "vs-kubernetes.minikube-show-information-expiration": "2025-02-12T22:50:37.220Z"
-  },
-  "extensions.experimental.affinity": {
-    "asvetliakov.vscode-neovim": 1
-  },
-  "workbench.startupEditor": "none",
-  "files.insertFinalNewline": true,
-  "markdown.marp.exportType": "pptx",
-  "markdown.marp.pdf.noteAnnotations": true,
+  // Editor - General
   "editor.fontSize": 12,
+  "editor.fontFamily": "Source Han Code JP, Menlo, Monaco, 'Courier New', monospace",
+  "editor.tabSize": 2,
+  "editor.minimap.enabled": false,
+  "editor.guides.indentation": false,
+  "editor.occurrencesHighlight": "off",
+
+  // Workbench - UI
+  "workbench.colorTheme": "Solarized Dark",
+  "workbench.iconTheme": "vscode-icons",
+  "workbench.startupEditor": "none",
+  "workbench.activityBar.location": "hidden",
+
+  // Terminal
   "terminal.integrated.fontSize": 12,
+
+  // Files
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+
+  // Security
+  "security.workspace.trust.untrustedFiles": "open",
+
+  // Language Specific - Ruby
   "[ruby]": {
     "editor.semantic.enabled": true,
     "editor.formatOnSave": true,
@@ -27,12 +33,27 @@
     "editor.defaultFormatter": "Shopify.ruby-lsp"
   },
   "rubyLsp.pullDiagnosticsOn": "save",
-  "files.trimTrailingWhitespace": true,
-  "editor.tabSize": 2,
-  "gitlens.telemetry.enabled": false,
-  "workbench.activityBar.location": "hidden",
-  "editor.occurrencesHighlight": "off",
-  "security.workspace.trust.untrustedFiles": "open",
+  "rubyLsp.rubyVersionManager": "asdf",
+  "rdbg.rubyVersionManager": "asdf",
+
+  // Language Specific - Python
+  "[python]": {
+    "editor.tabSize": 4
+  },
+
+  // Language Specific - Go
+  "[go]": {
+    "editor.tabSize": 4
+  },
+
+  // Language Specific - YAML
+  "[yaml]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml",
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2,
+    "editor.autoIndent": "advanced",
+    "editor.formatOnSave": true
+  },
   "yaml.customTags": [
     "!And",
     "!And sequence",
@@ -62,31 +83,42 @@
     "!Split",
     "!Split sequence"
   ],
-  "[yaml]": {
-    "editor.defaultFormatter": "redhat.vscode-yaml",
-    "editor.insertSpaces": true,
-    "editor.tabSize": 2,
-    "editor.autoIndent": "advanced",
-    "editor.formatOnSave": true
-  },
-  "workbench.iconTheme": "vscode-icons",
-  "vsicons.dontShowNewVersionMessage": true,
-  "roo-cline.allowedCommands": [
-    "npm test",
-    "npm install",
-    "tsc",
-    "git log",
-    "git diff",
-    "git show"
-  ],
-  "workspaceExplorer.workspaceStorageDirectory": "/usr/local/vscode/workspaces",
-  "cline.preferredLanguage": "Japanese - 日本語",
-  "rubyLsp.rubyVersionManager": "asdf",
-  "rdbg.rubyVersionManager": "asdf",
+
+  // Extensions - GitHub Copilot
   "github.copilot.enable": {
     "*": true,
     "plaintext": false,
     "scminput": false
   },
-  "docker.extension.enableComposeLanguageServer": false
+
+  // Extensions - GitLens
+  "gitlens.telemetry.enabled": false,
+
+  // Extensions - VSCode Icons
+  "vsicons.dontShowNewVersionMessage": true,
+
+  // Extensions - Markdown
+  "markdown.marp.exportType": "pptx",
+  "markdown.marp.pdf.noteAnnotations": true,
+
+  // Extensions - Kubernetes
+  "vs-kubernetes": {
+    "vscode-kubernetes.helm-path-mac": "${HOME}/.vs-kubernetes/tools/helm/darwin-arm64/helm",
+    "vscode-kubernetes.minikube-path-mac": "${HOME}/.vs-kubernetes/tools/minikube/darwin-arm64/minikube",
+    "vs-kubernetes.minikube-show-information-expiration": "2025-02-12T22:50:37.220Z"
+  },
+
+  // Extensions - Docker
+  "docker.extension.enableComposeLanguageServer": false,
+
+  // Extensions - Cline
+  "cline.preferredLanguage": "Japanese - 日本語",
+
+  // Extensions - Neovim
+  "extensions.experimental.affinity": {
+    "asvetliakov.vscode-neovim": 1
+  },
+
+  // Extensions - Workspace Explorer
+  "workspaceExplorer.workspaceStorageDirectory": "/usr/local/vscode/workspaces"
 }
