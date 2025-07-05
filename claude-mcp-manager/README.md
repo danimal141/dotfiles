@@ -1,54 +1,54 @@
 # Claude MCP Manager
 
-Claude Code CLIのMCP（Model Context Protocol）サーバー設定をGitで安全に管理するためのツールです。
+A tool for safely managing MCP (Model Context Protocol) server configurations for Claude Code CLI using Git.
 
-## 概要
+## Overview
 
-このツールを使うことで：
+This tool enables you to:
 
-- MCP設定をYAMLファイルで管理
-- 環境変数（APIキーなど）を`.env`ファイルで分離管理
-- `claude mcp add`コマンドを一括実行
+- Manage MCP configurations using YAML files
+- Separate environment variables (API keys, etc.) in `.env` files
+- Execute `claude mcp add` commands in batch
 
-## セットアップ
+## Setup
 
-### 1. 必要なツールのインストール
+### 1. Install Required Tools
 
 ```bash
-# yqのインストール（YAMLパーサー）
+# Install yq (YAML parser)
 brew install yq
 ```
 
-### 2. 環境変数の設定（必要に応じて）
+### 2. Configure Environment Variables (if needed)
 
 ```bash
 cp .env.example .env
-# .envファイルを編集して必要なAPIキーを設定
+# Edit the .env file to set required API keys
 ```
 
-### 3. MCPサーバーの追加
+### 3. Add MCP Servers
 
 ```bash
 ./setup-mcp.sh
 ```
 
-## ファイル構成
+## File Structure
 
-- `mcp-servers.yaml` - MCP設定を定義するファイル（Git管理対象）
-- `.env.example` - 環境変数のテンプレート（Git管理対象）
-- `.env` - 実際の環境変数（Git管理対象外）
-- `setup-mcp.sh` - MCP設定を適用するスクリプト
-- `.gitignore` - Git除外設定
+- `mcp-servers.yaml` - Define MCP configurations (tracked by Git)
+- `.env.example` - Environment variable template (tracked by Git)
+- `.env` - Actual environment variables (ignored by Git)
+- `setup-mcp.sh` - Script to apply MCP configurations
+- `.gitignore` - Git exclusion settings
 
-## 使い方
+## Usage
 
-### 新しいMCPサーバーを追加する
+### Adding a New MCP Server
 
-1. `mcp-servers.yaml`に新しいサーバー設定を追加
-2. 必要に応じて`.env`に環境変数を追加
-3. `./setup-mcp.sh`を実行
+1. Add new server configuration to `mcp-servers.yaml`
+2. Add environment variables to `.env` if needed
+3. Run `./setup-mcp.sh`
 
-### 設定例
+### Configuration Example
 
 ```yaml
 servers:
@@ -60,7 +60,43 @@ servers:
     env: {}
 ```
 
-## 注意事項
+## Command Options
 
-- `.env`ファイルには機密情報が含まれるため、絶対にGitにコミットしないでください
-- `--scope project`オプションでプロジェクト単位の設定として追加されます
+```bash
+# Add servers with user scope (default)
+./setup-mcp.sh
+
+# Add servers with project scope
+./setup-mcp.sh -s project
+```
+
+## Currently Configured Servers
+
+- **context7**: Documentation retrieval tool
+- **playwright**: Browser automation tool
+- **gemini-google-search**: Google search tool (using Gemini API)
+- **github**: GitHub operations tool
+
+## Security Notes
+
+- Never commit `.env` file to Git as it contains sensitive information like API keys
+- Use `.env.example` as a template to document required environment variables
+- All API keys should be stored in `.env` and referenced in `mcp-servers.yaml`
+
+## Troubleshooting
+
+If you encounter issues:
+
+1. Ensure `claude` CLI is installed and configured
+2. Verify `yq` is installed (`brew install yq`)
+3. Check that `.env` file exists and contains required API keys
+4. Ensure `mcp-servers.yaml` has valid YAML syntax
+
+## Contributing
+
+When adding new MCP servers:
+
+1. Add the configuration to `mcp-servers.yaml`
+2. Document any required environment variables in `.env.example`
+3. Test the configuration with `./setup-mcp.sh`
+4. Update this README if necessary
