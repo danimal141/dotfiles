@@ -51,6 +51,7 @@
   },
   "rubyLsp.pullDiagnosticsOn": "save",
   "rubyLsp.rubyVersionManager": "asdf",
+  "rubyLsp.formatter": "auto",
   "rdbg.rubyVersionManager": "asdf",
 
   // Language Specific
