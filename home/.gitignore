@@ -3,3 +3,4 @@ tags
 .tags
 .tool-versions
 *.code-workspace
+**/.claude/work/
