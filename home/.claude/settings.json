@@ -220,11 +220,11 @@
   "hooks": {
     "PostToolUse": [
       {
-        "matcher": "Edit|Write",
+        "matcher": "Edit|MultiEdit|Write",
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/remove-trailing-spaces.sh"
+            "command": "~/.claude/hooks/common-formatter.sh"
           }
         ]
       }
