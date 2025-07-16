@@ -1,14 +1,6 @@
 {
   "permissions": {
     "allow": [
-      "LS",
-      "Grep",
-      "Glob",
-      "WebFetch",
-      "WebSearch",
-      "TodoRead",
-      "TodoWrite",
-      "Task",
       "Bash(ls:*)",
       "Bash(mv:*)",
       "Bash(make:*)",
@@ -117,6 +109,13 @@
       "Bash(git pull:*)",
       "Bash(git reset:*)",
       "Bash(git cherry-pick:*)",
+      "LS",
+      "Grep",
+      "Glob",
+      "WebFetch",
+      "WebSearch",
+      "TodoRead",
+      "TodoWrite",
       "mcp__github__create_pull_request",
       "mcp__github__get_issue",
       "mcp__github__get_file_contents",
