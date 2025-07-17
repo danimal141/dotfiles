@@ -26,6 +26,8 @@
   "workbench.iconTheme": "vscode-icons",
   "workbench.startupEditor": "none",
   "workbench.activityBar.location": "hidden",
+  "workbench.panel.defaultLocation": "bottom",
+  "workbench.editor.openPositioning": "first",
 
   // Terminal
   "terminal.integrated.fontSize": 11,
