@@ -18,26 +18,37 @@ mkdir -p "$VSCODE_CONFIG_DIR"
 # Get the directory where this script is located
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Template file path
-TEMPLATE_FILE="$SCRIPT_DIR/settings.template.json"
-TARGET_FILE="$VSCODE_CONFIG_DIR/settings.json"
+# Template file paths
+SETTINGS_TEMPLATE="$SCRIPT_DIR/settings.template.json"
+SETTINGS_TARGET="$VSCODE_CONFIG_DIR/settings.json"
+KEYBINDINGS_TEMPLATE="$SCRIPT_DIR/keybindings.template.json"
+KEYBINDINGS_TARGET="$VSCODE_CONFIG_DIR/keybindings.json"
 
-# Check if template exists
-if [ ! -f "$TEMPLATE_FILE" ]; then
-    echo "Error: Template file not found: $TEMPLATE_FILE"
+# Check if settings template exists
+if [ ! -f "$SETTINGS_TEMPLATE" ]; then
+    echo "Error: Settings template file not found: $SETTINGS_TEMPLATE"
     exit 1
 fi
 
-# Replace ${HOME} with actual home directory
+# Replace ${HOME} with actual home directory in settings
 # Using sed with a delimiter that won't appear in paths
-sed "s|\${HOME}|$HOME|g" "$TEMPLATE_FILE" > "$TARGET_FILE"
+sed "s|\${HOME}|$HOME|g" "$SETTINGS_TEMPLATE" > "$SETTINGS_TARGET"
 
 echo "VSCode settings applied successfully!"
-echo "Template: $TEMPLATE_FILE"
-echo "Applied to: $TARGET_FILE"
+echo "Template: $SETTINGS_TEMPLATE"
+echo "Applied to: $SETTINGS_TARGET"
+
+# Apply keybindings if template exists
+if [ -f "$KEYBINDINGS_TEMPLATE" ]; then
+    sed "s|\${HOME}|$HOME|g" "$KEYBINDINGS_TEMPLATE" > "$KEYBINDINGS_TARGET"
+    echo ""
+    echo "VSCode keybindings applied successfully!"
+    echo "Template: $KEYBINDINGS_TEMPLATE"
+    echo "Applied to: $KEYBINDINGS_TARGET"
+fi
 
 # Also update the backup file if we're in the dotfiles repo
 if [ -f "$SCRIPT_DIR/settings.bak.json" ]; then
-    cp "$TARGET_FILE" "$SCRIPT_DIR/settings.bak.json"
+    cp "$SETTINGS_TARGET" "$SCRIPT_DIR/settings.bak.json"
     echo "Backup updated: $SCRIPT_DIR/settings.bak.json"
 fi

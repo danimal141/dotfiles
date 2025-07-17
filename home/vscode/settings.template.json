@@ -26,7 +26,7 @@
   "workbench.iconTheme": "vscode-icons",
   "workbench.startupEditor": "none",
   "workbench.activityBar.location": "hidden",
-  "workbench.panel.defaultLocation": "bottom",
+  // "workbench.panel.defaultLocation": "right", // VSCode 1.64以降で廃止。代わりにコマンドパレットから「Move Views From Panel To Side Panel」を使用
   "workbench.editor.openPositioning": "first",
 
   // Terminal
