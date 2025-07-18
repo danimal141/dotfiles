@@ -4,5 +4,10 @@
     "key": "cmd+shift+m",
     "command": "workbench.action.toggleMaximizedPanel",
     "when": "terminalFocus"
+  },
+  // Workspace Explorer shortcuts
+  {
+    "key": "cmd+shift+w",
+    "command": "workspaceExplorer.focus"
   }
 ]
