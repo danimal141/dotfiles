@@ -54,7 +54,6 @@ shopify.ruby-extensions-pack
 shopify.ruby-lsp
 sianglim.slim
 skyran.js-jsx-snippets
-streetsidesoftware.code-spell-checker
 tomsaunders.vscode-workspace-explorer
 vscode-icons-team.vscode-icons
 yzhang.markdown-all-in-one
