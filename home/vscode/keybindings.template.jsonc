@@ -9,5 +9,11 @@
   {
     "key": "cmd+shift+w",
     "command": "workspaceExplorer.focus"
+  },
+  // Collapse all folders in Explorer
+  {
+    "key": "cmd+shift+c",
+    "command": "workbench.files.action.collapseExplorerFolders",
+    "when": "explorerViewletVisible"
   }
 ]
