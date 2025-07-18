@@ -1,23 +1,8 @@
 [
-  // パネルサイズを最大化/元に戻す
+  // toggle maximized panel when focusing terminal
   {
     "key": "cmd+shift+m",
     "command": "workbench.action.toggleMaximizedPanel",
     "when": "terminalFocus"
-  },
-  // パネルを右側のサイドパネルに移動（VSCode 1.64以降）
-  {
-    "key": "cmd+k p",
-    "command": "workbench.action.movePanelToSidePanel"
-  },
-  // サイドパネルから下部パネルに移動（VSCode 1.64以降）
-  {
-    "key": "cmd+k b",
-    "command": "workbench.action.moveSidePanelToPanel"
-  },
-  // ターミナルをエディターエリアで開く
-  {
-    "key": "cmd+shift+t",
-    "command": "workbench.action.terminal.newInActiveWorkspace"
   }
 ]
