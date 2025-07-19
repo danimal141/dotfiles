@@ -158,6 +158,9 @@ export PATH="$(brew --prefix llvm)/bin:$PATH"
 # psql
 export PATH="$(brew --prefix libpq)/bin:$PATH"
 
+# Claude Code fix alias
+alias ccfix='rm -rf ~/.asdf/installs/nodejs/*/lib/node_modules/@anthropic-ai/.claude-code-* && npm install -g @anthropic-ai/claude-code && asdf reshim nodejs'
+
 # For M1Mac
 # Fixing "The chromium binary is not available for arm64"
 # https://www.broddin.be/fixing-the-chromium-binary-is-not-available-for-arm64/
