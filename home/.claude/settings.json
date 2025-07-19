@@ -208,13 +208,15 @@
       "Write(/etc/passwd)",
       "Write(/etc/shadow)",
       "Write(/etc/sudoers)",
-      "Write(**/.envrc)"
+      "Write(**/.envrc)",
+      "Read(**/.envrc)"
     ]
   },
   "env": {
     "BASH_DEFAULT_TIMEOUT_MS": "300000",
     "BASH_MAX_TIMEOUT_MS": "1200000",
-    "MAX_THINKING_TOKENS": "31999"
+    "MAX_THINKING_TOKENS": "31999",
+    "DISABLE_AUTOUPDATER": "1"
   },
   "hooks": {
     "PostToolUse": [
