@@ -45,7 +45,9 @@ Directory containing hook scripts:
 - `todos/`: Todo management data
 
 #### About AI Operation 6 Principles
-Reference: https://zenn.dev/sesere/articles/0420ecec9526dc
+Reference:
+* https://zenn.dev/sesere/articles/0420ecec9526dc
+* https://docs.anthropic.com/ja/docs/build-with-claude/prompt-engineering/use-xml-tags
 
 The six principles defined in this file control the behavior of Claude Code CLI:
 
