@@ -208,8 +208,8 @@
       "Write(/etc/passwd)",
       "Write(/etc/shadow)",
       "Write(/etc/sudoers)",
-      "Write(**/.envrc)",
-      "Read(**/.envrc)"
+      "Write(.env*)",
+      "Read(.env*)"
     ]
   },
   "env": {
