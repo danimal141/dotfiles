@@ -22,6 +22,12 @@ brew bundle --file=home/Brewfile
 
 # Install programming languages via asdf
 ./_asdf.sh
+
+# Setup MCP servers for Claude
+cd claude-mcp-manager && ./setup-mcp.sh
+
+# Setup VSCode with extensions and settings
+cd vscode && ./apply-settings.sh && ./sync-extensions.sh
 ```
 
 ### Managing Dotfiles
@@ -34,6 +40,15 @@ homesick link dotfiles  # Creates symlink ~/.newconfig -> ~/.homesick/repos/dotf
 # Update tmux config for deprecated options
 python tmux-migrate-options.py home/.tmux.conf > home/.tmux.conf.new
 mv home/.tmux.conf.new home/.tmux.conf
+
+# Sync VSCode extensions from current installation
+cd vscode && ./sync-extensions.sh
+
+# Apply VSCode settings and keybindings templates
+cd vscode && ./apply-settings.sh
+
+# Update Claude MCP server configurations
+cd claude-mcp-manager && ./setup-mcp.sh
 ```
 
 ### Common Development Commands
@@ -53,18 +68,25 @@ The repository follows homesick conventions:
 
 - `home/` - Contains all dotfiles that will be symlinked to ~/
 - `home/.config/` - XDG config directory (marked as subdir in .homesick_subdir)
+- `home/.claude/` - Claude Code CLI configuration directory with user settings and commands
 - `.homesick_subdir` - Declares `.config` as a subdirectory for proper symlinking
 - `setup.sh` - Main setup script that installs dependencies and links dotfiles
 - `_asdf.sh` - Installs programming languages using asdf version manager
 - `tmux-migrate-options.py` - Utility to migrate deprecated tmux options
+- `docs/` - Documentation directory with user guides
+- `vscode/` - VSCode configuration management tools
 
 Key configurations:
 
 - `.zshrc` - Zsh shell with vi-mode keybindings, git branch in prompt, asdf integration
 - `.vimrc` - Vim/Neovim config using vim-plug, CoC for LSP, Syntastic for linting
 - `.tmux.conf` - tmux with custom prefix (C-t), 256 color support, mouse support
-- `Brewfile` - Homebrew packages including development tools, CLI utilities, and GUI apps
+- `.gitconfig` - Git configuration with user settings and aliases
+- `.gitignore` - Global gitignore patterns
+- `Brewfile` - Comprehensive Homebrew packages (100+ packages) including development tools, CLI utilities, GUI apps, and specialized tools
 - `.vim/coc-settings.json` - CoC configuration for language servers
+- `.config/nvim/` - Neovim configuration with symlinked coc-settings.json
+- `.ctags.d/` - Universal Ctags configuration directory
 
 ## Development Notes
 
@@ -94,3 +116,32 @@ Key configurations:
 - `setup-mcp.sh` - Script to apply MCP configurations
 - Setup: `cd claude-mcp-manager && ./setup-mcp.sh`
 - Manages MCP servers for Claude Code CLI with environment variable support
+
+### Claude Configuration
+
+- `home/.claude/` - Claude Code CLI configuration directory containing:
+  - `CLAUDE.md` - Global user instructions for Claude (in Japanese)
+  - `settings.json` - Claude CLI settings and preferences
+  - `commands/` - Custom slash commands for Claude
+  - `hooks/` - Shell hooks for Claude operations
+  - `ide/` - IDE-specific configurations
+  - `projects/` - Project-specific Claude configurations
+  - `shell-snapshots/` - Saved shell state snapshots
+  - `statsig/` - Analytics and statistics data
+  - `todos/` - Task management data (77+ saved todo lists)
+
+### VSCode Management
+
+- `vscode/` - VSCode configuration and extension management:
+  - `apply-settings.sh` - Script to apply VSCode settings templates
+  - `sync-extensions.sh` - Script to sync VSCode extensions
+  - `extensions.txt` - List of installed VSCode extensions
+  - `settings.template.jsonc` - VSCode settings template
+  - `keybindings.template.jsonc` - VSCode keybindings template
+
+### Documentation
+
+- `docs/` - Comprehensive documentation:
+  - `claude-mcp-manager.md` - Claude MCP Manager usage guide
+  - `claude-use.md` - Claude usage patterns and best practices
+  - `vscode.md` - VSCode configuration and workflow documentation
