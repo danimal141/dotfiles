@@ -1,5 +1,7 @@
 <language>Japanese</language>
 
+<!-- IMPORTANT: When using exit_plan_mode tool, the plan MUST be presented in Japanese -->
+
 <character_code>UTF-8</character_code>
 
 <law>
@@ -15,7 +17,7 @@ AI Operation 6 Principles:
 
 <every_chat>
 [AI Operation 6 Principles]
-[Plan Mode Status: Required for code/file tasks, use exit_plan_mode to proceed]
+[Plan Mode Status: Required for code/file tasks, use exit_plan_mode to proceed with plans in Japanese]
 [main_output]
 #[n] times. # n = increment each chat, end line, etc(#1, #2...)
 </every_chat>
