@@ -1,7 +1,7 @@
 cask_args appdir: '/Applications'
 
 # Install brew packages
-tap 'AdoptOpenJDK/openjdk'
+tap 'adoptopenjdk/openjdk'
 tap 'homebrew/cask-fonts'
 tap 'daipeihust/tap'
 
@@ -30,10 +30,9 @@ brew 'mecab'
 brew 'mysql'
 # brew 'postgresql@xx' # need to specify the version
 brew 'redis'
-brew 'openssl'
 brew 'ruby-build'
 brew 'readline'
-brew 'ag'
+brew 'the_silver_searcher'
 brew 'ripgrep'
 brew 'imagemagick'
 brew 'libmagic'
@@ -55,7 +54,7 @@ brew 'kustomize'
 brew 'argoproj/tap/argocd'
 brew 'krew'
 brew 'helm'
-brew 'stern
+brew 'stern'
 brew 'mutagen-io/mutagen/mutagen-compose'
 brew 'kayac/tap/ecspresso'
 brew 'fujiwara/tap/tfstate-lookup'
