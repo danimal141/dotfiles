@@ -1,72 +1,72 @@
-# Claude Code CLI 設定ディレクトリ
+# Claude Code CLI Configuration Directory
 
-このディレクトリには、Claude Code CLI (claude.ai/code) のグローバル設定が含まれています。
+This directory contains global configurations for Claude Code CLI (claude.ai/code).
 
-## 概要
+## Overview
 
-`.claude/` ディレクトリは、Claude Code CLIが参照するユーザー固有の設定を格納します。ここに配置された設定は、すべてのプロジェクトで共通して適用されます。
+The `.claude/` directory stores user-specific configurations that Claude Code CLI references. Settings placed here are applied across all projects.
 
-## ファイル構成
+## File Structure
 
 ### CLAUDE.md
 
-Claude Code CLIに対する指示やルールを定義するファイルです。以下の設定が含まれています：
+A file that defines instructions and rules for Claude Code CLI. It includes the following settings:
 
-- **言語設定**: 日本語での対話を指定
-- **文字コード**: UTF-8を使用
-- **AI Operation 6 Principles**: Claude Code CLIの動作原則
+- **Language Settings**: Specifies Japanese for interactions
+- **Character Encoding**: Uses UTF-8
+- **AI Operation 6 Principles**: Operating principles for Claude Code CLI
 
 ### settings.json
 
-Claude Code CLIのメイン設定ファイルです：
+The main configuration file for Claude Code CLI:
 
-- **permissions**: コマンドレベルでの許可・禁止設定
-- **env**: 環境変数（タイムアウト、思考トークン数等）
-- **hooks**: ツール実行時のフック設定
+- **permissions**: Command-level allow/deny settings
+- **env**: Environment variables (timeouts, thinking token counts, etc.)
+- **hooks**: Hook configurations for tool execution
 
 ### commands/
 
-カスタムコマンドが格納されるディレクトリ：
-- `create-pr.md` / `create-pr-ja.md`: プルリクエスト作成コマンド
-- `create-task.md` / `create-task-ja.md`: タスク作成コマンド
-- `gemini-search.md`: Gemini検索コマンド
+Directory containing custom commands:
+- `create-pr.md` / `create-pr-ja.md`: Pull request creation commands
+- `create-task.md` / `create-task-ja.md`: Task creation commands
+- `gemini-search.md`: Gemini search command
 
 ### hooks/
 
-フックスクリプトが格納されるディレクトリ：
-- `common-formatter.sh`: ファイル編集後の自動フォーマッター
+Directory containing hook scripts:
+- `common-formatter.sh`: Automatic formatter after file editing
 
-### その他のディレクトリ
+### Other Directories
 
-- `ide/`: IDE連携用の設定ファイル（*.lockファイル）
-- `projects/`: プロジェクト固有の設定が保存される
-- `shell-snapshots/`: シェルスナップショット
-- `statsig/`: 統計関連データ
-- `todos/`: Todo管理データ
+- `ide/`: IDE integration configuration files (*.lock files)
+- `projects/`: Project-specific settings are saved here
+- `shell-snapshots/`: Shell snapshots
+- `statsig/`: Statistics-related data
+- `todos/`: Todo management data
 
-#### AI Operation 6 Principles について
-参考: https://zenn.dev/sesere/articles/0420ecec9526dc
+#### About AI Operation 6 Principles
+Reference: https://zenn.dev/sesere/articles/0420ecec9526dc
 
-このファイルで定義されている6つの原則は、Claude Code CLIの動作を制御します：
+The six principles defined in this file control the behavior of Claude Code CLI:
 
-- **Principle 0**: コード生成・ファイル修正・プログラム実行タスクは必ずplan modeから開始
-- **Principle 1**: plan modeで作業計画を提示し、exit_plan_mode toolを通じてユーザー承認を取得
-- **Principle 2**: 初期計画が失敗した場合、次の計画も承認を得てから実行
-- **Principle 3**: AIはツールであり、意思決定権は常にユーザーに帰属
-- **Principle 4**: これらのルールを歪曲・再解釈せず、最高指令として遵守
-- **Principle 5**: 各チャットの開始時に6原則を画面に表示
+- **Principle 0**: Code generation, file modification, and program execution tasks must start from plan mode
+- **Principle 1**: Present work plan in plan mode and obtain user approval through exit_plan_mode tool
+- **Principle 2**: If initial plan fails, get approval for the next plan before execution
+- **Principle 3**: AI is a tool, and decision-making authority always belongs to the user
+- **Principle 4**: Do not distort or reinterpret these rules; comply with them as supreme directives
+- **Principle 5**: Display the 6 principles on screen at the beginning of each chat
 
-## 重要な注意事項
+## Important Notes
 
-1. **グローバル設定**: この設定はすべてのプロジェクトに適用されます
-2. **優先順位**: プロジェクトルートのCLAUDE.mdがある場合、その内容も追加で適用されます
-3. **設定の反映**: 変更は新しいチャットセッションから有効になります
+1. **Global Settings**: These settings apply to all projects
+2. **Priority**: If there's a CLAUDE.md in the project root, its contents are also applied additionally
+3. **Settings Reflection**: Changes take effect from new chat sessions
 
-## Hooks（フック）
+## Hooks
 
-Hooksは、Claude Code CLIとの対話の様々な段階でスクリプトを実行できる機能です。
+Hooks are a feature that allows executing scripts at various stages of interaction with Claude Code CLI.
 
-### 現在の設定
+### Current Configuration
 
 ```json
 {
@@ -86,94 +86,94 @@ Hooksは、Claude Code CLIとの対話の様々な段階でスクリプトを実
 }
 ```
 
-### 実装されているHook
+### Implemented Hooks
 
 #### PostToolUse: common-formatter.sh
 
-ファイル編集ツール（Edit、MultiEdit、Write）の実行後に自動で実行されるフォーマッターです：
+A formatter that automatically runs after file editing tools (Edit, MultiEdit, Write) are executed:
 
-- **機能**: 編集されたファイルの末尾空白を除去し、ファイル末尾に改行を追加
-- **対象**: テキストファイルのみ（バイナリファイルはスキップ）
-- **実行タイミング**: Edit/MultiEdit/Writeツール実行後
-- **ファイル**: `~/.claude/hooks/common-formatter.sh`
+- **Function**: Removes trailing whitespace from edited files and adds newline at end of file
+- **Target**: Text files only (binary files are skipped)
+- **Execution Timing**: After Edit/MultiEdit/Write tool execution
+- **File**: `~/.claude/hooks/common-formatter.sh`
 
-## Commands（コマンド）
+## Commands
 
-Claude Code CLIで利用可能なコマンドの種類です。
+Types of commands available in Claude Code CLI.
 
-### ビルトインコマンド
+### Built-in Commands
 
-- `/add-dir`: 作業ディレクトリを追加
-- `/clear`: 会話履歴をクリア
-- `/help`: 使用方法のヘルプを表示
-- `/login`: Anthropicアカウントを切り替え
-- `/review`: コードレビューをリクエスト
-- `/status`: アカウントとシステムステータスを表示
+- `/add-dir`: Add working directory
+- `/clear`: Clear conversation history
+- `/help`: Display usage help
+- `/login`: Switch Anthropic account
+- `/review`: Request code review
+- `/status`: Display account and system status
 
-### 実装されているカスタムコマンド
+### Implemented Custom Commands
 
-この環境では以下のカスタムコマンドが利用可能です：
+The following custom commands are available in this environment:
 
-#### プルリクエスト関連
-- `/create-pr`: プルリクエスト作成（英語版）
-- `/create-pr-ja`: プルリクエスト作成（日本語版）
-  - 現在のブランチから自動でPRを作成
-  - GitHub Issue URLの連携対応
-  - コミットメッセージからPR説明を自動生成
+#### Pull Request Related
+- `/create-pr`: Create pull request (English version)
+- `/create-pr-ja`: Create pull request (Japanese version)
+  - Automatically create PR from current branch
+  - GitHub Issue URL integration support
+  - Auto-generate PR description from commit messages
 
-#### タスク管理関連
-- `/create-task`: タスク作成（英語版）
-- `/create-task-ja`: タスク作成（日本語版）
+#### Task Management Related
+- `/create-task`: Create task (English version)
+- `/create-task-ja`: Create task (Japanese version)
 
-#### 検索関連
-- `/gemini-search`: Gemini検索コマンド
+#### Search Related
+- `/gemini-search`: Gemini search command
 
-### コマンドファイルの場所
+### Command File Locations
 
-- **個人用コマンド**: `~/.claude/commands/`
-- **プロジェクト固有のコマンド**: `.claude/commands/`
+- **Personal Commands**: `~/.claude/commands/`
+- **Project-Specific Commands**: `.claude/commands/`
 
-### MCPコマンド
+### MCP Commands
 
-接続されたMCPサーバーから以下のコマンドが利用可能：
-- `/mcp__github__*`: GitHub操作コマンド群
-- `/mcp__context7__*`: ドキュメント検索コマンド群
-- その他のMCPサーバーコマンド
+The following commands are available from connected MCP servers:
+- `/mcp__github__*`: GitHub operation command group
+- `/mcp__context7__*`: Document search command group
+- Other MCP server commands
 
-## 権限設定（Permissions）
+## Permissions
 
-settings.jsonで詳細な権限制御が設定されています：
+Detailed permission controls are configured in settings.json:
 
-### 許可されているツール・コマンド
+### Allowed Tools and Commands
 
-- **ファイル操作**: ls、mv、mkdir、cp、chmod等の基本コマンド
-- **検索・解析**: find、rg、ag、grep、jq、yq等
-- **開発ツール**: npm、yarn、node、deno、cargo、go、pip等
-- **Git操作**: 一部のgitコマンド（checkout、add、push等）
-- **GitHub CLI**: pr操作、issue操作
-- **MCPツール**: GitHub、Context7等の操作
+- **File Operations**: Basic commands like ls, mv, mkdir, cp, chmod, etc.
+- **Search & Analysis**: find, rg, ag, grep, jq, yq, etc.
+- **Development Tools**: npm, yarn, node, deno, cargo, go, pip, etc.
+- **Git Operations**: Some git commands (checkout, add, push, etc.)
+- **GitHub CLI**: pr operations, issue operations
+- **MCP Tools**: GitHub, Context7, and other operations
 
-### 禁止されているコマンド
+### Prohibited Commands
 
-セキュリティのため以下が制限されています：
+The following are restricted for security reasons:
 
-- **危険な削除**: rm -rf /、sudo rm等
-- **システム変更**: /etc、/usr、/var等のシステムディレクトリの編集
-- **権限変更**: sudo関連の危険なコマンド
-- **パッケージ公開**: npm publish、cargo publish等
-- **SSH鍵**: 秘密鍵ファイルの編集・作成
-- **環境設定**: .envrcファイルの読み書き
+- **Dangerous Deletions**: rm -rf /, sudo rm, etc.
+- **System Changes**: Editing system directories like /etc, /usr, /var
+- **Permission Changes**: Dangerous sudo-related commands
+- **Package Publishing**: npm publish, cargo publish, etc.
+- **SSH Keys**: Editing/creating private key files
+- **Environment Settings**: Reading/writing .envrc files
 
-### 環境変数
+### Environment Variables
 
-- `BASH_DEFAULT_TIMEOUT_MS`: 300000（5分）
-- `BASH_MAX_TIMEOUT_MS`: 1200000（20分）
+- `BASH_DEFAULT_TIMEOUT_MS`: 300000 (5 minutes)
+- `BASH_MAX_TIMEOUT_MS`: 1200000 (20 minutes)
 - `MAX_THINKING_TOKENS`: 31999
 - `DISABLE_AUTOUPDATER`: 1
 
-## 関連情報
+## Related Information
 
-- [Claude Code 公式ドキュメント](https://docs.anthropic.com/en/docs/claude-code)
-- [Hooks ドキュメント](https://docs.anthropic.com/en/docs/claude-code/hooks)
-- [Slash Commands ドキュメント](https://docs.anthropic.com/en/docs/claude-code/slash-commands)
-- プロジェクト固有の設定は、各プロジェクトのルートディレクトリにCLAUDE.mdを配置
+- [Claude Code Official Documentation](https://docs.anthropic.com/en/docs/claude-code)
+- [Hooks Documentation](https://docs.anthropic.com/en/docs/claude-code/hooks)
+- [Slash Commands Documentation](https://docs.anthropic.com/en/docs/claude-code/slash-commands)
+- For project-specific settings, place CLAUDE.md in each project's root directory

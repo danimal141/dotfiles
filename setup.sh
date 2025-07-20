@@ -52,14 +52,14 @@ homesick link dotfiles
 # VSCode
 #------------------------------------------
 echo "Setting up VSCode..."
-if [ -f ./home/vscode/apply-settings.sh ]; then
+if [ -f ./vscode/apply-settings.sh ]; then
     echo "Applying VSCode settings..."
-    ./home/vscode/apply-settings.sh
+    ./vscode/apply-settings.sh
 fi
 
-if [ -f ./home/vscode/sync-extensions.sh ]; then
+if [ -f ./vscode/sync-extensions.sh ]; then
     echo "Installing VSCode extensions..."
-    ./home/vscode/sync-extensions.sh --install
+    ./vscode/sync-extensions.sh --install
 fi
 
 # Replace the current shell with a new shell, run it as a login shell, and reset the environment settings.
