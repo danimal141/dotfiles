@@ -1,19 +1,26 @@
 {
   "permissions": {
     "allow": [
+      // ファイル操作
       "Bash(ls:*)",
       "Bash(mv:*)",
-      "Bash(make:*)",
       "Bash(mkdir:*)",
       "Bash(cp:*)",
       "Bash(chmod:*)",
       "Bash(chown:*)",
       "Bash(find:*)",
+      "Bash(ln:*)",
+      "Bash(touch:*)",
+      "Bash(file:*)",
+      "Bash(stat:*)",
+      "Bash(diff:*)",
+      "Bash(cmp:*)",
+      "Bash(rsync:*)",
+
+      // テキスト処理・検索
       "Bash(rg:*)",
       "Bash(ag:*)",
       "Bash(grep:*)",
-      "Bash(jq:*)",
-      "Bash(yq:*)",
       "Bash(cat:*)",
       "Bash(head:*)",
       "Bash(tail:*)",
@@ -22,17 +29,33 @@
       "Bash(wc:*)",
       "Bash(sort:*)",
       "Bash(uniq:*)",
-      "Bash(xxd:*)",
       "Bash(cut:*)",
       "Bash(awk:*)",
       "Bash(sed:*)",
+
+      // データ処理
+      "Bash(jq:*)",
+      "Bash(yq:*)",
+      "Bash(xxd:*)",
+
+      // アーカイブ・圧縮
       "Bash(tar:*)",
       "Bash(gzip:*)",
       "Bash(gunzip:*)",
       "Bash(zip:*)",
       "Bash(unzip:*)",
+
+      // ネットワーク
       "Bash(curl:*)",
       "Bash(wget:*)",
+      "Bash(ssh:*)",
+      "Bash(scp:*)",
+      "Bash(ping:*)",
+      "Bash(netstat:*)",
+      "Bash(dig:*)",
+      "Bash(lsof:*)",
+
+      // システム情報
       "Bash(ps:*)",
       "Bash(top:*)",
       "Bash(which:*)",
@@ -40,32 +63,27 @@
       "Bash(whoami:*)",
       "Bash(whois:*)",
       "Bash(pwd:*)",
-      "Bash(clippy:*)",
       "Bash(du:*)",
       "Bash(df:*)",
       "Bash(date:*)",
-      "Bash(echo:*)",
-      "Bash(printf:*)",
       "Bash(history:*)",
       "Bash(alias:*)",
       "Bash(env:*)",
       "Bash(export:*)",
       "Bash(source:*)",
       "Bash(tree:*)",
-      "Bash(ln:*)",
-      "Bash(touch:*)",
-      "Bash(file:*)",
-      "Bash(stat:*)",
-      "Bash(diff:*)",
-      "Bash(cmp:*)",
-      "Bash(rsync:*)",
-      "Bash(ssh:*)",
-      "Bash(scp:*)",
-      "Bash(ping:*)",
-      "Bash(netstat:*)",
-      "Bash(dig:*)",
-      "Bash(lsof:*)",
+
+      // シェル・出力
+      "Bash(echo:*)",
+      "Bash(printf:*)",
+      "Bash(clippy:*)",
+
+      // パッケージ管理
       "Bash(brew:*)",
+      "Bash(direnv:*)",
+      "Bash(asdf:*)",
+
+      // JavaScript/TypeScript
       "Bash(npm:*)",
       "Bash(yarn:*)",
       "Bash(node:*)",
@@ -81,27 +99,27 @@
       "Bash(eslint:*)",
       "Bash(prettier:*)",
       "Bash(biome:*)",
-      "Bash(cargo-watch:*)",
-      "Bash(cargo-edit:*)",
-      "Bash(cargo-expand:*)",
+
+      // その他言語
       "Bash(go:*)",
       "Bash(gofmt:*)",
       "Bash(golint:*)",
       "Bash(pip:*)",
       "Bash(uv:*)",
       "Bash(bundle:*)",
-      "Bash(direnv:*)",
-      "Bash(asdf:*)",
+      "Bash(cargo-watch:*)",
+      "Bash(cargo-edit:*)",
+      "Bash(cargo-expand:*)",
+      "Bash(make:*)",
+
+      // インフラ・コンテナ
       "Bash(docker:*)",
       "Bash(docker-compose:*)",
       "Bash(kubectl:*)",
       "Bash(helm:*)",
       "Bash(terraform:*)",
-      "Bash(gh pr list:*)",
-      "Bash(gh pr view:*)",
-      "Bash(gh pr diff:*)",
-      "Bash(gh issue create:*)",
-      "Bash(gh issue edit:*)",
+
+      // バージョン管理
       "Bash(git checkout:*)",
       "Bash(git add:*)",
       "Bash(git push:*)",
@@ -109,6 +127,13 @@
       "Bash(git pull:*)",
       "Bash(git reset:*)",
       "Bash(git cherry-pick:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr diff:*)",
+      "Bash(gh issue create:*)",
+      "Bash(gh issue edit:*)",
+
+      // Claude/MCPツール
       "LS",
       "Grep",
       "Glob",
@@ -124,11 +149,18 @@
       "mcp__github__get_issue_comments"
     ],
     "deny": [
+      // 危険なファイル削除
       "Bash(rm -rf /)",
       "Bash(rm -rf ~)",
       "Bash(rm -rf ~/*)",
       "Bash(rm -rf /*)",
       "Bash(rm -rf .git)",
+      "Bash(mv * /)",
+      "Bash(mv .* /)",
+      "Bash(shred:*)",
+      "Bash(rm -f .*)",
+
+      // 危険なシステム操作
       "Bash(sudo rm:*)",
       "Bash(sudo dd:*)",
       "Bash(sudo mkfs:*)",
@@ -138,26 +170,41 @@
       "Bash(dd:*)",
       "Bash(mkfs:*)",
       "Bash(fdisk:*)",
-      "Bash(> /dev/*)",
-      "Bash(>> /dev/*)",
-      "Bash(sudo:*passwd*)",
-      "Bash(sudo:*shadow*)",
+      "Bash(launchctl unload:*)",
+      "Bash(launchctl stop:*)",
+      "Bash(csrutil disable)",
+      "Bash(nvram:*)",
+
+      // 権限・セキュリティ
+      "Bash(sudo *passwd*)",
+      "Bash(sudo *shadow*)",
       "Bash(chmod 777 /*)",
       "Bash(chown root:*)",
       "Bash(sudo chmod 777:*)",
       "Bash(sudo chown:*)",
-      "Bash(sudo -i:*)",
-      "Bash(sudo su:*)",
-      "Bash(curl * | sh)",
-      "Bash(curl * | bash)",
-      "Bash(wget * | sh)",
-      "Bash(wget * | bash)",
+      "Bash(sudo -i*)",
+      "Bash(sudo su*)",
+      "Bash(chmod 000:*)",
+      "Bash(chmod -R 777:*)",
+
+      // 危険な実行
+      "Bash(*|sh)",
+      "Bash(*|bash)",
       "Bash(git push -f:*)",
+      "Bash(git reset --hard HEAD~*)",
+      "Bash(git branch -D:*)",
+      "Bash(git clean -fdx)",
       "Bash(docker system prune -af)",
       "Bash(npm publish:*)",
       "Bash(cargo publish:*)",
       "Bash(deno publish:*)",
       "Bash(terraform apply:*)",
+      "Bash(brew uninstall --zap:*)",
+      "Bash(brew cleanup --prune=all)",
+      "Bash(export PATH=)",
+      "Bash(unset PATH)",
+
+      // ディレクトリ保護 - システムディレクトリ
       "Edit(/etc/**)",
       "Edit(/usr/**)",
       "Edit(/var/**)",
@@ -170,6 +217,10 @@
       "Edit(/proc/**)",
       "Edit(/sys/**)",
       "Edit(/dev/**)",
+      "Edit(/System/**)",
+      "Edit(/Library/LaunchDaemons/**)",
+      "Edit(/private/**)",
+      // ディレクトリ保護 - プロジェクトディレクトリ
       "Edit(.git/**)",
       "Edit(node_modules/**)",
       "Edit(vendor/**)",
@@ -182,6 +233,8 @@
       "Edit(build/**)",
       "Edit(.next/**)",
       "Edit(coverage/**)",
+
+      // ディレクトリ保護 - SSH鍵・機密情報
       "Edit(~/.ssh/id_*)",
       "Edit(~/.ssh/*_rsa)",
       "Edit(~/.ssh/*_ecdsa)",
@@ -189,25 +242,12 @@
       "Edit(/etc/passwd)",
       "Edit(/etc/shadow)",
       "Edit(/etc/sudoers)",
-      "Write(/etc/**)",
-      "Write(/usr/**)",
-      "Write(/var/**)",
-      "Write(/opt/**)",
-      "Write(/bin/**)",
-      "Write(/sbin/**)",
-      "Write(/lib/**)",
-      "Write(/lib64/**)",
-      "Write(/boot/**)",
-      "Write(/proc/**)",
-      "Write(/sys/**)",
-      "Write(/dev/**)",
-      "Write(~/.ssh/id_*)",
-      "Write(~/.ssh/*_rsa)",
-      "Write(~/.ssh/*_ecdsa)",
-      "Write(~/.ssh/*_ed25519)",
-      "Write(/etc/passwd)",
-      "Write(/etc/shadow)",
-      "Write(/etc/sudoers)",
+
+      // ディレクトリ保護 - 機密ファイル
+      "Edit(**/*key*)",
+      "Edit(**/*secret*)",
+      "Edit(**/*token*)",
+      "Edit(**/*password*)",
       "Write(.env*)",
       "Read(.env*)"
     ]
