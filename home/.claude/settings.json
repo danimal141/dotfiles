@@ -248,8 +248,8 @@
       "Edit(**/*secret*)",
       "Edit(**/*token*)",
       "Edit(**/*password*)",
-      "Write(.env*)",
-      "Read(.env*)"
+      "Write(**/.env*)",
+      "Read(**/.env*)"
     ]
   },
   "env": {
