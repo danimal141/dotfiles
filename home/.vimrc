@@ -6,8 +6,22 @@ set runtimepath^=~/.vim/
 " - For Neovim: ~/.local/share/nvim/plugged
 " - Avoid using standard Vim directory names like 'plugin'
 call plug#begin('~/.vim/plugged')
+
+Plug 'Shougo/vimproc.vim', { 'do' : 'make' }
+Plug 'tpope/vim-surround'
+Plug 'alvan/vim-closetag'
+Plug 'rizzatti/dash.vim'
+Plug 'rking/ag.vim'
+Plug 'airblade/vim-gitgutter'
+Plug 'szw/vim-tags'
+Plug 'preservim/tagbar'
+Plug 'simeji/winresizer'
+Plug 'tpope/vim-endwise'
+" Plug 'github/copilot.vim'
+
 if !exists('g:vscode')
   " Extensions: https://github.com/neoclide/coc.nvim#extensions
+  Plug 'scrooloose/nerdtree'
   Plug 'neoclide/coc.nvim', { 'branch': 'release' }
   Plug 'vim-syntastic/syntastic'
   Plug 'mtscout6/syntastic-local-eslint.vim'
@@ -37,18 +51,6 @@ if !exists('g:vscode')
   Plug 'aklt/plantuml-syntax'
   Plug 'mechatroner/rainbow_csv', { 'for': 'csv' }
 endif
-Plug 'scrooloose/nerdtree'
-Plug 'Shougo/vimproc.vim', { 'do' : 'make' }
-Plug 'tpope/vim-surround'
-Plug 'alvan/vim-closetag'
-Plug 'rizzatti/dash.vim'
-Plug 'rking/ag.vim'
-Plug 'airblade/vim-gitgutter'
-Plug 'szw/vim-tags'
-Plug 'preservim/tagbar'
-Plug 'simeji/winresizer'
-Plug 'tpope/vim-endwise'
-" Plug 'github/copilot.vim'
 
 call plug#end() " Initialize plugin system
 
@@ -214,7 +216,6 @@ nnoremap : ;
 " when finishing insert mode, automatically swith the keyboard input method
 " depends on `google-japanese-ime` and `im-select`
 autocmd InsertLeave * :silent !im-select com.google.inputmethod.Japanese.Roman
-
 
 " COC
 let g:coc_global_extensions = [

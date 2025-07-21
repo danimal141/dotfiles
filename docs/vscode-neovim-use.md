@@ -41,43 +41,6 @@ endif
 - All plugins load normally
 - Full CoC functionality is available
 
-### Plugin Categories
-
-#### Disabled in VSCode (Conditionally Loaded)
-
-**LSP and Development Tools:**
-- **coc.nvim**: Conflicts with VSCode's native LSP
-- **vim-syntastic/syntastic**: Conflicts with VSCode's linting
-- **syntastic-local-eslint**: Conflicts with VSCode's ESLint extension
-- **vim-go**: Has LSP features that conflict with VSCode's Go extension
-- **rust.vim / vim-racer**: Rust language support conflicts with VSCode's Rust extension
-- **vim-clang**: C/C++ support conflicts with VSCode's C++ extension
-- **vim-terraform**: Terraform support conflicts with VSCode's Terraform extension
-- **vim-prettier**: Code formatting conflicts with VSCode's Prettier extension
-
-**Syntax Highlighting Plugins:**
-- **vim-javascript**: JavaScript syntax highlighting (VSCode provides native support)
-- **vim-jsx-pretty**: JSX/TSX syntax highlighting (VSCode provides native support)
-- **vim-ruby**: Ruby syntax highlighting (VSCode provides native support)
-- **vim-cpp**: C++ syntax highlighting (VSCode provides native support)
-- **slim-template/vim-slim**: Slim template syntax (VSCode extensions available)
-- **digitaltoad/vim-jade**: Jade template syntax (VSCode extensions available)
-- **plasticboy/vim-markdown**: Markdown syntax (VSCode provides native support)
-- **previm/previm**: Markdown preview (VSCode has built-in preview)
-- **tyru/open-browser.vim**: Browser integration (VSCode has built-in preview)
-- **udalov/kotlin-vim**: Kotlin syntax (VSCode extensions available)
-- **tpope/vim-rails**: Rails-specific features (VSCode extensions available)
-- **jparise/vim-graphql**: GraphQL syntax (VSCode extensions available)
-- **aklt/plantuml-syntax**: PlantUML syntax (VSCode extensions available)
-- **mechatroner/rainbow_csv**: CSV syntax highlighting (VSCode extensions available)
-
-#### Always Active (Compatible)
-- **vim-surround**: Text manipulation commands
-- **vim-endwise**: Auto-completion for code blocks
-- **nerdtree**: File explorer (though VSCode's explorer is preferred)
-- **vim-gitgutter**: Git change indicators
-- **Syntax-only plugins**: vim-javascript, vim-jsx-pretty (syntax highlighting only)
-
 ## Feature Comparison
 
 | Feature | Standalone Neovim | VSCode + Neovim |
