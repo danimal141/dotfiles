@@ -11,7 +11,6 @@ augroup filetypedetect
   au BufRead,BufNewFile *.js setfiletype javascript.jsx
   au BufRead,BufNewFile *.tsx setfiletype typescript.tsx
   au BufRead,BufNewFile *.ts setfiletype typescript.tsx
-  au BufRead,BufNewFile *.coffee setfiletype coffeescript
   au BufRead,BufNewFile *.scss setfiletype scss
   au BufRead,BufNewFile *.py setfiletype python
   au BufRead,BufNewFile *.rs setfiletype rust

@@ -22,7 +22,6 @@ Plug 'simeji/winresizer'
 Plug 'tpope/vim-endwise'
 Plug 'pangloss/vim-javascript', { 'for': ['javascript.jsx'] }
 Plug 'maxmellon/vim-jsx-pretty', { 'for': ['javascript.jsx', 'typescript.tsx'] }
-Plug 'kchmck/vim-coffee-script', { 'for': 'coffeescript' }
 Plug 'vim-ruby/vim-ruby', { 'for': 'ruby' }
 Plug 'vim-jp/vim-cpp', { 'for': 'clang' }
 Plug 'justmao945/vim-clang', { 'for': 'clang' }
