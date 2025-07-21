@@ -10,6 +10,32 @@ if !exists('g:vscode')
   " Extensions: https://github.com/neoclide/coc.nvim#extensions
   Plug 'neoclide/coc.nvim', { 'branch': 'release' }
   Plug 'vim-syntastic/syntastic'
+  Plug 'mtscout6/syntastic-local-eslint.vim'
+  Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries', 'for': 'go' }
+  Plug 'rust-lang/rust.vim', { 'for': 'rust' }
+  Plug 'racer-rust/vim-racer', { 'for': 'rust' }
+  Plug 'justmao945/vim-clang', { 'for': 'clang' }
+  Plug 'hashivim/vim-terraform', { 'for': 'terraform' }
+  Plug 'prettier/vim-prettier', {
+    \ 'do': 'yarn install',
+    \ 'branch': 'release/1.x',
+    \ 'for': ['javascript.jsx', 'typescript.tsx', 'javascript', 'typescript', 'css', 'scss', 'json', 'markdown', 'html', 'yaml']
+  \ }
+  \" Syntax highlighting plugins (redundant in VSCode)
+  Plug 'pangloss/vim-javascript', { 'for': ['javascript.jsx'] }
+  Plug 'maxmellon/vim-jsx-pretty', { 'for': ['javascript.jsx', 'typescript.tsx'] }
+  Plug 'vim-ruby/vim-ruby', { 'for': 'ruby' }
+  Plug 'vim-jp/vim-cpp', { 'for': 'clang' }
+  Plug 'slim-template/vim-slim', { 'for': 'slim' }
+  Plug 'digitaltoad/vim-jade', { 'for': 'jade' }
+  Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
+  Plug 'previm/previm', { 'for': 'markdown' }
+  Plug 'tyru/open-browser.vim', { 'for': 'markdown' }
+  Plug 'udalov/kotlin-vim', { 'for': 'kotlin' }
+  Plug 'tpope/vim-rails', { 'for': 'ruby' }
+  Plug 'jparise/vim-graphql'
+  Plug 'aklt/plantuml-syntax'
+  Plug 'mechatroner/rainbow_csv', { 'for': 'csv' }
 endif
 Plug 'scrooloose/nerdtree'
 Plug 'Shougo/vimproc.vim', { 'do' : 'make' }
@@ -22,30 +48,6 @@ Plug 'szw/vim-tags'
 Plug 'preservim/tagbar'
 Plug 'simeji/winresizer'
 Plug 'tpope/vim-endwise'
-Plug 'pangloss/vim-javascript', { 'for': ['javascript.jsx'] }
-Plug 'maxmellon/vim-jsx-pretty', { 'for': ['javascript.jsx', 'typescript.tsx'] }
-Plug 'vim-ruby/vim-ruby', { 'for': 'ruby' }
-Plug 'vim-jp/vim-cpp', { 'for': 'clang' }
-Plug 'justmao945/vim-clang', { 'for': 'clang' }
-Plug 'slim-template/vim-slim', { 'for': 'slim' }
-Plug 'digitaltoad/vim-jade', { 'for': 'jade' }
-Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries', 'for': 'go' }
-Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
-Plug 'previm/previm', { 'for': 'markdown' }
-Plug 'tyru/open-browser.vim', { 'for': 'markdown' }
-Plug 'rust-lang/rust.vim', { 'for': 'rust' }
-Plug 'racer-rust/vim-racer', { 'for': 'rust' }
-Plug 'mechatroner/rainbow_csv', { 'for': 'csv' }
-Plug 'udalov/kotlin-vim', { 'for': 'kotlin' }
-Plug 'tpope/vim-rails', { 'for': 'ruby' }
-Plug 'hashivim/vim-terraform', { 'for': 'terraform' }
-Plug 'jparise/vim-graphql'
-Plug 'aklt/plantuml-syntax'
-Plug 'prettier/vim-prettier', {
-  \ 'do': 'yarn install',
-  \ 'branch': 'release/1.x',
-  \ 'for': ['javascript.jsx', 'typescript.tsx', 'javascript', 'typescript', 'css', 'scss', 'json', 'markdown', 'html', 'yaml']
-\ }
 " Plug 'github/copilot.vim'
 
 call plug#end() " Initialize plugin system
