@@ -6,11 +6,13 @@ set runtimepath^=~/.vim/
 " - For Neovim: ~/.local/share/nvim/plugged
 " - Avoid using standard Vim directory names like 'plugin'
 call plug#begin('~/.vim/plugged')
-Plug 'neoclide/coc.nvim', { 'branch': 'release' } " Extensions: https://github.com/neoclide/coc.nvim#extensions
+if !exists('g:vscode')
+  " Extensions: https://github.com/neoclide/coc.nvim#extensions
+  Plug 'neoclide/coc.nvim', { 'branch': 'release' }
+  Plug 'vim-syntastic/syntastic'
+endif
 Plug 'scrooloose/nerdtree'
 Plug 'Shougo/vimproc.vim', { 'do' : 'make' }
-Plug 'vim-syntastic/syntastic'
-Plug 'mtscout6/syntastic-local-eslint.vim'
 Plug 'tpope/vim-surround'
 Plug 'alvan/vim-closetag'
 Plug 'rizzatti/dash.vim'
@@ -195,6 +197,23 @@ let g:prettier#config#semi = 'false'
 let g:prettier#config#single_quote = 'true'
 let g:prettier#config#trailing_comma = 'all'
 
+" fuzzy search
+" ripgrep is used if it exists
+
+" memo: How to set ctrl+n and ctrl+p to up or down list
+" https://github.com/neoclide/coc-lists/issues/139
+nnoremap <C-p> :CocList files <CR>
+
+" For US keyboard
+nnoremap ; :
+nnoremap : ;
+
+" im-select
+" when finishing insert mode, automatically swith the keyboard input method
+" depends on `google-japanese-ime` and `im-select`
+autocmd InsertLeave * :silent !im-select com.google.inputmethod.Japanese.Roman
+
+
 " COC
 let g:coc_global_extensions = [
   \ 'coc-yaml',
@@ -218,19 +237,3 @@ let g:coc_global_extensions = [
   \ 'coc-deno',
   \ 'coc-lists'
 \ ]
-
-" fuzzy search
-" ripgrep is used if it exists
-
-" memo: How to set ctrl+n and ctrl+p to up or down list
-" https://github.com/neoclide/coc-lists/issues/139
-nnoremap <C-p> :CocList files <CR>
-
-" For US keyboard
-nnoremap ; :
-nnoremap : ;
-
-" im-select
-" when finishing insert mode, automatically swith the keyboard input method
-" depends on `google-japanese-ime` and `im-select`
-autocmd InsertLeave * :silent !im-select com.google.inputmethod.Japanese.Roman
