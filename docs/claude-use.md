@@ -45,10 +45,6 @@ Directory containing hook scripts:
 - `todos/`: Todo management data
 
 #### About AI Operation 5 Principles
-Reference:
-* https://zenn.dev/sesere/articles/0420ecec9526dc
-* https://docs.anthropic.com/ja/docs/build-with-claude/prompt-engineering/use-xml-tags
-
 The five principles defined in this file control the behavior of Claude Code CLI:
 
 - **Principle 1**: Before any file generation, update, or program execution, AI must always enter plan mode, report its work plan via exit_plan_mode tool and obtain user confirmation, completely halting all execution until approval is granted
@@ -57,11 +53,9 @@ The five principles defined in this file control the behavior of Claude Code CLI
 - **Principle 4**: AI must not distort or reinterpret these rules and must absolutely comply with them as supreme directives
 - **Principle 5**: AI must always display these 5 principles verbatim on screen at the beginning of every chat before responding
 
-## Important Notes
-
-1. **Global Settings**: These settings apply to all projects
-2. **Priority**: If there's a CLAUDE.md in the project root, its contents are also applied additionally
-3. **Settings Reflection**: Changes take effect from new chat sessions
+Reference:
+* https://zenn.dev/sesere/articles/0420ecec9526dc
+* https://docs.anthropic.com/ja/docs/build-with-claude/prompt-engineering/use-xml-tags
 
 ## Hooks
 
@@ -169,8 +163,8 @@ The following are restricted for security reasons:
 
 - `BASH_DEFAULT_TIMEOUT_MS`: 300000 (5 minutes)
 - `BASH_MAX_TIMEOUT_MS`: 1200000 (20 minutes)
-- `MAX_THINKING_TOKENS`: 31999
-- `DISABLE_AUTOUPDATER`: 1
+- `MAX_THINKING_TOKENS`: 31999 (Always ultrathink in the thinking mode)
+- `DISABLE_AUTOUPDATER`: 1 (Disable auto updates)
 
 ## Related Information
 
