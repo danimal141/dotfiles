@@ -1,3 +1,4 @@
+1yib.rust-bundle
 anthropic.claude-code
 asvetliakov.vscode-neovim
 bbenoist.shell
@@ -9,6 +10,7 @@ dart-code.flutter
 dbaeumer.vscode-eslint
 denoland.vscode-deno
 dsznajder.es7-react-js-snippets
+dustypomerleau.rust-syntax
 eamodio.gitlens
 ecmel.vscode-html-css
 esbenp.prettier-vscode
@@ -51,7 +53,9 @@ msjsdiag.vscode-react-native
 mylesmurphy.prettify-ts
 redhat.vscode-yaml
 rooveterinaryinc.roo-cline
+rust-lang.rust-analyzer
 saoudrizwan.claude-dev
+serayuzgur.crates
 shopify.ruby-extensions-pack
 shopify.ruby-lsp
 sianglim.slim
