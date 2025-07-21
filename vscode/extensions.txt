@@ -24,6 +24,7 @@ koichisasada.vscode-rdbg
 marp-team.marp-vscode
 mechatroner.rainbow-csv
 mosapride.zenkaku
+mquandalle.graphql
 ms-azuretools.vscode-containers
 ms-azuretools.vscode-docker
 ms-kubernetes-tools.vscode-kubernetes-tools
