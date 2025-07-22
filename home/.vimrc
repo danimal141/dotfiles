@@ -10,13 +10,13 @@ call plug#begin('~/.vim/plugged')
 Plug 'Shougo/vimproc.vim', { 'do' : 'make' }
 Plug 'tpope/vim-surround'
 Plug 'alvan/vim-closetag'
-Plug 'rizzatti/dash.vim'
 Plug 'rking/ag.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'szw/vim-tags'
 Plug 'preservim/tagbar'
 Plug 'simeji/winresizer'
 Plug 'tpope/vim-endwise'
+" Plug 'rizzatti/dash.vim'
 " Plug 'github/copilot.vim'
 
 if !exists('g:vscode')
