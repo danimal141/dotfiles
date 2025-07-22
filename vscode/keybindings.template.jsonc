@@ -1,7 +1,7 @@
 [
   // toggle maximized panel when focusing terminal
   {
-    "key": "cmd+shift+m",
+    "key": "cmd+shift+l",
     "command": "workbench.action.toggleMaximizedPanel",
     "when": "terminalFocus"
   },
