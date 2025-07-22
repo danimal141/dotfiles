@@ -237,7 +237,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "terminal-notifier -sender com.apple.Terminal -title 'hideaki.ishii' -subtitle 'claude code' -message 'タスク完了です'"
+            "command": "terminal-notifier -sender com.apple.Terminal -title 'Claude Code' -message 'タスク完了です'"
           }
         ]
       }
@@ -248,7 +248,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "terminal-notifier -sender com.apple.Terminal -title 'hideaki.ishii' -subtitle 'claude code' -message 'ユーザ確認待ちです'"
+            "command": "terminal-notifier -sender com.apple.Terminal -title 'Claude Code' -message 'ユーザ確認待ちです'"
           }
         ]
       }
