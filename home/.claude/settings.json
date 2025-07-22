@@ -230,6 +230,28 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "terminal-notifier -sender com.apple.Terminal -title 'hideaki.ishii' -subtitle 'claude code' -message 'タスク完了です'"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "terminal-notifier -sender com.apple.Terminal -title 'hideaki.ishii' -subtitle 'claude code' -message 'ユーザ確認待ちです'"
+          }
+        ]
+      }
     ]
   }
 }
