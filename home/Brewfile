@@ -75,6 +75,8 @@ brew 'azure-cli'
 brew 'graphviz'
 brew 'libpq'
 brew 'repomix'
+brew 'pandoc'
+brew 'basictex'
 
 # https://github.com/universal-ctags/homebrew-universal-ctags
 # brew install --HEAD universal-ctags/universal-ctags/universal-ctags
