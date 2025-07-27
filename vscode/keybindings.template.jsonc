@@ -15,5 +15,18 @@
     "key": "cmd+shift+c",
     "command": "workbench.files.action.collapseExplorerFolders",
     "when": "explorerViewletVisible"
+  },
+  // https://zenn.dev/tanktabox/scraps/ae455ec69100fc
+  {
+    "command": "vscode-neovim.compositeEscape1",
+    "key": "j",
+    "when": "neovim.mode == insert && editorTextFocus",
+    "args": "j"
+  },
+  {
+    "command": "vscode-neovim.compositeEscape2",
+    "key": "k",
+    "when": "neovim.mode == insert && editorTextFocus",
+    "args": "k"
   }
 ]

@@ -20,6 +20,7 @@
   "editor.wordWrap": "on",
   "editor.wordBasedSuggestions": true,
   "editor.defaultFormatter": null,
+  "editor.editContext": false, // https://qiita.com/sigma_devsecops/items/bf6f9412795ce6959c2f
 
   // Workbench - UI
   "workbench.colorTheme": "Solarized Dark",
