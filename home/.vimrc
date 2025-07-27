@@ -204,10 +204,6 @@ let g:prettier#config#trailing_comma = 'all'
 " fuzzy search
 " ripgrep is used if it exists
 
-" memo: How to set ctrl+n and ctrl+p to up or down list
-" https://github.com/neoclide/coc-lists/issues/139
-nnoremap <C-p> :CocList files <CR>
-
 " For US keyboard
 nnoremap ; :
 nnoremap : ;
@@ -244,3 +240,7 @@ let g:coc_global_extensions = [
   \ 'coc-deno',
   \ 'coc-lists'
 \ ]
+
+" memo: How to set ctrl+n and ctrl+p to up or down list
+" https://github.com/neoclide/coc-lists/issues/139
+nnoremap <C-p> :CocList files <CR>
