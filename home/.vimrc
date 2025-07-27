@@ -5,8 +5,8 @@ set runtimepath^=~/.vim/
 " Specify a directory for plugins
 " - For Neovim: ~/.local/share/nvim/plugged
 " - Avoid using standard Vim directory names like 'plugin'
-call plug#begin('~/.vim/plugged')
 
+call plug#begin('~/.vim/plugged')
 Plug 'Shougo/vimproc.vim', { 'do' : 'make' }
 Plug 'tpope/vim-surround'
 Plug 'alvan/vim-closetag'
@@ -16,7 +16,6 @@ Plug 'szw/vim-tags'
 Plug 'preservim/tagbar'
 Plug 'simeji/winresizer'
 Plug 'tpope/vim-endwise'
-" Plug 'rizzatti/dash.vim'
 " Plug 'github/copilot.vim'
 
 if !exists('g:vscode')
@@ -51,14 +50,14 @@ if !exists('g:vscode')
   Plug 'aklt/plantuml-syntax'
   Plug 'mechatroner/rainbow_csv', { 'for': 'csv' }
 endif
-
 call plug#end() " Initialize plugin system
 
 " Colorscheme and syntax
 " Refer to https://github.com/altercation/vim-colors-solarized/blob/master/README.mkd
 let g:solarized_termtrans=1
 
-filetype plugin indent on " Automatically detect file types.
+" Automatically detect file types.
+filetype plugin indent on
 
 " Use new regular expression engine
 " https://jameschambers.co.uk/vim-typescript-slow
@@ -79,13 +78,6 @@ set nobackup
 set noswapfile
 set noreadonly
 set modifiable
-
-" For nvim
-if !has('nvim')
-  set ttymouse=xterm2
-endif
-
-" Indent, Tab, Space
 set tabstop=2
 set shiftwidth=2
 set expandtab
@@ -93,8 +85,9 @@ set autoindent
 set smartindent
 set backspace=indent,eol,start
 
-" set cursorcolumn
-" highlight CursorColumn cterm=NONE ctermbg=242
+if !has('nvim')
+  set ttymouse=xterm2
+endif
 
 " Complementation
 " Brackets
@@ -108,12 +101,6 @@ inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
 " https://note.com/yasukotelin/n/na87dc604e042
 set showmatch
 set completeopt=menuone,noinsert
-
-" it conflicts with vim-endwise...
-" https://github.com/tpope/vim-endwise/issues/22#issuecomment-554685904
-" let g:endwise_no_mappings = v:true
-" inoremap <expr> <Plug>CustomCocCR pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-" imap <CR> <Plug>CustomCocCR<Plug>DiscretionaryEnd
 
 " HighlitTrailingSpaces
 augroup HighlightTrailingSpaces
@@ -142,8 +129,6 @@ endif
 set backupskip+=/home/tmp/*,/private/tmp/*
 
 " nerdtree:
-" Open nerdtree automatically
-" autocmd vimenter * if !argc() | NERDTree | endif
 " Display hidden file
 let g:NERDTreeShowHidden = 1
 " Display nerdtree when opening a new tab
@@ -167,22 +152,12 @@ let g:vim_tags_main_file = '.tags'
 " default: width=40
 let g:tagbar_width = 30
 let g:tagbar_autoshowtag = 1
-" nnoremap <silent> <Leader>t :<C-u>TagbarToggle<CR>
 nnoremap <silent> tt :TagbarToggle<CR>
 set statusline=%F%m%r%h%w\%=%{tagbar#currenttag('[%s]','')}\[Pos=%v,%l]\[Len=%L]
 
 " closetag.vim
-" filenames like *.xml, *.html, *.xhtml, ...
-" These are the file extensions where this plugin is enabled.
 let g:closetag_filenames = '*.html,*.xhtml,*.jsx,*.tsx'
-" filenames like *.xml, *.xhtml, ...
-" This will make the list of non-closing tags self-closing in the specified files.
-" let g:closetag_xhtml_filenames = '*.xhtml,*.jsx'
-" integer value [0|1]
-" This will make the list of non-closing tags case-sensitive (e.g. `<Link>` will be closed while `<link>` won't.)
 let g:closetag_emptyTags_caseSensitive = 1
-" dict
-" Disables auto-close if not in a "valid" region (based on filetype)
 let g:closetag_regions = {
   \ 'typescript.tsx': 'jsxRegion,tsxRegion',
   \ 'javascript.jsx': 'jsxRegion',
@@ -200,9 +175,6 @@ let g:winresizer_horiz_resize = 2
 let g:prettier#config#semi = 'false'
 let g:prettier#config#single_quote = 'true'
 let g:prettier#config#trailing_comma = 'all'
-
-" fuzzy search
-" ripgrep is used if it exists
 
 " For US keyboard
 nnoremap ; :
@@ -241,6 +213,6 @@ let g:coc_global_extensions = [
   \ 'coc-lists'
 \ ]
 
-" memo: How to set ctrl+n and ctrl+p to up or down list
+" How to set ctrl+n and ctrl+p to up or down list
 " https://github.com/neoclide/coc-lists/issues/139
 nnoremap <C-p> :CocList files <CR>
