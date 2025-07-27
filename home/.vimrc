@@ -215,7 +215,11 @@ nnoremap : ;
 " im-select
 " when finishing insert mode, automatically swith the keyboard input method
 " depends on `google-japanese-ime` and `im-select`
-autocmd InsertLeave * :silent !im-select com.google.inputmethod.Japanese.Roman
+let g:im_select_default = 'com.google.inputmethod.Japanese.Roman'
+if executable('im-select')
+  autocmd InsertLeave * :call system('im-select com.google.inputmethod.Japanese.Roman')
+  autocmd CmdlineLeave * :call system('im-select com.google.inputmethod.Japanese.Roman')
+endif
 
 " COC
 let g:coc_global_extensions = [
