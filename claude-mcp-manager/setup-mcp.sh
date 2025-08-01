@@ -75,6 +75,10 @@ print_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
+print_skip() {
+    echo -e "${YELLOW}[SKIP]${NC} $1"
+}
+
 # Check if required files exist
 if [[ ! -f "$MCP_CONFIG" ]]; then
     print_error "MCP configuration file not found: $MCP_CONFIG"
@@ -113,6 +117,15 @@ fi
 print_info "Found $server_count server(s) to configure"
 print_info "Installing with scope: $SCOPE"
 
+# Get list of existing MCP servers
+print_info "Checking for existing MCP servers..."
+existing_servers=$(claude mcp list 2>/dev/null | grep ': ' | cut -d':' -f1 || echo "")
+
+# Debug: Print existing servers
+if [[ -n "$existing_servers" ]]; then
+    print_info "Detected existing servers: $(echo "$existing_servers" | tr '\n' ', ' | sed 's/, $//')"
+fi
+
 # Process each server
 for ((i=0; i<$server_count; i++)); do
     # Get server name (key)
@@ -121,6 +134,12 @@ for ((i=0; i<$server_count; i++)); do
     # Get server configuration
     command=$(yq eval ".servers.$server_name.command" "$MCP_CONFIG")
     args=$(yq eval ".servers.$server_name.args[]" "$MCP_CONFIG" | tr '\n' ' ')
+
+    # Check if server already exists
+    if echo "$existing_servers" | grep -q "^${server_name}$"; then
+        print_skip "$server_name already exists"
+        continue
+    fi
 
     print_info "Adding MCP server: $server_name"
 

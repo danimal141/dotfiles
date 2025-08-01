@@ -44,3 +44,11 @@ servers:
       - "awslabs.aws-documentation-mcp-server@latest"
     env:
       FASTMCP_LOG_LEVEL: ERROR
+  serena:
+    command: uvx
+    args:
+      - "--from"
+      - "git+https://github.com/oraios/serena"
+      - "serena"
+      - "start-mcp-server"
+    env: {}
