@@ -125,9 +125,6 @@ else
   set clipboard=unnamed,autoselect
 endif
 
-" Cron
-set backupskip+=/home/tmp/*,/private/tmp/*
-
 " nerdtree:
 " Display hidden file
 let g:NERDTreeShowHidden = 1
