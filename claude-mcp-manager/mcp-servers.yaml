@@ -15,21 +15,21 @@ servers:
       - "-y"
       - "@playwright/mcp@latest"
     env: {}
-  gemini-google-search:
-    command: npx
-    args:
-      - "-y"
-      - "mcp-gemini-google-search"
-    env:
-      GEMINI_API_KEY: ${GEMINI_API_KEY}
-      GEMINI_MODEL: gemini-2.5-flash
-  github:
-    command: npx
-    args:
-      - "-y"
-      - "@modelcontextprotocol/server-github"
-    env:
-      GITHUB_PERSONAL_ACCESS_TOKEN: ${GITHUB_PERSONAL_ACCESS_TOKEN}
+  #  gemini-google-search:
+  #    command: npx
+  #    args:
+  #      - "-y"
+  #      - "mcp-gemini-google-search"
+  #    env:
+  #      GEMINI_API_KEY: ${GEMINI_API_KEY}
+  #      GEMINI_MODEL: gemini-2.5-flash
+  #  github:
+  #    command: npx
+  #    args:
+  #      - "-y"
+  #      - "@modelcontextprotocol/server-github"
+  #    env:
+  #      GITHUB_PERSONAL_ACCESS_TOKEN: ${GITHUB_PERSONAL_ACCESS_TOKEN}
   terraform:
     command: docker
     args:
