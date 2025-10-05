@@ -2,7 +2,7 @@ home/.vim/plugged/*
 home/.vim/.netrwhist
 home/.vim/sessions/*
 
-# Claude configuration - ignore everything except CLAUDE.md
+# Claude configuration
 /.claude/*
 home/.claude/*
 !home/.claude/CLAUDE.md
@@ -18,3 +18,8 @@ home/.claude/*
 # VSCode settings backup
 home/vscode/settings.bak.json
 
+# Codex configuration
+home/.codex/*
+!home/.codex/config.toml.template
+!home/.codex/.env.example
+!home/.codex/apply-config.sh

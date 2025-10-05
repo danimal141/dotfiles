@@ -1,0 +1,40 @@
+model = "gpt-5-codex"
+model_reasoning_effort = "high"
+hide_agent_reasoning = true
+network_access = true
+
+notify = ["bash", "-lc", "afplay /System/Library/Sounds/Ping.aiff"]
+
+[tools]
+web_search = true
+
+[mcp_servers.aws-documentation]
+command = "uvx"
+args = ["awslabs.aws-documentation-mcp-server@latest"]
+
+[mcp_servers.aws-documentation.env]
+FASTMCP_LOG_LEVEL = "ERROR"
+
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "@upstash/context7-mcp"]
+
+[mcp_servers.gemini-google-search]
+command = "npx"
+args = ["-y", "mcp-gemini-google-search"]
+
+[mcp_servers.gemini-google-search.env]
+GEMINI_API_KEY = "${GEMINI_API_KEY}"
+GEMINI_MODEL = "gemini-2.5-flash"
+
+[mcp_servers.playwright]
+command = "npx"
+args = ["-y", "@playwright/mcp@latest"]
+
+[mcp_servers.serena]
+command = "uvx"
+args = ["--from", "git+https://github.com/oraios/serena", "serena", "start-mcp-server", "--context", "ide-assistant"]
+
+[mcp_servers.terraform]
+command = "docker"
+args = ["run", "-i", "--rm", "hashicorp/terraform-mcp-server"]

@@ -26,6 +26,11 @@ brew bundle --file=home/Brewfile
 # Setup MCP servers for Claude
 cd claude-mcp-manager && ./setup-mcp.sh
 
+# Setup Codex configuration
+cd home/.codex && cp .env.example .env
+# Edit .env to add your API keys, then:
+cd home/.codex && ./apply-config.sh
+
 # Setup VSCode with extensions and settings
 cd vscode && ./apply-settings.sh && ./sync-extensions.sh
 ```
@@ -49,6 +54,9 @@ cd vscode && ./apply-settings.sh
 
 # Update Claude MCP server configurations
 cd claude-mcp-manager && ./setup-mcp.sh
+
+# Update Codex configuration
+cd home/.codex && ./apply-config.sh
 ```
 
 ### Common Development Commands
@@ -69,12 +77,14 @@ The repository follows homesick conventions:
 - `home/` - Contains all dotfiles that will be symlinked to ~/
 - `home/.config/` - XDG config directory (marked as subdir in .homesick_subdir)
 - `home/.claude/` - Claude Code CLI configuration directory with user settings and commands
+- `home/.codex/` - Codex CLI configuration directory with template-based config management
 - `.homesick_subdir` - Declares `.config` as a subdirectory for proper symlinking
 - `setup.sh` - Main setup script that installs dependencies and links dotfiles
 - `_asdf.sh` - Installs programming languages using asdf version manager
 - `tmux-migrate-options.py` - Utility to migrate deprecated tmux options
 - `docs/` - Documentation directory with user guides
 - `vscode/` - VSCode configuration management tools
+- `claude-mcp-manager/` - Tool for managing Claude Code CLI's MCP servers
 
 Key configurations:
 
@@ -129,6 +139,17 @@ Key configurations:
   - `shell-snapshots/` - Saved shell state snapshots
   - `statsig/` - Analytics and statistics data
   - `todos/` - Task management data (77+ saved todo lists)
+
+### Codex Configuration
+
+- `home/.codex/` - Codex CLI configuration directory with template-based management:
+  - `config.toml.template` - Configuration template (Git-managed)
+  - `config.toml` - Generated configuration file (gitignored)
+  - `.env.example` - Environment variables template (Git-managed)
+  - `.env` - Actual environment variables with API keys (gitignored)
+  - `apply-config.sh` - Script to generate config.toml from template
+  - Setup: Copy `.env.example` to `.env`, add your API keys, then run `./apply-config.sh`
+  - This approach keeps sensitive API keys out of Git while managing MCP server configurations
 
 ### VSCode Management
 
