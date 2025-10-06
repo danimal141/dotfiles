@@ -24,7 +24,7 @@ brew bundle --file=home/Brewfile
 ./_asdf.sh
 
 # Setup MCP servers for Claude
-cd claude-mcp-manager && ./setup-mcp.sh
+cd home/.claude && ./setup-mcp.sh
 
 # Setup Codex configuration
 cd home/.codex && cp .env.example .env
@@ -53,7 +53,7 @@ cd vscode && ./sync-extensions.sh
 cd vscode && ./apply-settings.sh
 
 # Update Claude MCP server configurations
-cd claude-mcp-manager && ./setup-mcp.sh
+cd home/.claude && ./setup-mcp.sh
 
 # Update Codex configuration
 cd home/.codex && ./apply-config.sh
@@ -84,7 +84,6 @@ The repository follows homesick conventions:
 - `tmux-migrate-options.py` - Utility to migrate deprecated tmux options
 - `docs/` - Documentation directory with user guides
 - `vscode/` - VSCode configuration management tools
-- `claude-mcp-manager/` - Tool for managing Claude Code CLI's MCP servers
 
 Key configurations:
 
@@ -119,14 +118,6 @@ Key configurations:
 - asdf manages multiple language versions (Ruby, Node.js, Python, Go, Rust, Deno, Terraform, kubectl, AWS CLI)
 - Languages are installed globally to latest version by default
 
-### Claude MCP Manager
-
-- `claude-mcp-manager/` - Tool for managing Claude Code CLI's MCP (Model Context Protocol) servers
-- `mcp-servers.yaml` - MCP server configurations (Git-managed)
-- `setup-mcp.sh` - Script to apply MCP configurations
-- Setup: `cd claude-mcp-manager && ./setup-mcp.sh`
-- Manages MCP servers for Claude Code CLI with environment variable support
-
 ### Claude Configuration
 
 - `home/.claude/` - Claude Code CLI configuration directory containing:
@@ -134,6 +125,9 @@ Key configurations:
   - `settings.json` - Claude CLI settings and preferences
   - `commands/` - Custom slash commands for Claude
   - `hooks/` - Shell hooks for Claude operations
+  - `mcp-servers.yaml` - MCP server configurations (Git-managed)
+  - `.env.example` - Environment variables template for MCP servers
+  - `setup-mcp.sh` - Script to apply MCP configurations
   - `ide/` - IDE-specific configurations
   - `projects/` - Project-specific Claude configurations
   - `shell-snapshots/` - Saved shell state snapshots
@@ -163,6 +157,6 @@ Key configurations:
 ### Documentation
 
 - `docs/` - Comprehensive documentation:
-  - `claude-mcp-manager.md` - Claude MCP Manager usage guide
+  - `claude-mcp-manager-use.md` - Claude MCP Manager usage guide
   - `claude-use.md` - Claude usage patterns and best practices
   - `vscode.md` - VSCode configuration and workflow documentation
