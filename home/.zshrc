@@ -164,3 +164,11 @@ export PATH="$(brew --prefix libpq)/bin:$PATH"
 # https://www.broddin.be/fixing-the-chromium-binary-is-not-available-for-arm64/
 export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 export PUPPETEER_EXECUTABLE_PATH=`which chromium`
+
+# pnpm
+export PNPM_HOME="/Users/danimal141/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
