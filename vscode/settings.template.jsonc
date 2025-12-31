@@ -33,6 +33,7 @@
   // Terminal
   "terminal.integrated.fontSize": 11,
   "terminal.integrated.cwd": "${workspaceFolder}",
+  "terminal.integrated.suggest.enabled": false,
 
   // Files
   "files.insertFinalNewline": true,
