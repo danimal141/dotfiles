@@ -24,11 +24,24 @@ path=(
   $path
 )
 
-# complementation
+# -------------------------------------
+# completion settings
+# -------------------------------------n
 autoload -U compinit
 compinit -u
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
+zstyle ':completion:*' use-cache yes
+zstyle ':completion:*' cache-path ~/.zsh/cache
 
-unsetopt auto_menu
+# -------------------------------------
+# plugins (via Homebrew)
+# -------------------------------------
+source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 setopt auto_pushd
 setopt auto_cd
