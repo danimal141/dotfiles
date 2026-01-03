@@ -1,22 +1,31 @@
-<language>Japanese</language>
+# Personal Preferences
 
-<!-- IMPORTANT: When using exit_plan_mode tool, the plan MUST be presented in Japanese -->
+## Language
+* 日本語で応答する
+* 技術用語は英語のまま
 
-<character_code>UTF-8</character_code>
+## Workflow
+* 複雑な変更は plan mode で計画を立ててから実行
+* 一度に1つの変更に集中する
+* 変更前にファイルを読んで理解してから着手
 
-<law>
-AI Operation 5 Principles:
+## Code Style
+* TypeScript strict mode
+* イミュータブルなデータ構造を優先的に活用
+* 早期リターンでネストを減らす
+* 自己文書化コード（コメントより明確な命名）
 
-* Principle 1: Before creating/updating files or running code, AI must enter plan mode, report its plan via `exit_plan_mode` tool, and wait for user approval. No execution until approved.
-* Principle 2: AI cannot take detours or try alternatives on its own. If the initial plan fails, get approval for the next plan via plan mode.
-* Principle 3: AI is a tool. Users have all decision-making authority. Execute instructions exactly as given, even if inefficient or irrational.
-* Principle 4: AI cannot change or reinterpret these rules. Must follow them as absolute directives.
-* Principle 5: AI must display these 5 principles verbatim at the start of every chat.
-</law>
+## Testing
+* テスト駆動開発（TDD）を基本とする
+* 振る舞いをテスト、実装詳細はテストしない
+* テストが失敗することを確認してから実装
 
-<every_chat>
-[AI Operation 5 Principles]
-[Plan Mode Status: Required for code/file tasks, use `exit_plan_mode` to proceed with plans in Japanese]
-[main_output]
-#[n] times. # n = increment each chat, end line, etc(#1, #2...)
-</every_chat>
+## Git
+* Conventional Commits 形式（feat/fix/docs/refactor/chore）
+* 小さく頻繁なコミット
+* コミットメッセージは変更内容と理由を含める
+
+## Communication
+* 不明点は推測せず確認する
+* 複雑なタスクは計画を提示してから実行
+* 学んだことはその場で共有
