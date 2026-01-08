@@ -1,9 +1,5 @@
 # Personal Preferences
 
-## Language
-* 日本語で応答する
-* 技術用語は英語のまま
-
 ## Workflow
 * 複雑な変更は plan mode で計画を立ててから実行
 * 一度に1つの変更に集中する
