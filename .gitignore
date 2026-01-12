@@ -9,6 +9,8 @@ home/.claude/*
 !home/.claude/settings.json
 !home/.claude/commands/
 !home/.claude/hooks/
+!home/.claude/rules/
+!home/.claude/skills/
 !home/.claude/mcp-servers.yaml
 !home/.claude/.env.example
 !home/.claude/setup-mcp.sh

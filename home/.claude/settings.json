@@ -5,7 +5,6 @@
     "MAX_THINKING_TOKENS": "31999",
     "DISABLE_AUTOUPDATER": "1"
   },
-  "language": "japanese",
   "permissions": {
     "allow": [
       "Bash(ls:*)",
@@ -254,5 +253,7 @@
       }
     ]
   },
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": true,
+  "language": "japanese",
+  "model": "opus"
 }
