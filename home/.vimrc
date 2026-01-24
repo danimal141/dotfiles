@@ -42,8 +42,8 @@ if !exists('g:vscode')
   Plug 'slim-template/vim-slim', { 'for': 'slim' }
   Plug 'digitaltoad/vim-jade', { 'for': 'jade' }
   Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
-  Plug 'previm/previm', { 'for': 'markdown' }
-  Plug 'tyru/open-browser.vim', { 'for': 'markdown' }
+  Plug 'previm/previm'
+  Plug 'tyru/open-browser.vim'
   Plug 'udalov/kotlin-vim', { 'for': 'kotlin' }
   Plug 'tpope/vim-rails', { 'for': 'ruby' }
   Plug 'jparise/vim-graphql'
