@@ -1,0 +1,24 @@
+# テーマ
+theme = tokyonight
+
+# フォント
+font-family = "Source Code Pro"
+font-size = 12
+
+# 背景
+background-opacity = 0.9
+background-blur-radius = 20
+
+# ウィンドウ内のパディング
+window-padding-x = 4
+window-padding-y = 4
+
+# paddingを自動でバランス良く調整
+window-padding-balance = true
+
+# ウィンドウ状態を保存（終了時のサイズや位置を記憶）
+window-save-state = always
+
+# 新しいウィンドウのサイズ
+window-width = 120
+window-height = 40
