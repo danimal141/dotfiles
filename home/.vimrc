@@ -34,7 +34,7 @@ if !exists('g:vscode')
     \ 'branch': 'release/1.x',
     \ 'for': ['javascript.jsx', 'typescript.tsx', 'javascript', 'typescript', 'css', 'scss', 'json', 'markdown', 'html', 'yaml']
   \ }
-  \" Syntax highlighting plugins (redundant in VSCode)
+  " Syntax highlighting plugins (redundant in VSCode)
   Plug 'pangloss/vim-javascript', { 'for': ['javascript.jsx'] }
   Plug 'maxmellon/vim-jsx-pretty', { 'for': ['javascript.jsx', 'typescript.tsx'] }
   Plug 'vim-ruby/vim-ruby', { 'for': 'ruby' }
@@ -80,7 +80,6 @@ set noswapfile
 set eol
 set ttyfast
 set nobackup
-set noswapfile
 set noreadonly
 set modifiable
 set tabstop=2
@@ -104,7 +103,6 @@ inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
 
 " Behaves like IDE
 " https://note.com/yasukotelin/n/na87dc604e042
-set showmatch
 set completeopt=menuone,noinsert
 
 " HighlitTrailingSpaces
@@ -140,8 +138,9 @@ let g:nerdtree_tabs_open_on_new_tab=1
 " Also should setup:
 " https://github.com/tpope/gem-ctags
 " https://github.com/tpope/rbenv-ctags
-let g:vim_tags_project_tags_command = "/usr/local/bin/ctags -R {OPTIONS} {DIRECTORY} 2>/dev/null"
-let g:vim_tags_gems_tags_command = "/usr/local/bin/ctags -R {OPTIONS} `bundle show --paths` 2>/dev/null"
+let s:ctags_path = executable('/opt/homebrew/bin/ctags') ? '/opt/homebrew/bin/ctags' : '/usr/local/bin/ctags'
+let g:vim_tags_project_tags_command = s:ctags_path . " -R {OPTIONS} {DIRECTORY} 2>/dev/null"
+let g:vim_tags_gems_tags_command = s:ctags_path . " -R {OPTIONS} `bundle show --paths` 2>/dev/null"
 
 " universal-ctags
 " Reference: https://qiita.com/aratana_tamutomo/items/59fb4c377863a385e032
@@ -202,7 +201,7 @@ let g:coc_global_extensions = [
   \ 'coc-tsserver',
   \ 'coc-solargraph',
   \ 'coc-jedi',
-  \ 'coc-rls',
+  \ 'coc-rust-analyzer',
   \ 'coc-go',
   \ 'coc-css',
   \ 'coc-vetur',
