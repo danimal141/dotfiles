@@ -10,7 +10,7 @@ call plug#begin('~/.vim/plugged')
 Plug 'Shougo/vimproc.vim', { 'do' : 'make' }
 Plug 'tpope/vim-surround'
 Plug 'alvan/vim-closetag'
-Plug 'rking/ag.vim'
+Plug 'jremmen/vim-ripgrep'
 Plug 'airblade/vim-gitgutter'
 Plug 'szw/vim-tags'
 Plug 'preservim/tagbar'
