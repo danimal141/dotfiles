@@ -40,7 +40,6 @@ if !exists('g:vscode')
   Plug 'vim-ruby/vim-ruby', { 'for': 'ruby' }
   Plug 'vim-jp/vim-cpp', { 'for': 'clang' }
   Plug 'slim-template/vim-slim', { 'for': 'slim' }
-  Plug 'digitaltoad/vim-jade', { 'for': 'jade' }
   Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
   Plug 'previm/previm'
   Plug 'tyru/open-browser.vim'
@@ -49,6 +48,12 @@ if !exists('g:vscode')
   Plug 'jparise/vim-graphql'
   Plug 'aklt/plantuml-syntax'
   Plug 'mechatroner/rainbow_csv', { 'for': 'csv' }
+
+  " telescope.nvim (Neovim only)
+  if has('nvim')
+    Plug 'nvim-lua/plenary.nvim'
+    Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.8' }
+  endif
 endif
 call plug#end() " Initialize plugin system
 
@@ -211,5 +216,8 @@ let g:coc_global_extensions = [
 \ ]
 
 " How to set ctrl+n and ctrl+p to up or down list
-" https://github.com/neoclide/coc-lists/issues/139
-nnoremap <C-p> :CocList files <CR>
+
+" Neovim uses Telescope (configured in lua/telescope-config.lua)
+if !has('nvim')
+  nnoremap <C-p> :CocList files <CR>
+endif
