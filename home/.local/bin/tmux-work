@@ -1,0 +1,105 @@
+#!/bin/bash
+# tmux-work: 開発用tmuxセッションを起動
+#
+# 使い方:
+#   tmux-work [ディレクトリ]      # 単一ディレクトリでセッション作成
+#   tmux-work                     # ~/.tmux_work_dir から一括起動
+#
+# 設定ファイル（引数なしの場合）:
+#   ~/.tmux_work_dir - 1行に1ディレクトリを記述
+#   コメント行（#で始まる）と空行は無視されます
+#   グロブパターン対応: ~/dev/* で dev配下の全ディレクトリが対象
+
+set -e
+
+CONFIG_FILE="$HOME/.tmux_work_dir"
+
+# セッション作成関数
+create_session() {
+  local dir="$1"
+  local session_name
+  session_name=$(basename "$dir")
+
+  # 既存セッションがあればスキップ
+  if tmux has-session -t "$session_name" 2>/dev/null; then
+    echo "Session '$session_name' already exists"
+    return 0
+  fi
+
+  # 新規セッション作成
+  tmux new-session -d -s "$session_name" -c "$dir" -n "editor"
+  tmux send-keys -t "$session_name:editor" "nvim" Enter
+
+  tmux new-window -t "$session_name" -n "terminal" -c "$dir"
+  tmux new-window -t "$session_name" -n "server" -c "$dir"
+
+  tmux select-window -t "$session_name:editor"
+  echo "Created session '$session_name'"
+}
+
+# 単一ディレクトリモード
+if [ $# -ge 1 ]; then
+  dir=$(cd "$1" && pwd)
+  session_name=$(basename "$dir")
+
+  # 既存セッションがあればアタッチ
+  if tmux has-session -t "$session_name" 2>/dev/null; then
+    tmux attach -t "$session_name"
+    exit 0
+  fi
+
+  create_session "$dir"
+  tmux attach -t "$session_name"
+  exit 0
+fi
+
+# 設定ファイルモード
+if [ ! -f "$CONFIG_FILE" ]; then
+  echo "Error: $CONFIG_FILE not found"
+  echo "Create it from ~/.tmux_work_dir.sample"
+  echo ""
+  echo "Or specify a directory: tmux-work ~/projects/myapp"
+  exit 1
+fi
+
+first_session=""
+
+while IFS= read -r line || [ -n "$line" ]; do
+  # 空行とコメント行をスキップ
+  [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
+
+  # ~ を展開
+  pattern="${line/#\~/$HOME}"
+
+  # グロブ展開（マッチしなければ空配列）
+  shopt -s nullglob
+  eval "dirs=($pattern)"
+  shopt -u nullglob
+
+  # 展開結果がなければスキップ
+  if [ ${#dirs[@]} -eq 0 ]; then
+    echo "Warning: No match for pattern: $line"
+    continue
+  fi
+
+  for dir in "${dirs[@]}"; do
+    # ディレクトリのみ対象
+    [ ! -d "$dir" ] && continue
+
+    create_session "$dir"
+
+    # 最初のセッション名を記録
+    if [ -z "$first_session" ]; then
+      first_session=$(basename "$dir")
+    fi
+  done
+done < "$CONFIG_FILE"
+
+# 最初のセッションにアタッチ
+if [ -n "$first_session" ]; then
+  echo ""
+  echo "Attaching to first session: $first_session"
+  tmux attach -t "$first_session"
+else
+  echo "No sessions created"
+fi
