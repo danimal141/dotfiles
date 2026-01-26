@@ -117,4 +117,5 @@ cask 'gcloud'
 cask 'ghostty'
 
 cask 'font-source-han-code-jp'
+cask 'font-jetbrains-mono'
 cask 'font-source-code-pro'
