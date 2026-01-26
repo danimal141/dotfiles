@@ -2,8 +2,11 @@
 theme = tokyonight
 
 # フォント
-font-family = "Source Code Pro"
-font-size = 12
+# 英数字やASCII文字 → JetBrains Mono
+# 日本語など、JetBrains Monoにない文字 → Source Han Code JP
+font-family = JetBrains Mono
+font-family = Source Han Code JP
+font-size = 11
 
 # 背景
 background-opacity = 0.9
