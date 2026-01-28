@@ -40,6 +40,9 @@ zstyle ':completion:*' cache-path ~/.zsh/cache
 # -------------------------------------
 # plugins (via Homebrew)
 # -------------------------------------
+# autosuggestions style (must be set before sourcing)
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#565f89'
+
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
