@@ -218,6 +218,7 @@
       "Read(**/.env*)"
     ]
   },
+  "model": "opus",
   "hooks": {
     "PostToolUse": [
       {
@@ -253,7 +254,6 @@
       }
     ]
   },
-  "alwaysThinkingEnabled": true,
   "language": "japanese",
-  "model": "opus"
+  "alwaysThinkingEnabled": true
 }
