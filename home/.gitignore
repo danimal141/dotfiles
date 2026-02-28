@@ -2,6 +2,6 @@
 tags
 .tags
 *.code-workspace
-**/.claude/work/
+**/.claude/reports/
 .serena/
 .tmux_work_dir

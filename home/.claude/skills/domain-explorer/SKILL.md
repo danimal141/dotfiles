@@ -68,6 +68,68 @@ find . -maxdepth 5 \
 部分的な読み込みではドメイン間の関係が見えなくなるため、
 スキーマ定義については省略せず全て読む。
 
+#### Enum値の解決
+
+スキーマ上で `integer` だがアプリケーション側でenumとして扱われているカラムを特定し、
+各整数値の意味をマッピングする。これはスキーマだけでは判別できないため、
+モデル/エンティティのソースコードも合わせて読む必要がある。
+
+探索パターン（フレームワーク別）：
+
+```bash
+# Rails: enum定義（モデルファイル内）
+grep -rn "enum\s" app/models/ --include="*.rb" 2>/dev/null
+
+# Rails 7+: enum メソッド形式
+grep -rn "enum.*:" app/models/ --include="*.rb" 2>/dev/null
+
+# Laravel: Casts や Enum クラス
+grep -rn "protected \$casts" app/Models/ --include="*.php" 2>/dev/null
+find . -path "*/Enums/*.php" 2>/dev/null
+
+# Prisma: enum定義（schema.prisma内に定義されている）
+grep -A 10 "^enum " prisma/schema.prisma 2>/dev/null
+
+# TypeScript: enum / const object
+grep -rn "enum\s\|as const" --include="*.ts" src/ 2>/dev/null
+
+# Python/Django: choices / TextChoices / IntegerChoices
+grep -rn "choices\|TextChoices\|IntegerChoices" --include="*.py" 2>/dev/null
+
+# Go: iota パターン
+grep -rn "iota" --include="*.go" 2>/dev/null
+```
+
+Rails の例：
+```ruby
+# app/models/order.rb
+class Order < ApplicationRecord
+  enum status: { draft: 0, pending: 1, confirmed: 2, shipped: 3, delivered: 4, cancelled: 5 }
+  enum payment_method: { credit_card: 0, bank_transfer: 1, convenience_store: 2 }, _prefix: true
+end
+```
+
+この場合、レポートには以下のように記載する：
+
+```markdown
+#### Enum定義: orders
+
+| カラム | 値 | ラベル | 説明 |
+|-------|---:|-------|------|
+| status | 0 | draft | 下書き |
+| status | 1 | pending | 確認待ち |
+| status | 2 | confirmed | 確定済み |
+| status | 3 | shipped | 発送済み |
+| status | 4 | delivered | 配達完了 |
+| status | 5 | cancelled | キャンセル |
+| payment_method | 0 | credit_card | クレジットカード |
+| payment_method | 1 | bank_transfer | 銀行振込 |
+| payment_method | 2 | convenience_store | コンビニ決済 |
+```
+
+Serenaモードでは `mcp__serena__find_symbol` で各モデルのenum定義を
+直接取得できるため、grepより正確かつ高速に解決できる。
+
 ### ステップ 2: テーブル/モデルの一覧化と分類
 
 読み込んだスキーマから全テーブルを一覧化し、ドメイン領域に分類する。
@@ -107,6 +169,7 @@ find . -maxdepth 5 \
 - 主要カラム（PK, FK, ビジネスキー, ステータス, タイムスタンプ）
 - インデックス（ユニーク制約、複合インデックスは特に注目）
 - ENUMやチェック制約があれば、取りうる値
+- integer enumカラムがあれば、ステップ1で収集した値マッピングを記載
 
 #### 3c. リレーション図
 
@@ -252,6 +315,9 @@ Serena MCPが接続されている場合、以下の追加分析を行う。
 #### テーブル構造
 [各テーブルの説明]
 
+#### Enum定義
+[integer enumの値マッピング表]
+
 #### リレーション図
 [Mermaid ER図]
 
@@ -291,3 +357,64 @@ Serena MCPが接続されている場合、以下の追加分析を行う。
   残りは付録で一覧だけ記載する。
 - Serenaが利用可能なら、モデルクラスのメソッド一覧取得に積極的に使う。
   スキーマからは読めない「ビジネスロジック」が見えてくる。
+
+### コンテキスト制限への対策
+
+大規模スキーマ（50テーブル超）ではコンテキストウィンドウを使い切るリスクがある。
+精度を落とさずに完走するため、以下の「段階書き出し＋サブエージェント分割」戦略を採る。
+
+#### 原則: メインコンテキストにはインデックスだけ残す
+
+1. ステップ1（スキーマ読み込み）とステップ2（分類）はメインで実行する。
+   スキーマ全量を読み、ドメイン分類まで完了したら、
+   分類結果（ドメイン名、所属テーブル名、FK関係の要約）だけを
+   レポートファイルに書き出す。
+2. スキーマの生テキストはこの時点でコンテキストから押し出されてよい。
+   以降のステップでは、レポートに書き出した分類結果を参照する。
+
+#### ドメインごとにサブエージェントへ委譲
+
+ステップ3（ドメイン詳細分析）が最もトークンを消費する。
+ドメインが4つ以上ある場合、各ドメインの詳細分析を
+Taskツール（subagent_type: general-purpose）に委譲する。
+
+各サブエージェントへの指示テンプレート：
+
+```
+以下のドメインについてレポートセクションを作成し、
+.claude/reports/domain-analysis.md の該当箇所に追記せよ。
+
+ドメイン名: [名前]
+所属テーブル: [テーブル名リスト]
+スキーマファイル: [パス]
+DB方言: [PostgreSQL/MySQL/SQLite]
+
+作成するセクション:
+1. ドメイン概要（1〜2文）
+2. 各テーブルのカラム構造（スキーマファイルの該当部分を読んで記述）
+3. Enum定義（モデルファイルからinteger enumの値マッピングを収集）
+4. Mermaid ER図
+5. 典型的なSQL例 3〜5個
+
+SQLはDB方言に合わせること。Enum値はSQLコメントで意味を注記すること。
+```
+
+サブエージェントは並列実行可能（独立したドメインなので依存関係なし）。
+これにより：
+- メインコンテキストはドメイン分類＋クロスドメイン分析だけ保持
+- 各ドメイン詳細は個別のサブエージェントコンテキストで処理
+- サブエージェント内ではスキーマの該当部分だけ読むのでトークン効率が良い
+
+#### ステップ4以降はメインに戻す
+
+クロスドメイン分析（ステップ4）はドメイン横断の視点が必要なため、
+メインコンテキストで実行する。ただしこの時点でのインプットは
+レポートファイルに書き出されたドメイン詳細の要約であり、
+スキーマ生テキストを再度読む必要はない。
+
+#### フォールバック: サブエージェントなし
+
+テーブル数が少ない（30テーブル以下）、またはドメインが3つ以下の場合は、
+サブエージェント分割のオーバーヘッドの方が大きい。
+メインコンテキストで全ステップを実行し、
+各ステップ完了時にレポートへ書き出すだけで十分。
