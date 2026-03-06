@@ -43,6 +43,7 @@ if !exists('g:vscode')
   Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
   Plug 'previm/previm'
   Plug 'tyru/open-browser.vim'
+  Plug 'iamcco/markdown-preview.nvim', { 'do': ':call mkdp#util#install()', 'for': 'markdown' }
   Plug 'udalov/kotlin-vim', { 'for': 'kotlin' }
   Plug 'tpope/vim-rails', { 'for': 'ruby' }
   Plug 'jparise/vim-graphql'
