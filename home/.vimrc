@@ -41,9 +41,7 @@ if !exists('g:vscode')
   Plug 'vim-jp/vim-cpp', { 'for': 'clang' }
   Plug 'slim-template/vim-slim', { 'for': 'slim' }
   Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
-  Plug 'previm/previm'
-  Plug 'tyru/open-browser.vim'
-  Plug 'iamcco/markdown-preview.nvim', { 'do': ':call mkdp#util#install()', 'for': 'markdown' }
+  Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && npm install' }
   Plug 'udalov/kotlin-vim', { 'for': 'kotlin' }
   Plug 'tpope/vim-rails', { 'for': 'ruby' }
   Plug 'jparise/vim-graphql'
@@ -172,6 +170,10 @@ let g:closetag_close_shortcut = '<leader>>'
 " winresizer
 let g:winresizer_vert_resize = 2
 let g:winresizer_horiz_resize = 2
+
+" markdown-preview.nvim
+let g:mkdp_auto_close = 1
+let g:mkdp_browser = ''
 
 " vim-prettier
 let g:prettier#config#semi = 'false'
