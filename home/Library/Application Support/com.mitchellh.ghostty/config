@@ -23,8 +23,8 @@ window-padding-balance = true
 window-save-state = always
 
 # 新しいウィンドウのサイズ
-window-width = 120
-window-height = 40
+# window-width = 120
+# window-height = 40
 
 # フォーカスされていないスプリットの暗さと色
 unfocused-split-opacity = 0.8
