@@ -218,7 +218,6 @@
       "Read(**/.env*)"
     ]
   },
-  "model": "opus",
   "hooks": {
     "PostToolUse": [
       {
