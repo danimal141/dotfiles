@@ -4,8 +4,8 @@
 export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-export EDITOR=$(brew --prefix nvim)
-export VISUAL=$(brew --prefix nvim)
+export EDITOR=$(brew --prefix nvim)/bin/nvim
+export VISUAL=$(brew --prefix nvim)/bin/nvim
 
 # -------------------------------------
 # path
