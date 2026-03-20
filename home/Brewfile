@@ -80,6 +80,7 @@ brew 'pandoc'
 brew 'basictex'
 brew 'codex'
 brew 'googleworkspace-cli'
+brew 'markdownlint-cli'
 
 # https://github.com/universal-ctags/homebrew-universal-ctags
 # brew install --HEAD universal-ctags/universal-ctags/universal-ctags

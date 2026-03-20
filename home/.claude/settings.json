@@ -225,7 +225,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/common-formatter.sh"
+            "command": "~/.claude/hooks/markdownlint-checker.sh"
           }
         ]
       }
