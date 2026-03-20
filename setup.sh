@@ -40,6 +40,18 @@ echo "Installing programming languages..."
 ./_asdf.sh
 
 #------------------------------------------
+# LSP servers (for Claude Code plugins)
+#------------------------------------------
+echo "Installing LSP servers..."
+npm install -g typescript-language-server typescript || true
+npm install -g pyright || true
+gem install ruby-lsp --no-doc || true
+go install golang.org/x/tools/gopls@latest || true
+asdf reshim nodejs || true
+asdf reshim ruby || true
+asdf reshim golang || true
+
+#------------------------------------------
 # homesick
 #------------------------------------------
 echo "Installing homesick..."
