@@ -23,6 +23,10 @@ DESTRUCTIVE_PATTERNS = [
     (re.compile(r"rm\s+.*-[a-zA-Z]*fr"), "ファイル: rm -rf は禁止"),
     # --- Git 破壊 ---
     (
+        re.compile(r"git\s+(commit|push)\s+.*--no-verify"),
+        "Git: --no-verify は禁止 (pre-commit hook をバイパスしないでください)",
+    ),
+    (
         re.compile(r"git\s+push\s+.*--force(?!-with-lease)"),
         "Git: --force push は禁止 (--force-with-lease を使用してください)",
     ),
@@ -69,6 +73,15 @@ DESTRUCTIVE_PATTERNS = [
     (
         re.compile(r"terraform\s+state\s+(rm|mv|push|replace-provider)"),
         "Terraform: state の破壊的操作は禁止",
+    ),
+    # --- リモートコード実行 ---
+    (
+        re.compile(r"curl\s+.*\|\s*(bash|sh|zsh)"),
+        "セキュリティ: curl | bash は禁止",
+    ),
+    (
+        re.compile(r"wget\s+.*\|\s*(bash|sh|zsh)"),
+        "セキュリティ: wget | bash は禁止",
     ),
 ]
 
