@@ -184,6 +184,7 @@
       "WebSearch",
       "TodoRead",
       "TodoWrite",
+      "Read",
       "mcp__context7",
       "mcp__playwright",
       "mcp__serena",

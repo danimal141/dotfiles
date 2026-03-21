@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """PreToolUse hook: 破壊的コマンドをブロックする.
 
-カテゴリ: IaC, ファイル破壊, Git 破壊, DB 破壊, コンテナ/K8s 破壊
+カテゴリ: IaC, ファイル破壊, Git 破壊, DB 破壊, コンテナ/K8s 破壊, 機密ファイルアクセス
 マッチ時は stderr にメッセージを出力し exit 2 でブロック。
 """
 
@@ -48,6 +48,27 @@ DESTRUCTIVE_PATTERNS = [
     (
         re.compile(r"kubectl\s+delete\s+(namespace|node)"),
         "K8s: namespace/node の削除は禁止",
+    ),
+    # --- 機密ファイルアクセス ---
+    (
+        re.compile(r"(cat|head|tail|less|more)\s+.*\.(env|pem|key|p12|pfx)"),
+        "機密ファイル: .env/証明書/鍵ファイルの読み取りは禁止",
+    ),
+    (
+        re.compile(r"(cat|head|tail|less|more)\s+.*\.ssh/"),
+        "機密ファイル: SSH ディレクトリの読み取りは禁止",
+    ),
+    (
+        re.compile(r"(cat|head|tail|less|more)\s+.*(credentials|\.aws/|\.gnupg/)"),
+        "機密ファイル: AWS/GnuPG 認証情報の読み取りは禁止",
+    ),
+    (
+        re.compile(r"(cp|mv|tee|sed\s+-i|>\s*\S*terraform\.tfstate).*terraform\.tfstate"),
+        "Terraform: state ファイルへの書き込みは禁止",
+    ),
+    (
+        re.compile(r"terraform\s+state\s+(rm|mv|push|replace-provider)"),
+        "Terraform: state の破壊的操作は禁止",
     ),
 ]
 
