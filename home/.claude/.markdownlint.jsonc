@@ -1,0 +1,20 @@
+{
+  // デフォルトルールをすべて無効化し、明示的に有効化したルールのみ適用する
+  "default": false,
+
+  // MD004: Unordered list style
+  // 箇条書きの記号を統一するルール。"asterisk" = * のみ許可。
+  "MD004": { "style": "asterisk" },
+
+  // MD007: Unordered list indentation
+  // 箇条書きのインデントを統一するルール。2スペースを要求。
+  "MD007": { "indent": 2 },
+
+  // MD010: Hard tabs
+  // タブ文字の使用を禁止するルール。スペースに統一。
+  "MD010": true,
+
+  // MD023: Headings must start at the beginning of the line
+  // 見出しが行頭から始まることを要求するルール。インデントされた見出しを禁止。
+  "MD023": true
+}

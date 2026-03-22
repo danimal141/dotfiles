@@ -17,6 +17,6 @@ if [[ "$FILE_PATH" != *.md ]]; then
     exit 0
 fi
 
-markdownlint --fix --config ~/.claude/hooks/.markdownlint.json "$FILE_PATH" >&2
+markdownlint --fix --config ~/.claude/.markdownlint.jsonc "$FILE_PATH" >&2
 
 exit 0

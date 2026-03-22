@@ -7,6 +7,7 @@ home/.vim/sessions/*
 home/.claude/*
 !home/.claude/CLAUDE.md
 !home/.claude/settings.json
+!home/.claude/.markdownlint.jsonc
 !home/.claude/skills/
 !home/.claude/hooks/
 !home/.claude/rules/
