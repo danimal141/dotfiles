@@ -6,6 +6,15 @@
 * 変更前にファイルを読んで理解してから着手
 * コマンド実行の許可を私に確認する時は、コマンドの説明を日本語で簡潔に出力
 
+## Code Reading
+* コードリーディング時、LSP が利用可能か最初に確認する（対象言語のソースファイルに documentSymbol を1回試行）
+* LSP が利用可能かつ必要なライブラリがインストール済みなら、grep/ファイル直読みより LSP を優先する
+  * 定義元の特定: goToDefinition
+  * 参照箇所の追跡: findReferences
+  * ファイル構造の把握: documentSymbol（ファイル全体を読まずに構造を把握でき効率的）
+  * 型情報の確認: hover
+* LSP が利用不可の場合は grep / ファイル直読みにフォールバック
+
 ## Code Style
 * TypeScript strict mode
 * イミュータブルなデータ構造を優先的に活用
