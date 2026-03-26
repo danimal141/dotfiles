@@ -4,4 +4,4 @@ tags
 *.code-workspace
 **/.claude/reports/
 .serena/
-.tmux_work_dir
+.tmux_start_dir

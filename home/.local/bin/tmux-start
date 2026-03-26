@@ -1,18 +1,18 @@
 #!/bin/bash
-# tmux-work: 開発用tmuxセッションを起動
+# tmux-start: 開発用tmuxセッションを起動
 #
 # 使い方:
-#   tmux-work [ディレクトリ]      # 単一ディレクトリでセッション作成
-#   tmux-work                     # ~/.tmux_work_dir から一括起動
+#   tmux-start [ディレクトリ]      # 単一ディレクトリでセッション作成
+#   tmux-start                     # ~/.tmux_start_dir から一括起動
 #
 # 設定ファイル（引数なしの場合）:
-#   ~/.tmux_work_dir - 1行に1ディレクトリを記述
+#   ~/.tmux_start_dir - 1行に1ディレクトリを記述
 #   コメント行（#で始まる）と空行は無視されます
 #   グロブパターン対応: ~/dev/* で dev配下の全ディレクトリが対象
 
 set -e
 
-CONFIG_FILE="$HOME/.tmux_work_dir"
+CONFIG_FILE="$HOME/.tmux_start_dir"
 
 # セッション作成関数
 create_session() {
@@ -56,9 +56,9 @@ fi
 # 設定ファイルモード
 if [ ! -f "$CONFIG_FILE" ]; then
   echo "Error: $CONFIG_FILE not found"
-  echo "Create it from ~/.tmux_work_dir.sample"
+  echo "Create it from ~/.tmux_start_dir.sample"
   echo ""
-  echo "Or specify a directory: tmux-work ~/projects/myapp"
+  echo "Or specify a directory: tmux-start ~/projects/myapp"
   exit 1
 fi
 
