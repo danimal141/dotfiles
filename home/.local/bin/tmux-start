@@ -32,8 +32,8 @@ create_session() {
 
   tmux new-window -t "$session_name" -n "terminal" -c "$dir"
   tmux split-window -t "$session_name:terminal" -h -c "$dir"
-  tmux split-window -t "$session_name:terminal.0" -v -c "$dir"
-  tmux split-window -t "$session_name:terminal.2" -v -c "$dir"
+  tmux split-window -t "$session_name:terminal" -v -c "$dir"
+  tmux split-window -t "$session_name:terminal" -v -c "$dir"
   tmux select-layout -t "$session_name:terminal" tiled
 
   tmux new-window -t "$session_name" -n "server" -c "$dir"
