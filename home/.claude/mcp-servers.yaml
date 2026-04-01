@@ -9,10 +9,6 @@ servers:
       - "-y"
       - "@upstash/context7-mcp"
     env: {}
-  chrome-devtools:
-    command: npx
-    args:
-      - "chrome-devtools-mcp@latest"
   terraform:
     command: docker
     args:
@@ -21,40 +17,4 @@ servers:
       - "--rm"
       - "hashicorp/terraform-mcp-server"
     env: {}
-  aws-documentation:
-    command: uvx
-    args:
-      - "awslabs.aws-documentation-mcp-server@latest"
-    env:
-      FASTMCP_LOG_LEVEL: ERROR
-  # serena:
-  #   command: uvx
-  #   args:
-  #     - "--from"
-  #     - "git+https://github.com/oraios/serena"
-  #     - "serena"
-  #     - "start-mcp-server"
-  #     - "--context"
-  #     - "ide-assistant"
-  #   env: {}
-  # playwright:
-  #   command: npx
-  #   args:
-  #     - "-y"
-  #     - "@playwright/mcp@latest"
-  #   env: {}
-  #  gemini-google-search:
-  #    command: npx
-  #    args:
-  #      - "-y"
-  #      - "mcp-gemini-google-search"
-  #    env:
-  #      GEMINI_API_KEY: ${GEMINI_API_KEY}
-  #      GEMINI_MODEL: gemini-2.5-flash
-  #  github:
-  #    command: npx
-  #    args:
-  #      - "-y"
-  #      - "@modelcontextprotocol/server-github"
-  #    env:
-  #      GITHUB_PERSONAL_ACCESS_TOKEN: ${GITHUB_PERSONAL_ACCESS_TOKEN}
+
