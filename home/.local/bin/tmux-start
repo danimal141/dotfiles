@@ -96,6 +96,8 @@ while IFS= read -r line || [ -n "$line" ]; do
     # 最初のセッション名を記録
     if [ -z "$first_session" ]; then
       first_session=$(basename "$dir")
+      # サーバー初期化完了を待つ（最初のnew-sessionでサーバーが起動するため）
+      sleep 0.5
     fi
   done
 done < "$CONFIG_FILE"
