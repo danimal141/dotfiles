@@ -1,0 +1,4 @@
+# APM-managed skills (installed via ~/.apm/apm.yml)
+chrome-cdp/
+dig/
+setup-dotfiles/
