@@ -4,6 +4,7 @@ cask_args appdir: '/Applications'
 tap 'adoptopenjdk/openjdk'
 tap 'homebrew/cask-fonts'
 tap 'daipeihust/tap'
+tap 'microsoft/apm'
 
 brew 'git'
 brew 'coreutils'
@@ -81,6 +82,7 @@ brew 'basictex'
 brew 'codex'
 brew 'googleworkspace-cli'
 brew 'markdownlint-cli'
+brew 'microsoft/apm/apm'
 
 # https://github.com/universal-ctags/homebrew-universal-ctags
 # brew install --HEAD universal-ctags/universal-ctags/universal-ctags
