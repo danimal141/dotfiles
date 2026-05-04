@@ -5,8 +5,9 @@
 {{- /* Auto-detect ephemeral environments (CI, devcontainer, root user) */ -}}
 {{- if or (env "CODESPACES") (env "REMOTE_CONTAINERS") (eq .chezmoi.username "root") -}}
 {{-   $machineType = "ephemeral" -}}
-{{- /* Auto-detect work hosts: "work-*" prefix or specific company-issued hostnames */ -}}
-{{- else if or (hasPrefix .chezmoi.hostname "work-") (eq .chezmoi.hostname "hideaki-ishii1") -}}
+{{- /* Auto-detect work account: company-issued login name. Personal Macs use a
+       different username so this defaults to "personal" elsewhere. */ -}}
+{{- else if eq .chezmoi.username "hideaki.ishii" -}}
 {{-   $machineType = "work" -}}
 {{- end -}}
 
