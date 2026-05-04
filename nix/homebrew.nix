@@ -1,9 +1,8 @@
 { ... }:
 
-# Homebrew の宣言。Step B 時点では旧 `home/Brewfile` の brew/cask を全件
-# そのまま移植している (Step C で CLI を Nix store に切り出す前段)。
+# nix-darwin が管理する Homebrew (tap / brew / cask) の宣言。
 #
-# Step B の目的との対応:
+# 設計の意図:
 #   * Brewfile + brew bundle では「宣言から外したら自動 uninstall」が無く、
 #     dotfile を消しただけでは実機の brew は残る。`onActivation.cleanup`
 #     を有効にすると `darwin-rebuild switch` 時に未宣言パッケージが自動で
@@ -40,7 +39,7 @@
     #   adoptopenjdk/openjdk — 旧 JDK build (cask の adoptopenjdk11 用)
     #   homebrew/cask-fonts  — font cask (font-jetbrains-mono 等)
     #   daipeihust/tap       — im-select の供給元 (IME 切り替え CLI)
-    #   microsoft/apm        — APM CLI の供給元 (Step C で nix 化予定)
+    #   microsoft/apm        — APM CLI の供給元
     taps = [
       "adoptopenjdk/openjdk"
       "homebrew/cask-fonts"
@@ -48,8 +47,7 @@
       "microsoft/apm"
     ];
 
-    # brews: CLI ツール本体。Step B 時点では旧 Brewfile の brews を全件
-    # 残置する (Nix store 化は Step C のスコープ)。
+    # brews: Homebrew で運ぶ CLI / formulae。
     brews = [
       "1password-cli"
       "FairwindsOps/tap/pluto"
@@ -132,8 +130,8 @@
       "zsh-syntax-highlighting"
     ];
 
-    # casks: GUI アプリ。nix-homebrew (= Homebrew) 経由でしか配布されない
-    # ものが大半なので、Step C でも引き続き brew 管理。
+    # casks: GUI アプリ。Homebrew 経由でしか配布されないものが大半なので
+    # 引き続き brew 管理。
     casks = [
       "adoptopenjdk11"
       "avidemux"

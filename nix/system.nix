@@ -2,10 +2,9 @@
 
 # macOS システム全体の設定 (Dock / Finder / KeyRepeat / trackpad / Nix 自体の挙動)。
 #
-# Step B の目的との対応:
-#   宣言的な `darwin-rebuild switch` 一発で「OS の挙動」も復元できる状態にする。
-#   従来は `defaults write com.apple.dock autohide -bool true` を chezmoi の
-#   run_once_*.sh で叩いていたが、ロールバック手段がなく差分も追えなかった。
+# `darwin-rebuild switch` 一発で「OS の挙動」も復元できる状態にするためのモジュール。
+# 直接 `defaults write com.apple.dock autohide -bool true` 等を叩く運用は
+# 差分が追えずロールバックも効かないので、すべてここに集約する。
 #
 # スコープの境界:
 #   * 含む: 全ユーザー / システム共通の defaults、Nix 自体の運用 (gc, flakes)

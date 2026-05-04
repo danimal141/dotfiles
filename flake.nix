@@ -1,20 +1,19 @@
-# Step B の目的:
-#   Homebrew パッケージ (brew / cask) と macOS システム設定を nix-darwin で
-#   宣言的に管理し、`darwin-rebuild switch` 一発で同期する状態に持っていく。
+# nix-darwin で macOS / Homebrew を宣言的に管理するためのトップレベル flake。
 #
-#   Brewfile + brew bundle 運用では:
-#     * 「宣言から外したら自動 uninstall」が効かない (cleanup フラグなし)
-#     * macOS の defaults (Dock / KeyRepeat / trackpad) は別系統で管理が必要
-#     * 世代単位のロールバックが効かない
-#   nix-darwin に寄せることで上記すべてが `flake.nix` 配下に集約される。
+# Brewfile + brew bundle / 手動の `defaults write` 運用では次が成立しない:
+#   * 「宣言から外したら自動 uninstall」(cleanup フラグなし)
+#   * macOS defaults (Dock / KeyRepeat / trackpad) の宣言的同期
+#   * 世代単位のロールバック
+# これらを `darwin-rebuild switch` 一発で揃えるため nix-darwin を採用する。
 #
 # 構成上の方針:
-#   * `inputs` は最小限。nixpkgs-unstable に追従し、nix-darwin / nix-homebrew は
+#   * `inputs` は最小限。nixpkgs-unstable に追従し、子 input は
 #     `nixpkgs.follows = "nixpkgs"` で nixpkgs を共有して store 重複を避ける。
 #   * ホスト追加コストを下げるため `hosts` を attrset で持ち、`mkHost` で
 #     `darwinConfigurations.<hostname>` に展開する。
-#   * `nix/system.nix` / `nix/homebrew.nix` を全ホスト共通モジュールとして配置し、
-#     ホスト個別差分のみ `nix/hosts/<hostname>.nix` に書く。
+#   * モジュールは `nix/system.nix` (macOS settings) / `nix/homebrew.nix`
+#     (brew/cask) を全ホスト共通として配置し、ホスト個別差分のみ
+#     `nix/hosts/<hostname>.nix` に書く。
 {
   description = "danimal141 dotfiles - chezmoi + nix-darwin";
 
