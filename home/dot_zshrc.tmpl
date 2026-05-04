@@ -4,16 +4,27 @@
 export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-export EDITOR=$(/opt/homebrew/bin/brew --prefix nvim)/bin/nvim
-export VISUAL=$(/opt/homebrew/bin/brew --prefix nvim)/bin/nvim
+export EDITOR=nvim
+export VISUAL=nvim
 
 # -------------------------------------
 # path
 # -------------------------------------
 typeset -U path cdpath fpath manpath
 
-# `N` means null glob in Zsh
+# `N` means null glob in Zsh — そのディレクトリが存在しないときは配列から落とす。
+#
+# Nix store (/run/current-system/sw/bin) を Homebrew (/opt/homebrew/bin) より
+# 先に置くことで、Nix と brew の両方に同名の CLI がある場合に Nix 側が勝つ。
+# `which git` 等が `/run/current-system/sw/bin/git` を返すようになり、
+# `flake.lock` で pin されたバージョンが確実に走る。`cleanup = "check"` の
+# 状態で brew 側に旧バイナリが残っていても Nix 側を優先させる防衛策にもなる。
+#
+# mise activate はこの後で言語ランタイム shim を PATH 先頭に差し込むため、
+# node / ruby / python など mise 管理下のランタイム解決には影響しない。
 path=(
+  /run/current-system/sw/bin(N-/)
+  /run/current-system/sw/sbin(N-/)
   /usr/local/bin(N-/)
   /usr/local/sbin(N-/)
   /opt/homebrew/bin(N-/)

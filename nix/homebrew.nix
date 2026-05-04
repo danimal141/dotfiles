@@ -44,10 +44,23 @@
       "adoptopenjdk/openjdk"
       "homebrew/cask-fonts"
       "daipeihust/tap"
-      "microsoft/apm"
     ];
 
     # brews: Homebrew で運ぶ CLI / formulae。
+    # 大半の CLI は `nix/packages.nix` (Nix store) 側に移してあり、ここに残すのは
+    # Nix 経由では現実的でない or brew 側に置く方が扱いやすいものに絞る:
+    #
+    # * shell bootstrap binaries — chezmoi, mise (darwin-rebuild の前段階で必要)
+    # * tap-only formulae        — FairwindsOps/pluto, fujiwara/tfstate-lookup,
+    #                              k1LoW/tbls, kayac/ecspresso, mutagen-io/mutagen,
+    #                              yukiarrr/ecsk, argoproj/argocd
+    # * Apple / macOS 統合が強い  — basictex, ffmpeg, imagemagick, llvm, mas, gdb
+    # * Node / Python 前提のツール — markdownlint-cli, marp-cli, repomix, pipx
+    # * macOS-only ツール          — terminal-notifier, im-select
+    # * shell 本体と plugin       — zsh, zsh-autosuggestions, zsh-syntax-highlighting,
+    #                              zsh-completions (brew の方が起動が速い)
+    # * secrets bootstrap         — 1password-cli, age (chezmoi の secrets 注入経路)
+    # * DB / dev サーバー          — mysql, redis, libpq, qemu
     brews = [
       "1password-cli"
       "FairwindsOps/tap/pluto"
@@ -58,35 +71,20 @@
       "azure-cli"
       "basictex"
       "bash-completion"
-      "bat"
       "chezmoi"
       "chromium"
-      "cloc"
       "cloudflared"
       "cmake"
       "codex"
-      "coreutils"
-      "cue"
-      "curl"
-      "direnv"
       "ffmpeg"
       "fujiwara/tap/tfstate-lookup"
       "gdb"
-      "gh"
-      "git"
-      "gnu-sed"
       "googleworkspace-cli"
-      "graphviz"
-      "helm"
-      "htop"
       "im-select"
       "imagemagick"
-      "jq"
       "k1LoW/tap/tbls"
       "kayac/tap/ecspresso"
       "krew"
-      "kubectx"
-      "kustomize"
       "libmagic"
       "libpq"
       "llvm"
@@ -98,33 +96,17 @@
       # 初回セットアップで VSCode 拡張用に node が必要、等) で言語ランタイムを
       # 用意するパスがあるため、Nix store ではなく brew 側に置いておく。
       "mise"
-      "microsoft/apm/apm"
       "mutagen-io/mutagen/mutagen-compose"
       "mysql"
-      "neovim"
-      "pandoc"
-      "parallel"
-      "peco"
       "pipx"
-      "pstree"
       "qemu"
       "readline"
       "redis"
       "repomix"
-      "ripgrep"
       "ruby-build"
-      "stern"
       "terminal-notifier"
-      "the_silver_searcher"
-      "tig"
-      "tmux"
       "tmuxinator"
-      "tree"
-      "vim"
-      "watch"
-      "wget"
       "yarn"
-      "yq"
       "yukiarrr/tap/ecsk"
       "zlib"
       "zsh"
