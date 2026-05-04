@@ -30,19 +30,23 @@ echo "Initializing chezmoi..."
 chezmoi init --apply --source "$(pwd)"
 
 #------------------------------------------
-# LSP servers (depends on asdf/mise runtimes - mise migration is Step mise)
+# LSP servers (depends on mise-managed language runtimes)
 #------------------------------------------
-echo "Installing programming language runtimes via asdf..."
-./_asdf.sh
+# `~/.tool-versions` に書かれた言語ランタイムを mise でまとめて install する。
+# 失敗しても止めないのは、ビルド失敗してもセットアップ全体を最後まで回す方が
+# 後段 (VSCode 等) を別途やり直さなくて済むため。
+echo "Installing language runtimes from ~/.tool-versions via mise..."
+mise install || true
 
+# LSP server は npm/gem/go が走る言語でだけ事前 install しておく。
+# `mise reshim` は npm install -g などで作った shim を再生成して PATH に
+# 反映するために必要 (mise 経由の node なら自動だが、global install 直後は明示)。
 echo "Installing LSP servers..."
 npm install -g typescript-language-server typescript || true
 npm install -g pyright || true
 gem install ruby-lsp --no-doc || true
 go install golang.org/x/tools/gopls@latest || true
-asdf reshim nodejs || true
-asdf reshim ruby || true
-asdf reshim golang || true
+mise reshim || true
 
 #------------------------------------------
 # VSCode
