@@ -95,6 +95,7 @@
       "marp-cli"
       "mas"
       "mecab"
+      "mise"
       "microsoft/apm/apm"
       "mutagen-io/mutagen/mutagen-compose"
       "mysql"
