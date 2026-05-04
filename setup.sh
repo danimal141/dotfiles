@@ -1,47 +1,40 @@
 #!/bin/bash
 set -ex
 
-echo "Installing Xcode..."
+echo "Installing Xcode CLT..."
 xcode-select --install || true
 
-# Install rosetta
-echo "Installing rosetta..."
-sudo softwareupdate --install-rosetta --agree-to-licensesudo softwareupdate --install-rosetta --agree-to-license || true
+echo "Installing Rosetta..."
+sudo softwareupdate --install-rosetta --agree-to-license || true
 
 #------------------------------------------
-# homebrew (arm64)
+# Nix + nix-darwin (replaces brew bundle)
 #------------------------------------------
-echo "Installing homebrew..."
-which /opt/homebrew/bin/brew >/dev/null 2>&1 || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+echo "Installing Nix (official installer)..."
+if ! command -v nix >/dev/null 2>&1; then
+    sh <(curl -L https://nixos.org/nix/installer)
+fi
 
-# PATH for brew
-echo "Add PATH for homebrew..."
-export PATH="/opt/homebrew/bin:$PATH" && which brew
+# Flakes 有効化
+mkdir -p ~/.config/nix
+grep -q "experimental-features = nix-command flakes" ~/.config/nix/nix.conf 2>/dev/null \
+    || echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
 
-echo "Execute brew doctor..."
-brew doctor
-
-echo "Execute brew update..."
-brew update --verbose
-
-echo "Execute brew upgrade..."
-brew upgrade --verbose
-
-echo "Installing packages written in Brewfile..."
-brew bundle --file ./home/Brewfile --verbose
-
-echo "Execute brew cleanup..."
-brew cleanup --verbose
+echo "Applying nix-darwin (Homebrew, brews, casks, macOS defaults)..."
+nix run nix-darwin -- switch --flake ".#$(scutil --get LocalHostName)"
 
 #------------------------------------------
-# asdf
+# chezmoi (dotfile management, replaces homesick link)
 #------------------------------------------
-echo "Installing programming languages..."
+echo "Initializing chezmoi..."
+chezmoi init --apply --source "$(pwd)"
+
+#------------------------------------------
+# LSP servers (depends on asdf/mise runtimes - mise migration is Step mise)
+#------------------------------------------
+echo "Installing programming language runtimes via asdf..."
 ./_asdf.sh
 
-#------------------------------------------
-# LSP servers (for Claude Code plugins)
-#------------------------------------------
 echo "Installing LSP servers..."
 npm install -g typescript-language-server typescript || true
 npm install -g pyright || true
@@ -50,15 +43,6 @@ go install golang.org/x/tools/gopls@latest || true
 asdf reshim nodejs || true
 asdf reshim ruby || true
 asdf reshim golang || true
-
-#------------------------------------------
-# homesick
-#------------------------------------------
-echo "Installing homesick..."
-gem install homesick --no-doc
-
-echo "Symlink dotfiles..."
-homesick link dotfiles
 
 #------------------------------------------
 # VSCode
@@ -74,5 +58,5 @@ if [ -f ./vscode/sync-extensions.sh ]; then
     ./vscode/sync-extensions.sh --install
 fi
 
-# Replace the current shell with a new shell, run it as a login shell, and reset the environment settings.
+# Re-exec login shell so PATH and chezmoi-applied dotfiles take effect.
 exec $SHELL -l

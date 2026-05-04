@@ -2,30 +2,44 @@
 
 ## Requirements
 
-* [chezmoi](https://github.com/twpayne/chezmoi) (primary, Step A 以降)
-* [homesick](https://github.com/technicalpickles/homesick) (legacy paths only — 完全解除は後続 PR)
-* [Homebrew](https://brew.sh/)
+* [Nix + nix-darwin](https://github.com/nix-darwin/nix-darwin) (Step B 以降、Homebrew / macOS 設定の declarative 管理)
+* [chezmoi](https://github.com/twpayne/chezmoi) (Step A 以降、dotfile 管理 + テンプレート)
+* [homesick](https://github.com/technicalpickles/homesick) (legacy paths only、完全解除は後続 PR)
 
 ## Get started
 
 ### 1. リポジトリを clone
 
-`~/.homesick/repos/dotfiles` は homesick と互換のパスとして引き続き使う。
-
 ```shell
 $ mkdir -p ~/.homesick/repos && cd ~/.homesick/repos
 $ git clone git@github.com:danimal141/dotfiles.git
+$ cd dotfiles
 ```
 
-### 2. ツール群を Homebrew で install
-
-`home/Brewfile` に chezmoi / age / 1password-cli / APM を含む全依存が宣言されている。
+### 2. Nix を install
 
 ```shell
-$ brew bundle --file=~/.homesick/repos/dotfiles/home/Brewfile
+$ sh <(curl -L https://nixos.org/nix/installer)
+
+# Flakes 有効化
+$ mkdir -p ~/.config/nix
+$ echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
 ```
 
-### 3. chezmoi 用 config を作成
+### 3. nix-darwin を apply (Homebrew / brew / cask / macOS 設定)
+
+Brewfile の宣言を `nix/homebrew.nix` に移植済み。`darwin-rebuild switch` 一発で全部入る。
+
+```shell
+$ nix run nix-darwin -- switch --flake ".#$(scutil --get LocalHostName)"
+
+# 二度目以降は darwin-rebuild が PATH に居る
+$ darwin-rebuild switch --flake ".#$(scutil --get LocalHostName)"
+```
+
+`onActivation.cleanup = "check"` の状態で動作確認後、`nix/homebrew.nix` を編集して `cleanup = "uninstall"` に切り替えると「宣言から外したパッケージが自動 uninstall」が有効になる。
+
+### 4. chezmoi 用 config を作成
 
 `home/.chezmoi.toml.tmpl` は対話プロンプト (`promptStringOnce`) を使う。Bash 越しに init する場合は config を直接書いてもよい。
 
@@ -44,28 +58,22 @@ sourceDir = "$HOME/.homesick/repos/dotfiles"
 EOF
 ```
 
-対話的にやる場合は次のコマンドで `~/.config/chezmoi/chezmoi.toml` が生成される。
+### 5. dotfiles を展開
 
 ```shell
-$ chezmoi init --source ~/.homesick/repos/dotfiles
-```
-
-### 4. ~/ に dotfiles を展開
-
-```shell
-$ chezmoi diff --no-pager   # 変更内容を確認
-$ chezmoi apply             # 実体ファイルとして配置
+$ chezmoi diff --no-pager
+$ chezmoi apply
 ```
 
 `chezmoi apply` 時に `home/.chezmoiscripts/darwin/run_onchange_after_apm-install.sh.tmpl` が走り、APM の skill 群が install される。
 
-### 5. シークレット注入
+### 6. シークレット注入
 
 `home/dot_codex/config.toml.tmpl` などで API key を `{{ env "GEMINI_API_KEY" }}` 形式で読む。1Password CLI を使う場合は `op signin` 後にテンプレを `{{ (onepasswordRead "op://Personal/...") }}` に書き換える。
 
 age 経路を使う場合は鍵を `~/.config/age/key.txt` に置いて、`encrypted_` プレフィックス付きの chezmoi ファイルで運ぶ。
 
-### 6. pre-commit + secretlint を有効化
+### 7. pre-commit + secretlint を有効化
 
 API key の誤コミットを防ぐため secretlint が pre-commit に組み込まれている。
 
@@ -75,18 +83,25 @@ $ npm install
 $ pre-commit install        # or `prek install`
 ```
 
-## 並走モード (Step A 完了時点)
+## 日常運用
 
-現状は **chezmoi と homesick が並走** している。
+### nix-darwin (Homebrew + macOS 設定)
 
-* chezmoi 管理: `~/.zshrc` `~/.gitconfig` `~/.tmux.conf` `~/.vimrc` `~/.codex/` `~/.claude/` ほか主要設定
-* homesick 経由 (chezmoi 管理外、`.chezmoiignore` で除外): `~/.claude/.env`, `~/.claude/.markdownlint.jsonc`, `~/.apm/apm.lock.yaml`, `~/.apm/.gitignore` など
+| 操作 | コマンド |
+|---|---|
+| パッケージ追加 / 削除 | `nix/homebrew.nix` を編集 → `darwin-rebuild switch --flake ".#$(scutil --get LocalHostName)"` |
+| macOS 設定変更 | `nix/system.nix` を編集 → 同上 |
+| 入力を個別更新 | `nix flake lock --update-input nixpkgs` (or `nix-darwin` / `nix-homebrew`) |
+| 世代一覧 | `darwin-rebuild --list-generations` |
+| 前世代に戻す | `darwin-rebuild --rollback` |
 
-`chezmoi apply` を一度走らせると、homesick の symlink は chezmoi 管理対象パスでは実体ファイルに上書きされるため、それ以降 `homesick link` を再実行すると衝突する。Step A 完了後は **chezmoi のみ** を使う運用が前提。
+注意:
 
-homesick の完全解除と `home/.zshrc` 等の重複ファイル削除、`.homesick_subdir` 削除は **後続の別 PR** で扱う。
+* `nix flake update` (全 input 更新) は壊れた時の切り分けが困難。個別に `--update-input` で進める
+* nixpkgs 追従ラグで `darwin-rebuild` が一時的に壊れることがある。動かなくなったら `--rollback` で前世代に戻し、`flake.lock` を git で前状態に巻き戻して再 switch
+* GUI アプリの単独設定 (1Password / Raycast / Karabiner 等) は標準モジュール対象外。必要なら `system.defaults.CustomUserPreferences` か chezmoi 側 `defaults write` で対応
 
-## chezmoi の日常運用
+### chezmoi (dotfile)
 
 | 操作 | コマンド |
 |---|---|
@@ -96,10 +111,61 @@ homesick の完全解除と `home/.zshrc` 等の重複ファイル削除、`.hom
 | 整合性チェック | `chezmoi verify` |
 | ホームディレクトリの変更を取り込む | `chezmoi re-add ~/.zshrc` |
 
-注意点:
+注意:
 
-* `[edit] apply = true` のため、`chezmoi edit` で保存した瞬間に `~/` に反映される。テンプレ syntax error が `~/.zshrc` を破壊しうるので、大きな書き換えは `chezmoi diff --watch` で先に検証する。
-* 自動生成された `*.backup` ファイル (chezmoi の auto-rename 結果) は内容を確認してから削除する。
+* `[edit] apply = true` のため、`chezmoi edit` で保存した瞬間に `~/` に反映される。テンプレ syntax error が `~/.zshrc` を破壊しうるので、大きな書き換えは `chezmoi diff --watch` で先に検証する
+* 自動生成された `*.backup` ファイル (chezmoi の auto-rename 結果) は内容を確認してから削除する
+
+## 新しい Mac を追加する場合
+
+hostname 規約: 仕事用は `work`、個人用は `personal` / `personal2` / `personal3` / ... と連番で増やす。`nix-darwin` の `networking.hostName` で apply 時に LocalHostName / HostName が固定されるので、IT 部門が割り当てた元の hostname がどんな名前でも上書きされる。
+
+1. `nix/hosts/<hostname>.nix` を作成 (`work.nix` を雛形に):
+
+   ```nix
+   { ... }:
+   {
+     networking.hostName = "<hostname>";
+     # この host 専用の brew/cask があればここに
+   }
+   ```
+
+2. `flake.nix` の `hosts` attrset に追加:
+
+   ```nix
+   hosts = {
+     "work"      = { user = "hideaki.ishii"; };
+     "personal"  = { user = "danimal141"; };  # ← 追加
+   };
+   ```
+
+3. 変更を commit & push (or 既存ブランチに rebase)
+
+4. 新 Mac でセットアップ実行:
+
+   ```shell
+   $ ./setup.sh
+   ```
+
+   初回は `nix run nix-darwin -- switch --flake .#<hostname>` で hostname を指定する (元の hostname と一致しないため scutil で検出できない)。`darwin-rebuild` 実行後は LocalHostName が `<hostname>` に変わるので、二度目以降は `setup.sh` の `scutil --get LocalHostName` 経由で動作する。
+
+`chezmoi` の `machineType` は **hostname で自動判定** される:
+
+* `hostname == "work"` → `machineType = "work"`
+* `hostname` が `personal` で始まる (`personal`, `personal2` 等) → `machineType = "personal"`
+* CI / devcontainer / root user → `machineType = "ephemeral"`
+
+明示的に override したい場合は `~/.config/chezmoi/chezmoi.toml` の `[data] machineType` に直接書く。
+
+## 並走モード (Step A〜B 時点)
+
+* nix-darwin 管理: Homebrew (CLI / cask)、macOS システム設定
+* chezmoi 管理: `~/.zshrc` `~/.gitconfig` `~/.tmux.conf` `~/.vimrc` `~/.codex/` `~/.claude/` ほか主要設定
+* homesick 経由 (chezmoi 管理外、`.chezmoiignore` で除外): `~/.claude/.env`, `~/.claude/.markdownlint.jsonc`, `~/.apm/apm.lock.yaml` など
+
+`home/Brewfile` は brew bundle 由来の旧管理経路として残置 (Step C で削除予定)。Step B 完了後は **`nix/homebrew.nix` のみ** を編集する。
+
+homesick の完全解除と `home/.zshrc` 等の重複ファイル削除、`.homesick_subdir` 削除は **後続の別 PR** で扱う。
 
 ## Claude Code skills via APM
 
