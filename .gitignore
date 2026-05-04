@@ -1,39 +1,16 @@
-home/.vim/plugged/*
-home/.vim/.netrwhist
-home/.vim/sessions/*
-
 # Vim plugin caches (chezmoi-managed)
 home/dot_vim/plugged/*
 home/dot_vim/.netrwhist
 home/dot_vim/sessions/*
 
-# Claude configuration
+# Claude local work directories (only the ones that may appear at repo root)
 /.claude/*
-home/.claude/*
-!home/.claude/CLAUDE.md
-!home/.claude/settings.json
-!home/.claude/.markdownlint.jsonc
-!home/.claude/skills/
-!home/.claude/hooks/
-!home/.claude/rules/
-!home/.claude/mcp-servers.yaml
-!home/.claude/.env.example
-!home/.claude/setup-mcp.sh
-
-# Claude local work directories
 .claude/work/
 .claude/tmp/
 .claude/settings.local.json
 
 # VSCode settings backup
 home/vscode/settings.bak.json
-
-# Codex configuration (homesick legacy, removed after Step A merges)
-home/.codex/*
-!home/.codex/config.toml.template
-!home/.codex/.env.example
-!home/.codex/apply-config.sh
-!home/.codex/AGENTS.md
 
 # Claude configuration (chezmoi-managed)
 home/dot_claude/*

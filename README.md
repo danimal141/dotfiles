@@ -4,11 +4,12 @@
 
 * [Nix + nix-darwin](https://github.com/nix-darwin/nix-darwin) — Homebrew / macOS 設定 / Nix store CLI の declarative 管理
 * [chezmoi](https://github.com/twpayne/chezmoi) — dotfile 管理 + テンプレート
-* [homesick](https://github.com/technicalpickles/homesick) — legacy paths only (完全解除は後続 PR)
 
 ## Get started
 
 ### 1. リポジトリを clone
+
+clone 先は任意。既存環境に合わせ `~/.homesick/repos/dotfiles` を踏襲しているが、別パスで構わない。
 
 ```shell
 $ mkdir -p ~/.homesick/repos && cd ~/.homesick/repos
@@ -28,7 +29,7 @@ $ echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
 
 ### 3. nix-darwin を apply (Homebrew / brew / cask / macOS 設定)
 
-Brewfile の宣言を `nix/homebrew.nix` に移植済み。`darwin-rebuild switch` 一発で全部入る。
+`darwin-rebuild switch` 一発で brew / cask / macOS defaults が入る。
 
 ```shell
 $ nix run nix-darwin -- switch --flake ".#$(scutil --get LocalHostName)"
@@ -197,7 +198,7 @@ hostname 規約: 仕事用は `work`、個人用は `personal` / `personal2` / `
   * `nix/system.nix` — macOS システム設定 (Dock / Finder / KeyRepeat / trackpad)
 * chezmoi 管理: `~/.zshrc` `~/.gitconfig` `~/.tmux.conf` `~/.vimrc` `~/.codex/` `~/.claude/` ほか主要設定 (PC ごとの差分は tmpl で吸収)
 * mise 管理: 言語ランタイム (Node / Python / Ruby / Go / etc.)
-* homesick 経由 (chezmoi 管理外、`.chezmoiignore` で除外): `~/.claude/.env`, `~/.claude/.markdownlint.jsonc`, `~/.apm/apm.lock.yaml` など
+* chezmoi 管理外 (`.chezmoiignore` で除外): `~/.claude/.env`, `~/.claude/.markdownlint.jsonc`, `~/.apm/apm.lock.yaml` などツールが動的に書き換えるファイル群
 
 PATH 解決順 (`home/dot_zshrc.tmpl`):
 
@@ -205,8 +206,6 @@ PATH 解決順 (`home/dot_zshrc.tmpl`):
 2. `/opt/homebrew/bin` — Homebrew (Nix 移行外の formulae / cask)
 3. `$HOME/bin`, `$HOME/.local/bin`
 4. mise activate がこの後で言語ランタイム shim を PATH 先頭に差し込む
-
-homesick の完全解除と `home/.zshrc` 等の重複ファイル削除、`.homesick_subdir` 削除は **後続の別 PR** で扱う。
 
 ## Claude Code skills via APM
 
