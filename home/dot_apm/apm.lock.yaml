@@ -1,5 +1,5 @@
 lockfile_version: '1'
-generated_at: '2026-05-04T09:33:00.006417+00:00'
+generated_at: '2026-05-03T01:17:28.096135+00:00'
 apm_version: 0.11.0
 dependencies:
 - repo_url: danimal141/skilltree
@@ -10,7 +10,7 @@ dependencies:
   is_virtual: true
   package_type: claude_skill
   deployed_files:
-  - .github/skills/chrome-cdp
+  - .claude/skills/chrome-cdp
   content_hash: sha256:3152bf480dfc3752e831342673c600e55f76add9dcab044e890647233e4e77d0
 - repo_url: danimal141/skilltree
   host: github.com
@@ -20,7 +20,7 @@ dependencies:
   is_virtual: true
   package_type: claude_skill
   deployed_files:
-  - .github/skills/codebase-analyzer
+  - .claude/skills/codebase-analyzer
   content_hash: sha256:f6c5696dc9cbb55eef72e08ffcc41bd2e119dd836a5cd8a740c7e655624248c6
 - repo_url: danimal141/skilltree
   host: github.com
@@ -30,7 +30,7 @@ dependencies:
   is_virtual: true
   package_type: claude_skill
   deployed_files:
-  - .github/skills/create-pr
+  - .claude/skills/create-pr
   content_hash: sha256:e95fd458c35d98a798c5c9d66c1d025cb7779f8ceeca426f6feff5d70fb6fa7e
 - repo_url: danimal141/skilltree
   host: github.com
@@ -40,7 +40,7 @@ dependencies:
   is_virtual: true
   package_type: claude_skill
   deployed_files:
-  - .github/skills/dig
+  - .claude/skills/dig
   content_hash: sha256:a69b9fb667a63ce650e85856464067eb9d31a21ecaa735baf08b153c7450013f
 - repo_url: danimal141/skilltree
   host: github.com
@@ -50,7 +50,7 @@ dependencies:
   is_virtual: true
   package_type: claude_skill
   deployed_files:
-  - .github/skills/git-commit
+  - .claude/skills/git-commit
   content_hash: sha256:26eae85394087535c89a2505f4201673a5ae38c0b366f7c7c1c3adb0ad2f280c
 - repo_url: danimal141/skilltree
   host: github.com
@@ -60,7 +60,7 @@ dependencies:
   is_virtual: true
   package_type: claude_skill
   deployed_files:
-  - .github/skills/infra-codebase-analyzer
+  - .claude/skills/infra-codebase-analyzer
   content_hash: sha256:786f35862ed7e0e3f69b70c60820f5627b6f60ce4c57abfbf9edcf2d3c52207a
 - repo_url: danimal141/skilltree
   host: github.com
@@ -70,7 +70,7 @@ dependencies:
   is_virtual: true
   package_type: claude_skill
   deployed_files:
-  - .github/skills/interview-design
+  - .claude/skills/interview-design
   content_hash: sha256:4d9fb09175bbcc50dfae52657efd32c43fdbf2b27a4d3272b548d56beaaa4083
 - repo_url: danimal141/skilltree
   host: github.com
@@ -80,7 +80,7 @@ dependencies:
   is_virtual: true
   package_type: claude_skill
   deployed_files:
-  - .github/skills/new-eng-outsource
+  - .claude/skills/new-eng-outsource
   content_hash: sha256:531068d3a10c61322ab0a1ba914e3b970d7089f2f490887acb81baa62e99b17f
 - repo_url: danimal141/skilltree
   host: github.com
@@ -90,7 +90,7 @@ dependencies:
   is_virtual: true
   package_type: claude_skill
   deployed_files:
-  - .github/skills/resignation-report
+  - .claude/skills/resignation-report
   content_hash: sha256:9145f775f1bcbc897fa3c091704cc0a033b83f6acb4981fda68b4985df397b51
 - repo_url: danimal141/skilltree
   host: github.com
@@ -100,7 +100,7 @@ dependencies:
   is_virtual: true
   package_type: claude_skill
   deployed_files:
-  - .github/skills/setup-dotfiles
+  - .claude/skills/setup-dotfiles
   content_hash: sha256:6dbd233cd9b9c5a09557d6b4cad2c09d54dae5c67e11d721e2cd19b4f19e6161
 - repo_url: danimal141/skilltree
   host: github.com
@@ -110,5 +110,5 @@ dependencies:
   is_virtual: true
   package_type: claude_skill
   deployed_files:
-  - .github/skills/setup-markdownlint
+  - .claude/skills/setup-markdownlint
   content_hash: sha256:fc7775767b5e231dec4da4828602277a7d403ea9e1bd47a185be7c10084a908b

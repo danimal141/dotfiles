@@ -2,6 +2,11 @@ home/.vim/plugged/*
 home/.vim/.netrwhist
 home/.vim/sessions/*
 
+# Vim plugin caches (chezmoi-managed)
+home/dot_vim/plugged/*
+home/dot_vim/.netrwhist
+home/dot_vim/sessions/*
+
 # Claude configuration
 /.claude/*
 home/.claude/*
@@ -23,9 +28,33 @@ home/.claude/*
 # VSCode settings backup
 home/vscode/settings.bak.json
 
-# Codex configuration
+# Codex configuration (homesick legacy, removed after Step A merges)
 home/.codex/*
 !home/.codex/config.toml.template
 !home/.codex/.env.example
 !home/.codex/apply-config.sh
 !home/.codex/AGENTS.md
+
+# Claude configuration (chezmoi-managed)
+home/dot_claude/*
+!home/dot_claude/CLAUDE.md
+!home/dot_claude/settings.json
+!home/dot_claude/.markdownlint.jsonc
+!home/dot_claude/skills/
+!home/dot_claude/hooks/
+!home/dot_claude/rules/
+!home/dot_claude/mcp-servers.yaml
+!home/dot_claude/.env.example
+!home/dot_claude/setup-mcp.sh
+
+# Codex configuration (chezmoi-managed)
+home/dot_codex/*
+!home/dot_codex/.env.example
+!home/dot_codex/config.toml.tmpl
+!home/dot_codex/symlink_AGENTS.md
+
+# Node modules (pre-commit + secretlint)
+node_modules/
+
+# pre-commit cache
+.pre-commit-cache/

@@ -84,6 +84,11 @@ brew 'googleworkspace-cli'
 brew 'markdownlint-cli'
 brew 'microsoft/apm/apm'
 
+# dotfiles management (chezmoi-driven setup, see docs/chezmoi.md)
+brew 'chezmoi'
+brew 'age'
+brew '1password-cli'
+
 # https://github.com/universal-ctags/homebrew-universal-ctags
 # brew install --HEAD universal-ctags/universal-ctags/universal-ctags
 

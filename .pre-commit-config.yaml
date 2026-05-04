@@ -1,0 +1,27 @@
+# テンプレートにシークレット (API key, OAuth token, AWS credential 等) が
+# 紛れ込むのを「コミット前」に止める防衛線。chezmoi のテンプレで 1Password
+# CLI / age を使う運用に置き換えても、レビューや手動編集の過程で平文鍵を
+# 貼り付ける事故はゼロにできない。
+#
+# 二重防衛の意味:
+#   * 主防衛: テンプレ側で `{{ env "..." }}` / `{{ onepasswordRead "..." }}`
+#     を使い、平文鍵をリポジトリに置かない。
+#   * 副防衛: secretlint で誤コミットを物理的に block する (これ)。
+#
+# secretlint を採った理由:
+#   * truffleHog / gitleaks より誤検知が少なく、JS/TS エコシステムとの親和性
+#     が高い (npx で動かせる)。
+#   * `recommend` プリセットで AWS / GCP / GitHub / Slack / Stripe 等主要
+#     プロバイダの key 形式を一括カバーできる。
+
+repos:
+  - repo: local
+    hooks:
+      - id: secretlint
+        name: secretlint
+        entry: npx -y secretlint
+        language: system
+        pass_filenames: true
+        files: '.*'
+        # binary は走査対象外: secretlint が誤検知 (or 性能低下) しがち
+        exclude_types: ['binary']

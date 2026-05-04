@@ -1,0 +1,53 @@
+# chezmoi が ~/ に展開しない (= chezmoi 管理外として残す) パスのリスト。
+#
+# `[edit] apply = true` が有効なため、`chezmoi edit` で保存した瞬間に ~/
+# にも書き戻る。一方で Claude Code / Codex / APM / vim-plug のようなツールは
+# 「アプリ側が ~/ のファイルを動的に書き換える」運用をする。それらを chezmoi
+# 管理下に置くと、`chezmoi verify` が常に drift を検出し、誤って `chezmoi
+# apply` を打つたびにアプリ側の状態が消える。
+#
+# 除外対象を厳選し、各行に「なぜ無視するか」を残す (運用時に判断材料になる)。
+
+# Claude Code が動的に書き換える領域 (drift 回避)
+.claude/projects/**
+.claude/todos/**
+.claude/shell-snapshots/**
+.claude/statsig/**
+.claude/ide/**
+
+# Plan ファイルはローカル ~/.claude/plans/ にのみ存在する (Git 管理外)
+.claude/plans/**
+
+# Claude Code 関連の生成・状態系 (chezmoi 管理外)
+.claude/.credentials.json
+.claude/.last-update-check
+.claude/.local-state.json
+
+# APM (apm install) が動的に更新するファイル
+.apm/apm.lock.yaml
+.apm/.github/**
+.apm/.claude/**
+
+# Codex の動的状態
+.codex/sessions/**
+.codex/log.json
+
+# age 鍵置き場 (defensive、コミットしない)
+.config/age/**
+
+# Brewfile はリポジトリのビルド入力。~/ には配置しない
+Brewfile
+
+# APM が apm install で動的に作る module ツリー
+.apm/apm_modules/**
+
+# Vim プラグインの実体は vim-plug が動的に管理するので chezmoi 管理外
+.vim/plugged/**
+.vim/sessions/**
+.vim/.netrwhist
+
+# OS 別の除外: chezmoiscripts/darwin/ は macOS 以外では走らせない
+{{- if ne .chezmoi.os "darwin" }}
+Library/**
+.chezmoiscripts/darwin/**
+{{- end }}
