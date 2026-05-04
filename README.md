@@ -139,7 +139,7 @@ $ pre-commit install        # or `prek install`
    ```nix
    hosts = {
      "hideaki-ishii1" = { user = "hideaki.ishii"; };
-     "personal-mbp"   = { user = "danimal141"; };  # ← 追加
+     "personal"       = { user = "danimal141"; };  # ← 追加
    };
    ```
 

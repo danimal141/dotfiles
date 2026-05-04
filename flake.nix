@@ -23,7 +23,7 @@
       #   4. 新 Mac で `nix run nix-darwin -- switch --flake .#<hostname>`
       hosts = {
         "hideaki-ishii1" = { user = "hideaki.ishii"; };
-        # "personal-mbp"   = { user = "danimal141"; };
+        # "personal"       = { user = "danimal141"; };
       };
 
       mkHost = hostname: { user, system ? "aarch64-darwin" }:
