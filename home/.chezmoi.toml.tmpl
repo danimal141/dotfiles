@@ -1,0 +1,28 @@
+{{- /* Initial chezmoi config, evaluated by `chezmoi init` */ -}}
+
+{{- $machineType := "" -}}
+
+{{- /* Auto-detect ephemeral environments (CI, devcontainer, root user) */ -}}
+{{- if or (env "CODESPACES") (env "REMOTE_CONTAINERS") (eq .chezmoi.username "root") -}}
+{{-   $machineType = "ephemeral" -}}
+{{- /* Auto-detect work hosts by hostname prefix (rename your Mac to "work-..." if needed) */ -}}
+{{- else if hasPrefix .chezmoi.hostname "work-" -}}
+{{-   $machineType = "work" -}}
+{{- end -}}
+
+{{- $name := promptStringOnce . "name" "Full name (e.g. Hideaki Ishii)" -}}
+{{- $email := promptStringOnce . "email" "Primary email" -}}
+{{- if eq $machineType "" -}}
+{{-   $machineType = promptStringOnce . "machineType" "Machine type (work / personal / ephemeral)" "personal" -}}
+{{- end -}}
+
+[data]
+    name = {{ $name | quote }}
+    email = {{ $email | quote }}
+    machineType = {{ $machineType | quote }}
+
+[edit]
+    apply = true
+
+[diff]
+    pager = "less -R"

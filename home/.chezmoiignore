@@ -1,0 +1,35 @@
+# Claude Code が動的に書き換える領域 (drift 回避)
+.claude/projects/**
+.claude/todos/**
+.claude/shell-snapshots/**
+.claude/statsig/**
+.claude/ide/**
+
+# Claude Code 関連の生成・状態系 (chezmoi 管理外)
+.claude/.credentials.json
+.claude/.last-update-check
+.claude/.local-state.json
+
+# APM (apm install) が動的に更新するファイル
+.apm/apm.lock.yaml
+.apm/.github/**
+.apm/.claude/**
+
+# Codex の動的状態
+.codex/sessions/**
+.codex/log.json
+
+# age 鍵置き場 (defensive、コミットしない)
+.config/age/**
+
+# Brewfile はリポジトリのビルド入力 (Step B で nix/homebrew.nix に移行予定)、~/ には配置しない
+Brewfile
+
+# APM が apm install で動的に作る module ツリー
+.apm/apm_modules/**
+
+# OS 別の除外
+{{- if ne .chezmoi.os "darwin" }}
+Library/**
+.chezmoiscripts/darwin/**
+{{- end }}
