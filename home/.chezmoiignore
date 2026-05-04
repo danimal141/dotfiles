@@ -1,3 +1,14 @@
+# chezmoi が ~/ に展開しない (= chezmoi 管理外として残す) パスのリスト。
+#
+# Step A の目的との対応:
+#   `[edit] apply = true` を有効にしているため、`chezmoi edit` で保存した
+#   瞬間に ~/ にも書き戻る。一方で Claude Code / Codex / APM のような
+#   ツールは「アプリ側が ~/ のファイルを動的に書き換える」運用をする。
+#   それらを chezmoi 管理下に置くと、`chezmoi verify` が常に drift を
+#   検出し、誤って `chezmoi apply` を打つたびにアプリ側の状態が消える。
+#
+# 除外対象を厳選し、各行に「なぜ無視するか」を残す (運用時に判断材料になる)。
+
 # Claude Code が動的に書き換える領域 (drift 回避)
 .claude/projects/**
 .claude/todos/**
@@ -36,7 +47,7 @@ Brewfile
 .vim/sessions/**
 .vim/.netrwhist
 
-# OS 別の除外
+# OS 別の除外: chezmoiscripts/darwin/ は macOS 以外では走らせない
 {{- if ne .chezmoi.os "darwin" }}
 Library/**
 .chezmoiscripts/darwin/**
