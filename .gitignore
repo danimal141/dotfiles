@@ -46,7 +46,6 @@ home/dot_claude/*
 !home/dot_claude/mcp-servers.yaml
 !home/dot_claude/.env.example
 !home/dot_claude/setup-mcp.sh
-!home/dot_claude/plans/
 
 # Codex configuration (chezmoi-managed)
 home/dot_codex/*

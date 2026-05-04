@@ -5,6 +5,9 @@
 .claude/statsig/**
 .claude/ide/**
 
+# Plan ファイルはローカル ~/.claude/plans/ にのみ存在する (Git 管理外)
+.claude/plans/**
+
 # Claude Code 関連の生成・状態系 (chezmoi 管理外)
 .claude/.credentials.json
 .claude/.last-update-check
