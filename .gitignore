@@ -2,6 +2,11 @@ home/.vim/plugged/*
 home/.vim/.netrwhist
 home/.vim/sessions/*
 
+# Vim plugin caches (chezmoi-managed)
+home/dot_vim/plugged/*
+home/dot_vim/.netrwhist
+home/dot_vim/sessions/*
+
 # Claude configuration
 /.claude/*
 home/.claude/*

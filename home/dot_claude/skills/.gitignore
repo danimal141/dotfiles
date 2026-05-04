@@ -1,0 +1,12 @@
+# APM-managed skills (installed via ~/.apm/apm.yml)
+chrome-cdp/
+codebase-analyzer/
+create-pr/
+dig/
+git-commit/
+infra-codebase-analyzer/
+interview-design/
+new-eng-outsource/
+resignation-report/
+setup-dotfiles/
+setup-markdownlint/
