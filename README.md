@@ -85,15 +85,30 @@ $ pre-commit install        # or `prek install`
 
 ## 日常運用
 
-### nix-darwin (Homebrew + macOS 設定)
+### nix-darwin (Nix store CLI + Homebrew + macOS 設定)
+
+CLI ツールバイナリは Nixpkgs から供給する `nix/packages.nix` と、
+GUI cask や Apple 統合が必要な formulae を運ぶ `nix/homebrew.nix` の二段構え。
 
 | 操作 | コマンド |
 |---|---|
-| パッケージ追加 / 削除 | `nix/homebrew.nix` を編集 → `darwin-rebuild switch --flake ".#$(scutil --get LocalHostName)"` |
+| Nix store の CLI を追加 / 削除 | `nix/packages.nix` を編集 → `darwin-rebuild switch --flake ".#$(scutil --get LocalHostName)"` |
+| Homebrew 経由の brew / cask を追加 / 削除 | `nix/homebrew.nix` を編集 → 同上 |
 | macOS 設定変更 | `nix/system.nix` を編集 → 同上 |
-| 入力を個別更新 | `nix flake lock --update-input nixpkgs` (or `nix-darwin` / `nix-homebrew`) |
+| 入力を個別更新 | `nix flake lock --update-input nixpkgs` (or `nix-darwin` / `nix-homebrew` / `llm-agents`) |
 | 世代一覧 | `darwin-rebuild --list-generations` |
 | 前世代に戻す | `darwin-rebuild --rollback` |
+
+`nix/homebrew.nix` で Homebrew 側に残している主な理由:
+
+* shell bootstrap binaries (chezmoi, mise) — `darwin-rebuild` の前段階で必要
+* tap-only formulae (FairwindsOps/pluto, fujiwara/tfstate-lookup, k1LoW/tbls, kayac/ecspresso, mutagen-io, yukiarrr/ecsk)
+* Apple / macOS 統合が brew の方が確実 (basictex, ffmpeg, imagemagick, llvm, mas, gdb)
+* Node / Python ランタイム前提 (markdownlint-cli, marp-cli, repomix, pipx)
+* macOS-only ツール (terminal-notifier, im-select)
+* shell 本体と plugin (zsh / zsh-autosuggestions / zsh-syntax-highlighting / zsh-completions) — brew の方が startup が速い
+
+APM (`microsoft/apm/apm`) は [`numtide/llm-agents.nix`](https://github.com/numtide/llm-agents.nix) flake 経由で Nix store 供給に切り替え済み。
 
 注意:
 
@@ -174,14 +189,22 @@ hostname 規約: 仕事用は `work`、個人用は `personal` / `personal2` / `
 
 明示的に override したい場合は `~/.config/chezmoi/chezmoi.toml` の `[data] machineType` に直接書く。
 
-## 並走モード (Step A〜mise 時点)
+## 管理ツールの責務分担 (Step A〜C 完了時点)
 
-* nix-darwin 管理: Homebrew (CLI / cask)、macOS システム設定
-* chezmoi 管理: `~/.zshrc` `~/.gitconfig` `~/.tmux.conf` `~/.vimrc` `~/.codex/` `~/.claude/` ほか主要設定
-* mise 管理: 言語ランタイム (Node / Python / Ruby / Go / etc.) — asdf からの置き換え
+* nix-darwin 管理:
+  * `nix/packages.nix` — Nix store 供給の CLI バイナリ (git, tmux, neovim, fzf, ripgrep, jq, gh, kubectl 系, APM など、`flake.lock` で pin)
+  * `nix/homebrew.nix` — bootstrap binaries / tap-only formulae / GUI cask / macOS 統合の強い formulae
+  * `nix/system.nix` — macOS システム設定 (Dock / Finder / KeyRepeat / trackpad)
+* chezmoi 管理: `~/.zshrc` `~/.gitconfig` `~/.tmux.conf` `~/.vimrc` `~/.codex/` `~/.claude/` ほか主要設定 (PC ごとの差分は tmpl で吸収)
+* mise 管理: 言語ランタイム (Node / Python / Ruby / Go / etc.)
 * homesick 経由 (chezmoi 管理外、`.chezmoiignore` で除外): `~/.claude/.env`, `~/.claude/.markdownlint.jsonc`, `~/.apm/apm.lock.yaml` など
 
-`home/Brewfile` は brew bundle 由来の旧管理経路として残置 (Step C で削除予定)。Step B 完了後は **`nix/homebrew.nix` のみ** を編集する。
+PATH 解決順 (`home/dot_zshrc.tmpl`):
+
+1. `/run/current-system/sw/bin` — Nix store (nix-darwin が管理する CLI)
+2. `/opt/homebrew/bin` — Homebrew (Nix 移行外の formulae / cask)
+3. `$HOME/bin`, `$HOME/.local/bin`
+4. mise activate がこの後で言語ランタイム shim を PATH 先頭に差し込む
 
 homesick の完全解除と `home/.zshrc` 等の重複ファイル削除、`.homesick_subdir` 削除は **後続の別 PR** で扱う。
 

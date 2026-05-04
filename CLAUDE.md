@@ -14,11 +14,11 @@ This is a dotfiles repository managed by homesick. All configuration files are s
 # Initial setup (run from repository root)
 ./setup.sh
 
-# Link dotfiles after adding new files
-homesick link dotfiles
+# Apply dotfiles after editing (chezmoi)
+chezmoi apply
 
-# Install/update Homebrew packages
-brew bundle --file=home/Brewfile
+# Apply Nix store CLI / Homebrew packages / macOS settings (nix-darwin)
+darwin-rebuild switch --flake ".#$(scutil --get LocalHostName)"
 
 # Install language runtimes via mise (replaces asdf, reads ~/.tool-versions)
 mise install
@@ -38,9 +38,8 @@ cd vscode && ./apply-settings.sh && ./sync-extensions.sh
 ### Managing Dotfiles
 
 ```bash
-# Add new dotfile - place it in home/ directory first
-# Example: home/.newconfig
-homesick link dotfiles  # Creates symlink ~/.newconfig -> ~/.homesick/repos/dotfiles/home/.newconfig
+# Add new dotfile - place it in home/ with chezmoi naming (e.g. home/dot_newconfig)
+# then run `chezmoi apply` to materialize ~/.newconfig from the source
 
 # Update tmux config for deprecated options
 python tmux-migrate-options.py home/.tmux.conf > home/.tmux.conf.new
@@ -91,7 +90,10 @@ Key configurations:
 - `.tmux.conf` - tmux with custom prefix (C-t), 256 color support, mouse support
 - `.gitconfig` - Git configuration with user settings and aliases
 - `.gitignore` - Global gitignore patterns
-- `Brewfile` - Comprehensive Homebrew packages (100+ packages) including development tools, CLI utilities, GUI apps, and specialized tools
+- `nix/packages.nix` - CLI tools served from the Nix store (`flake.lock` で pin)
+- `nix/homebrew.nix` - GUI cask + bootstrap binaries + tap-only / Apple-integrated formulae
+- `nix/system.nix` - macOS system defaults (Dock / Finder / KeyRepeat / trackpad)
+- `nix/hosts/<hostname>.nix` - per-host overrides (work / personal / personal2 ...)
 - `.vim/coc-settings.json` - CoC configuration for language servers
 - `.config/nvim/` - Neovim configuration with symlinked coc-settings.json
 - `.ctags.d/` - Universal Ctags configuration directory
