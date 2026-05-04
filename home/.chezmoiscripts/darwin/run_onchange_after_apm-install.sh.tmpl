@@ -2,15 +2,14 @@
 # `chezmoi apply` の後段で APM (Microsoft Agent Package Manager) を呼び、
 # Claude Code skill 群を再 install する。
 #
-# Step A の目的との対応:
-#   * APM の skill 管理を chezmoi の workflow に統合する。`apm.yml` を
-#     編集 → `chezmoi apply` → 自動で `apm install` が走る、を成立させる。
-#   * 旧来は `~/.apm/apm.yml` を直接編集し手動で `apm install` を打って
-#     いた。dotfiles のセットアップフローに 1 ステップ余計に挟まる。
+# 目的:
+#   APM の skill 管理を chezmoi の workflow に統合する。`apm.yml` を編集 →
+#   `chezmoi apply` → 自動で `apm install` が走る、を成立させる。直接
+#   `~/.apm/apm.yml` を編集して手動で `apm install` を打つ手順を 1 ステップ
+#   削減する。
 #
 # なぜ `run_onchange_after_*` プレフィックス:
-#   * `run_after_*` は毎回 apply するたびに走り、`apm install` の I/O が
-#     無駄。
+#   * `run_after_*` は毎回 apply するたびに走り、`apm install` の I/O が無駄。
 #   * `run_once_*` は名前が同じ間は再実行されず、`apm.yml` を編集しても
 #     反映されない。
 #   * `run_onchange_*` は「テンプレ展開後の中身が変わったときだけ走る」。
@@ -23,8 +22,8 @@ set -euo pipefail
 
 if ! command -v apm >/dev/null 2>&1; then
   # APM 未インストールの環境 (CI / 初期セットアップ最初の chezmoi init 時)
-  # では skip する。Step B 以降で nix-darwin / brew が APM を先に入れる
-  # 前提だが、それでも beforeAll の段階では未インストールでありうる。
+  # では skip する。brew/Nix が APM を先に入れる前提だが、それでも beforeAll
+  # の段階では未インストールでありうる。
   echo "apm not installed; skipping"
   exit 0
 fi

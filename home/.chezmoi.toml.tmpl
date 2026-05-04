@@ -1,21 +1,18 @@
 {{- /*
   chezmoi 初期 config の生成テンプレート (`chezmoi init` 時に評価される)。
 
-  Step A の目的:
-    homesick の「~/ にシンボリックリンクを張るだけ」では、
-    PC ごとに値が変わる項目 (username / email / 環境別の AWS_PROFILE / IDE
-    設定等) を一本の dotfile に押し込めない。chezmoi の data + tmpl で
-    マシン別差分を吸収する。
+  PC ごとに値が変わる項目 (username / email / 環境別の AWS_PROFILE / IDE 設定
+  等) を一本の dotfile に押し込めるため、chezmoi の data + tmpl で吸収する。
 
-  なぜ data 値を 3 段階で決めるか:
+  data 値 (machineType) は 3 段階で決める:
     1. 「ephemeral」(CI / devcontainer / root) を最優先で自動判定する。
        これらの環境では work / personal の質問を出してはならない (CI 詰まる)。
     2. それ以外は hostname 規約 (work / personal*) で自動判定する。
-       Step B 以降、nix-darwin が `networking.hostName` を強制するため、
-       IT 部門が割り当てた個別 hostname に依存せず確実に分類できる。
+       nix-darwin が `networking.hostName` を強制するため、IT 部門が割り当てた
+       個別 hostname に依存せず確実に分類できる。
     3. どちらでも分類できないときだけ `promptStringOnce` で対話入力する。
-       `promptStringOnce` を使う理由は、二度目以降の `chezmoi init` で
-       値を保持して再質問しないため (CI で chezmoi init を流すケースに有用)。
+       `promptStringOnce` を使う理由は、二度目以降の `chezmoi init` で値を
+       保持して再質問しないため (CI で chezmoi init を流すケースに有用)。
 */ -}}
 
 {{- $machineType := "" -}}

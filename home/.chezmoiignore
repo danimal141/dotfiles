@@ -1,11 +1,10 @@
 # chezmoi が ~/ に展開しない (= chezmoi 管理外として残す) パスのリスト。
 #
-# Step A の目的との対応:
-#   `[edit] apply = true` を有効にしているため、`chezmoi edit` で保存した
-#   瞬間に ~/ にも書き戻る。一方で Claude Code / Codex / APM のような
-#   ツールは「アプリ側が ~/ のファイルを動的に書き換える」運用をする。
-#   それらを chezmoi 管理下に置くと、`chezmoi verify` が常に drift を
-#   検出し、誤って `chezmoi apply` を打つたびにアプリ側の状態が消える。
+# `[edit] apply = true` が有効なため、`chezmoi edit` で保存した瞬間に ~/
+# にも書き戻る。一方で Claude Code / Codex / APM / vim-plug のようなツールは
+# 「アプリ側が ~/ のファイルを動的に書き換える」運用をする。それらを chezmoi
+# 管理下に置くと、`chezmoi verify` が常に drift を検出し、誤って `chezmoi
+# apply` を打つたびにアプリ側の状態が消える。
 #
 # 除外対象を厳選し、各行に「なぜ無視するか」を残す (運用時に判断材料になる)。
 
@@ -36,7 +35,7 @@
 # age 鍵置き場 (defensive、コミットしない)
 .config/age/**
 
-# Brewfile はリポジトリのビルド入力 (Step B で nix/homebrew.nix に移行予定)、~/ には配置しない
+# Brewfile はリポジトリのビルド入力。~/ には配置しない
 Brewfile
 
 # APM が apm install で動的に作る module ツリー
