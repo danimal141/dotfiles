@@ -5,8 +5,8 @@
 {{- /* Auto-detect ephemeral environments (CI, devcontainer, root user) */ -}}
 {{- if or (env "CODESPACES") (env "REMOTE_CONTAINERS") (eq .chezmoi.username "root") -}}
 {{-   $machineType = "ephemeral" -}}
-{{- /* Auto-detect work hosts by hostname prefix (rename your Mac to "work-..." if needed) */ -}}
-{{- else if hasPrefix .chezmoi.hostname "work-" -}}
+{{- /* Auto-detect work hosts: "work-*" prefix or specific company-issued hostnames */ -}}
+{{- else if or (hasPrefix .chezmoi.hostname "work-") (eq .chezmoi.hostname "hideaki-ishii1") -}}
 {{-   $machineType = "work" -}}
 {{- end -}}
 
