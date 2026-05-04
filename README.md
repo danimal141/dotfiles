@@ -2,9 +2,9 @@
 
 ## Requirements
 
-* [Nix + nix-darwin](https://github.com/nix-darwin/nix-darwin) (Step B 以降、Homebrew / macOS 設定の declarative 管理)
-* [chezmoi](https://github.com/twpayne/chezmoi) (Step A 以降、dotfile 管理 + テンプレート)
-* [homesick](https://github.com/technicalpickles/homesick) (legacy paths only、完全解除は後続 PR)
+* [Nix + nix-darwin](https://github.com/nix-darwin/nix-darwin) — Homebrew / macOS 設定 / Nix store CLI の declarative 管理
+* [chezmoi](https://github.com/twpayne/chezmoi) — dotfile 管理 + テンプレート
+* [homesick](https://github.com/technicalpickles/homesick) — legacy paths only (完全解除は後続 PR)
 
 ## Get started
 
@@ -189,7 +189,7 @@ hostname 規約: 仕事用は `work`、個人用は `personal` / `personal2` / `
 
 明示的に override したい場合は `~/.config/chezmoi/chezmoi.toml` の `[data] machineType` に直接書く。
 
-## 管理ツールの責務分担 (Step A〜C 完了時点)
+## 管理ツールの責務分担
 
 * nix-darwin 管理:
   * `nix/packages.nix` — Nix store 供給の CLI バイナリ (git, tmux, neovim, fzf, ripgrep, jq, gh, kubectl 系, APM など、`flake.lock` で pin)
