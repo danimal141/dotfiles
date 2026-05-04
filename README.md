@@ -116,6 +116,48 @@ $ pre-commit install        # or `prek install`
 * `[edit] apply = true` のため、`chezmoi edit` で保存した瞬間に `~/` に反映される。テンプレ syntax error が `~/.zshrc` を破壊しうるので、大きな書き換えは `chezmoi diff --watch` で先に検証する
 * 自動生成された `*.backup` ファイル (chezmoi の auto-rename 結果) は内容を確認してから削除する
 
+## 新しい Mac を追加する場合
+
+1. 新 Mac で hostname を確認:
+
+   ```shell
+   $ scutil --get LocalHostName
+   ```
+
+2. `nix/hosts/<hostname>.nix` を作成 (`hideaki-ishii1.nix` を雛形に):
+
+   ```nix
+   { ... }:
+   {
+     networking.hostName = "<hostname>";
+     # この host 専用の brew/cask があればここに
+   }
+   ```
+
+3. `flake.nix` の `hosts` attrset に追加:
+
+   ```nix
+   hosts = {
+     "hideaki-ishii1" = { user = "hideaki.ishii"; };
+     "personal-mbp"   = { user = "danimal141"; };  # ← 追加
+   };
+   ```
+
+4. 変更を commit & push (or 既存ブランチに rebase)
+
+5. 新 Mac でセットアップ実行:
+
+   ```shell
+   $ ./setup.sh
+   ```
+
+`chezmoi` の `machineType` は **`whoami` の出力で自動判定** される:
+
+* `whoami == "hideaki.ishii"` (会社管理 Mac) → `machineType = "work"`
+* それ以外 (例: `whoami == "danimal141"`) → `machineType = "personal"`
+
+明示的に override したい場合は `~/.config/chezmoi/chezmoi.toml` の `[data] machineType` に直接書く。
+
 ## 並走モード (Step A〜B 時点)
 
 * nix-darwin 管理: Homebrew (CLI / cask)、macOS システム設定
