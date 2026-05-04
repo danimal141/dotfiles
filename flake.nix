@@ -34,9 +34,16 @@
     nix-homebrew = {
       url = "github:zhaofengli/nix-homebrew";
     };
+
+    # APM (microsoft/apm) is not in official nixpkgs; numtide packages it
+    # with daily auto-updates. Used in nix/packages.nix.
+    llm-agents = {
+      url = "github:numtide/llm-agents.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs@{ self, nixpkgs, nix-darwin, nix-homebrew }:
+  outputs = inputs@{ self, nixpkgs, nix-darwin, nix-homebrew, llm-agents }:
     let
       # Hostname 規約:
       #   "work"     — 仕事用 Mac
@@ -62,9 +69,10 @@
       mkHost = hostname: { user, system ? "aarch64-darwin" }:
         nix-darwin.lib.darwinSystem {
           inherit system;
-          specialArgs = { inherit user hostname; };
+          specialArgs = { inherit user hostname inputs; };
           modules = [
             ./nix/system.nix
+            ./nix/packages.nix
             ./nix/homebrew.nix
             (./nix/hosts + "/${hostname}.nix")
 
