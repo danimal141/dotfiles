@@ -28,6 +28,11 @@ Brewfile
 # APM が apm install で動的に作る module ツリー
 .apm/apm_modules/**
 
+# Vim プラグインの実体は vim-plug が動的に管理するので chezmoi 管理外
+.vim/plugged/**
+.vim/sessions/**
+.vim/.netrwhist
+
 # OS 別の除外
 {{- if ne .chezmoi.os "darwin" }}
 Library/**
