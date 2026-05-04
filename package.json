@@ -1,0 +1,13 @@
+{
+  "name": "dotfiles",
+  "version": "1.0.0",
+  "description": "Personal dotfiles managed by chezmoi (Step A onward) and homesick (legacy).",
+  "private": true,
+  "scripts": {
+    "secretlint": "secretlint '**/*'"
+  },
+  "devDependencies": {
+    "@secretlint/secretlint-rule-preset-recommend": "^9.3.4",
+    "secretlint": "^9.3.4"
+  }
+}
