@@ -118,13 +118,9 @@ $ pre-commit install        # or `prek install`
 
 ## 新しい Mac を追加する場合
 
-1. 新 Mac で hostname を確認:
+hostname 規約: 仕事用は `work`、個人用は `personal` / `personal2` / `personal3` / ... と連番で増やす。`nix-darwin` の `networking.hostName` で apply 時に LocalHostName / HostName が固定されるので、IT 部門が割り当てた元の hostname がどんな名前でも上書きされる。
 
-   ```shell
-   $ scutil --get LocalHostName
-   ```
-
-2. `nix/hosts/<hostname>.nix` を作成 (`hideaki-ishii1.nix` を雛形に):
+1. `nix/hosts/<hostname>.nix` を作成 (`work.nix` を雛形に):
 
    ```nix
    { ... }:
@@ -134,27 +130,30 @@ $ pre-commit install        # or `prek install`
    }
    ```
 
-3. `flake.nix` の `hosts` attrset に追加:
+2. `flake.nix` の `hosts` attrset に追加:
 
    ```nix
    hosts = {
-     "hideaki-ishii1" = { user = "hideaki.ishii"; };
-     "personal"       = { user = "danimal141"; };  # ← 追加
+     "work"      = { user = "hideaki.ishii"; };
+     "personal"  = { user = "danimal141"; };  # ← 追加
    };
    ```
 
-4. 変更を commit & push (or 既存ブランチに rebase)
+3. 変更を commit & push (or 既存ブランチに rebase)
 
-5. 新 Mac でセットアップ実行:
+4. 新 Mac でセットアップ実行:
 
    ```shell
    $ ./setup.sh
    ```
 
-`chezmoi` の `machineType` は **`whoami` の出力で自動判定** される:
+   初回は `nix run nix-darwin -- switch --flake .#<hostname>` で hostname を指定する (元の hostname と一致しないため scutil で検出できない)。`darwin-rebuild` 実行後は LocalHostName が `<hostname>` に変わるので、二度目以降は `setup.sh` の `scutil --get LocalHostName` 経由で動作する。
 
-* `whoami == "hideaki.ishii"` (会社管理 Mac) → `machineType = "work"`
-* それ以外 (例: `whoami == "danimal141"`) → `machineType = "personal"`
+`chezmoi` の `machineType` は **hostname で自動判定** される:
+
+* `hostname == "work"` → `machineType = "work"`
+* `hostname` が `personal` で始まる (`personal`, `personal2` 等) → `machineType = "personal"`
+* CI / devcontainer / root user → `machineType = "ephemeral"`
 
 明示的に override したい場合は `~/.config/chezmoi/chezmoi.toml` の `[data] machineType` に直接書く。
 

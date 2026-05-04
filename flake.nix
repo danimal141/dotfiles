@@ -16,14 +16,18 @@
 
   outputs = inputs@{ self, nixpkgs, nix-darwin, nix-homebrew }:
     let
+      # Hostname convention: "work" for the company Mac, "personal" /
+      # "personal2" / "personal3" / ... for personal Macs. nix-darwin enforces
+      # the hostname via networking.hostName in each host module so chezmoi's
+      # hostname-based machineType detection lines up automatically.
+      #
       # 新しい Mac を追加する手順:
-      #   1. 新 Mac で `scutil --get LocalHostName` で hostname を確認
-      #   2. nix/hosts/<hostname>.nix を作成 (hideaki-ishii1.nix を雛形に)
-      #   3. 下の hosts に 1 エントリ追加
-      #   4. 新 Mac で `nix run nix-darwin -- switch --flake .#<hostname>`
+      #   1. nix/hosts/<hostname>.nix を作成 (work.nix を雛形に)
+      #   2. 下の hosts に 1 エントリ追加
+      #   3. 新 Mac で `nix run nix-darwin -- switch --flake .#<hostname>`
       hosts = {
-        "hideaki-ishii1" = { user = "hideaki.ishii"; };
-        # "personal"       = { user = "danimal141"; };
+        "work"     = { user = "hideaki.ishii"; };
+        # "personal" = { user = "danimal141"; };
       };
 
       mkHost = hostname: { user, system ? "aarch64-darwin" }:
