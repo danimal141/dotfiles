@@ -30,19 +30,17 @@ echo "Initializing chezmoi..."
 chezmoi init --apply --source "$(pwd)"
 
 #------------------------------------------
-# LSP servers (depends on asdf/mise runtimes - mise migration is Step mise)
+# LSP servers (depends on mise-managed language runtimes)
 #------------------------------------------
-echo "Installing programming language runtimes via asdf..."
-./_asdf.sh
+echo "Installing language runtimes from ~/.tool-versions via mise..."
+mise install || true
 
 echo "Installing LSP servers..."
 npm install -g typescript-language-server typescript || true
 npm install -g pyright || true
 gem install ruby-lsp --no-doc || true
 go install golang.org/x/tools/gopls@latest || true
-asdf reshim nodejs || true
-asdf reshim ruby || true
-asdf reshim golang || true
+mise reshim || true
 
 #------------------------------------------
 # VSCode

@@ -111,6 +111,23 @@ $ pre-commit install        # or `prek install`
 | 整合性チェック | `chezmoi verify` |
 | ホームディレクトリの変更を取り込む | `chezmoi re-add ~/.zshrc` |
 
+### mise (language runtime)
+
+asdf を置き換えた言語ランタイム管理。`~/.tool-versions` (asdf 互換) を読むので既存プロジェクトはそのまま動く。
+
+| 操作 | コマンド |
+|---|---|
+| プロジェクト依存をまとめて install | `mise install` |
+| 個別バージョンを fix | `mise use ruby@3.4 --pin` |
+| グローバル install (`~/.tool-versions`) | `mise use -g node@22` |
+| LSP 等のシム再生成 | `mise reshim` |
+| 利用可能バージョン一覧 | `mise ls-remote ruby` |
+
+注意:
+
+* asdf の `~/.asdf/installs` は再利用不可で再ビルドが要る。Python / Ruby のビルド依存問題は同じく発生するので、precompiled binary (`mise use python@3.12` 等) を使うのが基本
+* mise は activate 時に PATH 先頭にシムを差し込むので、`zshrc` の `mise activate zsh` は path-helper や Nix 側ランタイムの **後ろ** に置く
+
 注意:
 
 * `[edit] apply = true` のため、`chezmoi edit` で保存した瞬間に `~/` に反映される。テンプレ syntax error が `~/.zshrc` を破壊しうるので、大きな書き換えは `chezmoi diff --watch` で先に検証する
@@ -157,10 +174,11 @@ hostname 規約: 仕事用は `work`、個人用は `personal` / `personal2` / `
 
 明示的に override したい場合は `~/.config/chezmoi/chezmoi.toml` の `[data] machineType` に直接書く。
 
-## 並走モード (Step A〜B 時点)
+## 並走モード (Step A〜mise 時点)
 
 * nix-darwin 管理: Homebrew (CLI / cask)、macOS システム設定
 * chezmoi 管理: `~/.zshrc` `~/.gitconfig` `~/.tmux.conf` `~/.vimrc` `~/.codex/` `~/.claude/` ほか主要設定
+* mise 管理: 言語ランタイム (Node / Python / Ruby / Go / etc.) — asdf からの置き換え
 * homesick 経由 (chezmoi 管理外、`.chezmoiignore` で除外): `~/.claude/.env`, `~/.claude/.markdownlint.jsonc`, `~/.apm/apm.lock.yaml` など
 
 `home/Brewfile` は brew bundle 由来の旧管理経路として残置 (Step C で削除予定)。Step B 完了後は **`nix/homebrew.nix` のみ** を編集する。

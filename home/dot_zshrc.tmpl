@@ -163,10 +163,7 @@ bindkey '^R' peco-history-selection
 # for zsh-completions
 fpath=($(brew --prefix zsh-completions) $fpath)
 
-# asdf (kept during the asdf -> mise migration; remove once mise install verified)
-. $(brew --prefix asdf)/libexec/asdf.sh
-
-# mise (overrides asdf shims because it activates after asdf in PATH)
+# mise (replaces asdf; reads ~/.tool-versions for backward compatibility)
 eval "$(mise activate zsh)"
 
 # direnv

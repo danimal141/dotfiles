@@ -20,8 +20,8 @@ homesick link dotfiles
 # Install/update Homebrew packages
 brew bundle --file=home/Brewfile
 
-# Install programming languages via asdf
-./_asdf.sh
+# Install language runtimes via mise (replaces asdf, reads ~/.tool-versions)
+mise install
 
 # Setup MCP servers for Claude
 cd home/.claude && ./setup-mcp.sh
@@ -80,14 +80,13 @@ The repository follows homesick conventions:
 - `home/.codex/` - Codex CLI configuration directory with template-based config management
 - `.homesick_subdir` - Declares `.config` as a subdirectory for proper symlinking
 - `setup.sh` - Main setup script that installs dependencies and links dotfiles
-- `_asdf.sh` - Installs programming languages using asdf version manager
 - `tmux-migrate-options.py` - Utility to migrate deprecated tmux options
 - `docs/` - Documentation directory with user guides
 - `vscode/` - VSCode configuration management tools
 
 Key configurations:
 
-- `.zshrc` - Zsh shell with vi-mode keybindings, git branch in prompt, asdf integration
+- `.zshrc` - Zsh shell with vi-mode keybindings, git branch in prompt, mise integration
 - `.vimrc` - Vim/Neovim config using vim-plug, CoC for LSP, Syntastic for linting
 - `.tmux.conf` - tmux with custom prefix (C-t), 256 color support, mouse support
 - `.gitconfig` - Git configuration with user settings and aliases
@@ -115,8 +114,8 @@ Key configurations:
 
 ### Language Management
 
-- asdf manages multiple language versions (Ruby, Node.js, Python, Go, Rust, Deno, Terraform, kubectl, AWS CLI)
-- Languages are installed globally to latest version by default
+- mise manages multiple language versions (Ruby, Node.js, Python, Go, Rust, Deno, Terraform, kubectl, AWS CLI). Reads `~/.tool-versions` for asdf compatibility; `mise.toml` is preferred for new projects.
+- Languages are installed per-project via `mise install`; precompiled binaries (mise's `core` plugins) avoid the openssl/libyaml build pitfalls common with asdf.
 
 ### Claude Configuration
 

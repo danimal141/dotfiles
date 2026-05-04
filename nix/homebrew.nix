@@ -54,7 +54,6 @@
       "age"
       "ansible"
       "argoproj/tap/argocd"
-      "asdf"
       "automake"
       "azure-cli"
       "basictex"
