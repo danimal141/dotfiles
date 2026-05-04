@@ -27,7 +27,7 @@
       #   3. 新 Mac で `nix run nix-darwin -- switch --flake .#<hostname>`
       hosts = {
         "work"     = { user = "hideaki.ishii"; };
-        # "personal" = { user = "danimal141"; };
+        "personal" = { user = "danimal141"; };
       };
 
       mkHost = hostname: { user, system ? "aarch64-darwin" }:
