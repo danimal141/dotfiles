@@ -32,12 +32,9 @@ chezmoi init --apply --source "$(pwd)"
 #------------------------------------------
 # LSP servers (depends on mise-managed language runtimes)
 #------------------------------------------
-# Step mise の目的との対応:
-#   旧 _asdf.sh は asdf プラグイン install + 各言語インストールを縦に並べた
-#   30 行超のスクリプトだった。mise はバイナリ単体で `~/.tool-versions` を
-#   読むため、このセクション自体が `mise install` 一行に潰せる。
-#   失敗時に止めずに進ませるのは、ビルド失敗してもセットアップ全体を最後まで
-#   回す方が後段 (VSCode 等) を別途やり直さなくて済むため。
+# `~/.tool-versions` に書かれた言語ランタイムを mise でまとめて install する。
+# 失敗しても止めないのは、ビルド失敗してもセットアップ全体を最後まで回す方が
+# 後段 (VSCode 等) を別途やり直さなくて済むため。
 echo "Installing language runtimes from ~/.tool-versions via mise..."
 mise install || true
 
