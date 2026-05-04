@@ -32,9 +32,18 @@ chezmoi init --apply --source "$(pwd)"
 #------------------------------------------
 # LSP servers (depends on mise-managed language runtimes)
 #------------------------------------------
+# Step mise の目的との対応:
+#   旧 _asdf.sh は asdf プラグイン install + 各言語インストールを縦に並べた
+#   30 行超のスクリプトだった。mise はバイナリ単体で `~/.tool-versions` を
+#   読むため、このセクション自体が `mise install` 一行に潰せる。
+#   失敗時に止めずに進ませるのは、ビルド失敗してもセットアップ全体を最後まで
+#   回す方が後段 (VSCode 等) を別途やり直さなくて済むため。
 echo "Installing language runtimes from ~/.tool-versions via mise..."
 mise install || true
 
+# LSP server は npm/gem/go が走る言語でだけ事前 install しておく。
+# `mise reshim` は npm install -g などで作った shim を再生成して PATH に
+# 反映するために必要 (mise 経由の node なら自動だが、global install 直後は明示)。
 echo "Installing LSP servers..."
 npm install -g typescript-language-server typescript || true
 npm install -g pyright || true

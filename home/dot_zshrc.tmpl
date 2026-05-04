@@ -164,6 +164,19 @@ bindkey '^R' peco-history-selection
 fpath=($(brew --prefix zsh-completions) $fpath)
 
 # mise (replaces asdf; reads ~/.tool-versions for backward compatibility)
+#
+# Step mise の目的:
+#   asdf は ~/.asdf/installs を再ビルド前提で運ぶため、Python の openssl 依存
+#   や Ruby の libyaml/readline 等で詰まりやすい。mise は precompiled binary
+#   (`core` plugin) を優先利用するため、新規 Mac での `mise install` が
+#   実用時間で完走する。
+#
+# 配置の意図:
+#   `mise activate zsh` は実行時点の PATH 先頭に shim ディレクトリを差し込む。
+#   path-helper や上で組んだ /opt/homebrew / /usr/local の path 配列より
+#   "後" に評価する必要がある (前に置くと shim が先頭に来た直後 path 配列で
+#   上書きされ無効化される)。
+#   `direnv` よりは前に置くのが慣習 (direnv が language runtime を呼ぶケース)。
 eval "$(mise activate zsh)"
 
 # direnv

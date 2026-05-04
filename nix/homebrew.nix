@@ -94,6 +94,8 @@
       "marp-cli"
       "mas"
       "mecab"
+      # mise: bootstrap binary。darwin-rebuild が走り終わる前段階で言語ランタイムが
+      # 必要なケース (VSCode セットアップ等) があるため Step C でも brew 維持。
       "mise"
       "microsoft/apm/apm"
       "mutagen-io/mutagen/mutagen-compose"
