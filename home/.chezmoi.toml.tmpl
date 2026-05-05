@@ -40,6 +40,12 @@
 {{-   $machineType = promptStringOnce . "machineType" "Machine type (work / personal / ephemeral)" "personal" -}}
 {{- end -}}
 
+# `sourceDir` は `chezmoi init --source <path>` 実行時の引数を chezmoi が
+# 組み込み変数 `.chezmoi.sourceDir` として解決した値で固定する。これがないと
+# 引数なしで `chezmoi init` を再実行したときデフォルト ~/.local/share/chezmoi
+# にフォールバックしてリポジトリを見失う。
+sourceDir = {{ .chezmoi.sourceDir | quote }}
+
 [data]
     name = {{ $name | quote }}
     email = {{ $email | quote }}
