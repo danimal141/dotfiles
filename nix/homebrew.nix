@@ -38,11 +38,11 @@
     };
 
     # tap: nixpkgs / nix-homebrew では拾えない formulae の供給元。
-    #   homebrew/cask-fonts  — font cask (font-jetbrains-mono 等)
-    #   daipeihust/tap       — im-select の供給元 (IME 切り替え CLI)
-    #   microsoft/apm        — APM CLI の供給元
+    #   daipeihust/tap — im-select の供給元 (IME 切り替え CLI)
+    #
+    # font-* cask 群はかつて homebrew/cask-fonts tap に居たが、本家 homebrew/cask
+    # に統合されたため tap 宣言は不要 (cask 名だけで resolve される)。
     taps = [
-      "homebrew/cask-fonts"
       "daipeihust/tap"
     ];
 
