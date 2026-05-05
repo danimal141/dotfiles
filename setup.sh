@@ -12,7 +12,7 @@ sudo softwareupdate --install-rosetta --agree-to-license || true
 #------------------------------------------
 echo "Installing Nix (official installer)..."
 if ! command -v nix >/dev/null 2>&1; then
-    sh <(curl -L https://nixos.org/nix/installer)
+    sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install)
 fi
 
 # Flakes 有効化

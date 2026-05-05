@@ -20,7 +20,7 @@ $ cd dotfiles
 ### 2. Nix を install
 
 ```shell
-$ sh <(curl -L https://nixos.org/nix/installer)
+$ sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install)
 
 # Flakes 有効化
 $ mkdir -p ~/.config/nix
