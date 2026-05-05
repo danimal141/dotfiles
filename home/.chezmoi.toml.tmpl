@@ -13,6 +13,10 @@
     3. どちらでも分類できないときだけ `promptStringOnce` で対話入力する。
        `promptStringOnce` を使う理由は、二度目以降の `chezmoi init` で値を
        保持して再質問しないため (CI で chezmoi init を流すケースに有用)。
+
+  `[edit] apply = true` を有効にしているため `chezmoi edit` で保存した瞬間に
+  ~/ に反映される。reedit ループは回避できるが、テンプレ syntax error が
+  即座に ~/.zshrc を破壊するリスクがある (README に運用注意を明記)。
 */ -}}
 
 {{- $machineType := "" -}}
@@ -41,9 +45,6 @@
     email = {{ $email | quote }}
     machineType = {{ $machineType | quote }}
 
-{{- /* `apply = true`: `chezmoi edit` で保存した瞬間に ~/ に反映されるよう
-       にする。reedit ループを回避できる代わり、テンプレ syntax error が
-       即座に ~/.zshrc を破壊するリスクがある (README に運用注意を明記)。 */ -}}
 [edit]
     apply = true
 
