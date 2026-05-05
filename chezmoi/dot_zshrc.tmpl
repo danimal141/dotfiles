@@ -68,18 +68,12 @@ setopt hist_ignore_dups
 setopt share_history
 
 # -------------------------------------
-# prompt
+# prompt (starship)
 # -------------------------------------
-autoload -U promptinit; promptinit
-autoload -Uz colors; colors
-autoload -Uz is-at-least
-autoload -Uz vcs_info
-
-zstyle ':vcs_info:*' actionformats '%F{5}(%f%s%F{5})%F{3}-%F{5}[%F{2}%b%F{3}|%F{1}%a%F{5}]%f '
-zstyle ':vcs_info:*' formats       '%F{5}(%f%s%F{5})%F{3}-%F{5}[%F{2}%b%F{5}]%f '
-zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat '%b%F{1}:%F{3}%r'
-precmd () { vcs_info }
-PS1='%F{5}[%F{2}%n%F{5}] %F{3}%3~ ${vcs_info_msg_0_}%f%# '
+# starship バイナリと ~/.config/starship.toml は home-manager (`nix/home/`) で
+# declarative に管理。`programs.starship.enableZshIntegration = false` にして
+# eval 行はここに 1 行だけ手書きしている (chezmoi が zshrc を所有して
+# home-manager の自動注入と衝突しないようにするため)。
 
 # -------------------------------------
 # key binding
@@ -189,6 +183,11 @@ eval "$(mise activate zsh)"
 
 # direnv
 eval "$(direnv hook zsh)"
+
+# starship prompt (config は ~/.config/starship.toml に home-manager 経由で
+# 配置される)。mise / direnv より後ろに置く: prompt 系は他の PROMPT/PS1 設定
+# を上書きするので、最後に init するのが慣習。
+eval "$(starship init zsh)"
 
 # llvm
 export PATH="$(brew --prefix llvm)/bin:$PATH"

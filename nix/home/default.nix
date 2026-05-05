@@ -1,6 +1,6 @@
 { user, ... }:
 
-# home-manager (~/ 配下を declarative に管理する Nix module) の最小モジュール。
+# home-manager (~/ 配下を declarative に管理する Nix module)。
 #
 # 設計上の方針:
 #   * dotfile 本体 (zshrc / tmux.conf / vimrc 等) は引き続き chezmoi 側に集約。
@@ -8,11 +8,6 @@
 #     「flake.lock で pin したい user-level バイナリ」だけを引き受ける。
 #   * 編集頻度が低く、Nix module の `programs.*` で恩恵を受けるツール (starship,
 #     direnv, fzf 等) を段階的にここに移していく予定。
-#
-# このファイル単独では `home.packages` も `programs.*` 設定も持たない。
-# flake build と darwin-rebuild の home-manager activation 経路が壊れていない
-# ことだけを保証する pure infra モジュール。実際の dotfile / CLI 配布は
-# 後続 PR で段階的に追加する。
 {
   # nixpkgs unstable に対応する home-manager リリース。
   # nix-darwin の system.stateVersion (= 6) とは別の値で、初回設定値を pin する。
@@ -26,4 +21,55 @@
   # programs.home-manager.enable = true は darwin module 統合経路では不要。
   # standalone の `home-manager` CLI を使わない (= darwin-rebuild 1 発で活性化
   # する) ため、CLI の同梱インストールを避けて冪等性を維持する。
+
+  # ----------------------------------------------------------------------------
+  # starship: shell prompt
+  # ----------------------------------------------------------------------------
+  # 旧 zsh prompt は `vcs_info` ベースで `[user] cwd (vcs)-[branch] %` 形式を
+  # 出していた。starship に置き換えて宣言的に再現しつつ、Nix module の型付け
+  # と `flake.lock` での pin を取りに行く。
+  programs.starship = {
+    enable = true;
+
+    # zsh integration (= ~/.zshrc に `eval "$(starship init zsh)"` を注入) は
+    # 無効化する。zsh の rc は chezmoi 管理 (`chezmoi/dot_zshrc.tmpl`) で集約
+    # しているため、home-manager に zshrc 注入を許すと両者が衝突する。
+    # eval 行は chezmoi 側で 1 行手書きする。
+    enableZshIntegration = false;
+
+    # 旧 vcs_info prompt のミニマル再現:
+    #   [user] ~/path (git)-[main] %
+    #
+    # starship preset (Pure / Tokyo Night 等) を使わない理由は、既存環境からの
+    # 認知負荷を最小化するため。慣れたら `programs.starship.settings` を user
+    # 自身が iterate していけば良い。
+    settings = {
+      add_newline = false;
+
+      format = "[\\[$username\\]]($style) $directory$git_branch$character";
+
+      username = {
+        show_always = true;
+        format = "[\\[$user\\]]($style)";
+        style_user = "green";
+      };
+
+      directory = {
+        truncation_length = 3;
+        format = "[$path]($style) ";
+      };
+
+      git_branch = {
+        symbol = "";
+        format = "[\\(git\\)\\-\\[$branch\\]]($style) ";
+        style = "yellow";
+      };
+
+      # 元 prompt の `%#` (root: #, user: %) を再現
+      character = {
+        success_symbol = "[%](magenta)";
+        error_symbol = "[%](red)";
+      };
+    };
+  };
 }
