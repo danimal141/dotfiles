@@ -9,7 +9,7 @@
 # 強い formulae 等)。
 #
 # PATH 競合に注意:
-#   `home/dot_zshrc.tmpl` で /run/current-system/sw/bin を /opt/homebrew/bin
+#   `chezmoi/dot_zshrc.tmpl` で /run/current-system/sw/bin を /opt/homebrew/bin
 #   より前に置いているため、Nix store と Homebrew の両方に同名バイナリが
 #   ある場合は Nix store 側が勝つ。下のリストに入れたものは brew 側からも
 #   消す (= `nix/homebrew.nix` の brews から削除する) のが原則。

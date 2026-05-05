@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This is a dotfiles repository managed by chezmoi. Configuration files live in `home/` using chezmoi naming (`dot_*` -> `~/.<name>`, `private_*`, `executable_*`, etc.) and are materialized into the user's home directory via `chezmoi apply`.
+This is a dotfiles repository managed by chezmoi. Configuration files live in `chezmoi/` (declared via `.chezmoiroot`) using chezmoi naming (`dot_*` -> `~/.<name>`, `private_*`, `executable_*`, etc.) and are materialized into the user's home directory via `chezmoi apply`.
 
 ## Essential Commands
 
@@ -12,7 +12,9 @@ This is a dotfiles repository managed by chezmoi. Configuration files live in `h
 
 ```bash
 # Initial setup (run from repository root)
-./setup.sh
+./setup.sh                  # auto-detect host from LocalHostName
+./setup.sh work             # explicitly target the work host
+./setup.sh personal2        # explicitly target personal2
 
 # Apply dotfiles after editing (chezmoi)
 chezmoi apply
@@ -23,13 +25,8 @@ darwin-rebuild switch --flake ".#$(scutil --get LocalHostName)"
 # Install language runtimes via mise (replaces asdf, reads ~/.tool-versions)
 mise install
 
-# Setup MCP servers for Claude
-cd home/.claude && ./setup-mcp.sh
-
-# Setup Codex configuration
-cd home/.codex && cp .env.example .env
-# Edit .env to add your API keys, then:
-cd home/.codex && ./apply-config.sh
+# Setup MCP servers for Claude (one-shot, after editing chezmoi/dot_claude/mcp-servers.yaml)
+cd chezmoi/dot_claude && ./setup-mcp.sh
 
 # Setup VSCode with extensions and settings
 cd vscode && ./apply-settings.sh && ./sync-extensions.sh
@@ -38,12 +35,13 @@ cd vscode && ./apply-settings.sh && ./sync-extensions.sh
 ### Managing Dotfiles
 
 ```bash
-# Add new dotfile - place it in home/ with chezmoi naming (e.g. home/dot_newconfig)
+# Add new dotfile - place it in chezmoi/ with chezmoi naming
+# (e.g. chezmoi/dot_newconfig, chezmoi/dot_config/foo/bar)
 # then run `chezmoi apply` to materialize ~/.newconfig from the source
 
 # Update tmux config for deprecated options
-python tmux-migrate-options.py home/.tmux.conf > home/.tmux.conf.new
-mv home/.tmux.conf.new home/.tmux.conf
+python tmux-migrate-options.py chezmoi/dot_tmux.conf > chezmoi/dot_tmux.conf.new
+mv chezmoi/dot_tmux.conf.new chezmoi/dot_tmux.conf
 
 # Sync VSCode extensions from current installation
 cd vscode && ./sync-extensions.sh
@@ -52,10 +50,7 @@ cd vscode && ./sync-extensions.sh
 cd vscode && ./apply-settings.sh
 
 # Update Claude MCP server configurations
-cd home/.claude && ./setup-mcp.sh
-
-# Update Codex configuration
-cd home/.codex && ./apply-config.sh
+cd chezmoi/dot_claude && ./setup-mcp.sh
 ```
 
 ### Common Development Commands
@@ -73,19 +68,20 @@ cd home/.codex && ./apply-config.sh
 
 The repository follows chezmoi conventions:
 
-- `home/` - chezmoi source root (declared via `.chezmoiroot`)
-- `home/dot_config/` - materialized as `~/.config/`
-- `home/dot_claude/` - materialized as `~/.claude/` (Claude Code CLI configuration)
-- `home/dot_codex/` - materialized as `~/.codex/` (Codex CLI configuration, template-based)
-- `home/.chezmoi.toml.tmpl` - per-host config (name / email / machineType auto-detection)
-- `home/.chezmoiignore` - paths chezmoi must NOT manage (apps that rewrite ~/  at runtime)
-- `home/.chezmoiscripts/darwin/` - hooks that run on macOS during `chezmoi apply`
+- `chezmoi/` - chezmoi source root (declared via `.chezmoiroot`)
+- `chezmoi/dot_config/` - materialized as `~/.config/`
+- `chezmoi/dot_claude/` - materialized as `~/.claude/` (Claude Code CLI configuration)
+- `chezmoi/dot_codex/` - materialized as `~/.codex/` (Codex CLI configuration; `config.toml.tmpl` is a chezmoi template)
+- `chezmoi/dot_apm/` - materialized as `~/.apm/` (APM dependency manifest for skill management)
+- `chezmoi/.chezmoi.toml.tmpl` - per-host config (name / email / machineType auto-detection)
+- `chezmoi/.chezmoiignore` - paths chezmoi must NOT manage (apps that rewrite ~/  at runtime)
+- `chezmoi/.chezmoiscripts/darwin/` - hooks that run on macOS during `chezmoi apply`
 - `setup.sh` - first-time bootstrap (Nix install -> darwin-rebuild -> chezmoi init -> mise install)
 - `tmux-migrate-options.py` - Utility to migrate deprecated tmux options
 - `docs/` - Documentation directory with user guides
-- `vscode/` - VSCode configuration management tools
+- `vscode/` - VSCode configuration management tools (NOT chezmoi-managed; lives at repo root)
 
-Key configurations:
+Key configurations (materialized paths in `~/`):
 
 - `.zshrc` - Zsh shell with vi-mode keybindings, git branch in prompt, mise integration
 - `.vimrc` - Vim/Neovim config using vim-plug, CoC for LSP, Syntastic for linting
@@ -123,34 +119,33 @@ Key configurations:
 
 ### Claude Configuration
 
-- `home/.claude/` - Claude Code CLI configuration directory containing:
+- `chezmoi/dot_claude/` - source for `~/.claude/` (Claude Code CLI configuration). Tracked files:
   - `CLAUDE.md` - Global user instructions for Claude (in Japanese)
   - `settings.json` - Claude CLI settings and preferences
   - `commands/` - Custom slash commands for Claude
   - `hooks/` - Shell hooks for Claude operations
-  - `mcp-servers.yaml` - MCP server configurations (Git-managed)
-  - `.env.example` - Environment variables template for MCP servers
-  - `setup-mcp.sh` - Script to apply MCP configurations
-  - `ide/` - IDE-specific configurations
-  - `projects/` - Project-specific Claude configurations
-  - `shell-snapshots/` - Saved shell state snapshots
-  - `statsig/` - Analytics and statistics data
-  - `todos/` - Task management data (77+ saved todo lists)
+  - `rules/` - Authoring rules (e.g., `markdown.md`)
+  - `mcp-servers.yaml` - MCP server configurations
+  - `dot_env.example` - Environment variables template (materialized as `~/.claude/.env.example`)
+  - `dot_markdownlint.jsonc` - markdownlint config (materialized as `~/.claude/.markdownlint.jsonc`)
+  - `setup-mcp.sh` - one-shot script to materialize MCP server configs
+  - `skills/` - Local + APM-managed skills (APM-installed dirs are gitignored via `dot_gitignore`)
 
 ### Codex Configuration
 
-- `home/.codex/` - Codex CLI configuration directory with template-based management:
-  - `config.toml.template` - Configuration template (Git-managed)
-  - `config.toml` - Generated configuration file (gitignored)
-  - `.env.example` - Environment variables template (Git-managed)
-  - `.env` - Actual environment variables with API keys (gitignored)
-  - `apply-config.sh` - Script to generate config.toml from template
-  - Setup: Copy `.env.example` to `.env`, add your API keys, then run `./apply-config.sh`
-  - This approach keeps sensitive API keys out of Git while managing MCP server configurations
+- `chezmoi/dot_codex/` - source for `~/.codex/`:
+  - `config.toml.tmpl` - chezmoi template; secrets are injected via `{{ env "..." }}` from shell env or 1Password CLI
+  - `dot_env.example` - environment variables template (materialized as `~/.codex/.env.example`)
+  - `symlink_AGENTS.md` - chezmoi symlink directive
+
+### APM Configuration
+
+- `chezmoi/dot_apm/apm.yml` - APM dependency manifest (= `~/.apm/apm.yml`)
+- `chezmoi/.chezmoiscripts/darwin/run_onchange_after_apm-install.sh.tmpl` - hash-based hook that runs `apm install --target claude` whenever `apm.yml` changes, integrating skills into `~/.claude/skills/`
 
 ### VSCode Management
 
-- `vscode/` - VSCode configuration and extension management:
+- `vscode/` - lives at **repo root**, NOT under `chezmoi/`. Holds settings/keybinding templates and an extension list:
   - `apply-settings.sh` - Script to apply VSCode settings templates
   - `sync-extensions.sh` - Script to sync VSCode extensions
   - `extensions.txt` - List of installed VSCode extensions

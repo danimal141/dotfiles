@@ -36,7 +36,7 @@
     };
   };
 
-  # zsh の rc は chezmoi 管理 (`home/dot_zshrc.tmpl`) に集約する。
+  # zsh の rc は chezmoi 管理 (`chezmoi/dot_zshrc.tmpl`) に集約する。
   # nix-darwin が /etc/zshrc を生成すると chezmoi 側の zshrc と読み込み順で
   # 競合 (PATH 重複 / completion 多重設定) しうるため明示的に無効化する。
   programs.zsh.enable = false;

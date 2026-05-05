@@ -22,23 +22,23 @@ brew install yq
 ### 2. Configure Environment Variables (if needed)
 
 ```bash
-cd home/.claude
-cp .env.example .env
+cd chezmoi/dot_claude
+cp dot_env.example .env
 # Edit the .env file to set required API keys
 ```
 
 ### 3. Add MCP Servers
 
 ```bash
-cd home/.claude && ./setup-mcp.sh
+cd chezmoi/dot_claude && ./setup-mcp.sh
 ```
 
 ## File Structure
 
-All files are located in `home/.claude/` directory:
+All files are located in `chezmoi/dot_claude/` directory (materialized to `~/.claude/`):
 
 - `mcp-servers.yaml` - File defining MCP configurations (Git-managed)
-- `.env.example` - Environment variable template (Git-managed)
+- `dot_env.example` - Environment variable template (Git-managed; materialized as `~/.claude/.env.example`)
 - `.env` - Actual environment variables (Git-ignored)
 - `setup-mcp.sh` - Script to apply MCP configurations
 
@@ -46,9 +46,9 @@ All files are located in `home/.claude/` directory:
 
 ### Adding a New MCP Server
 
-1. Add new server configuration to `home/.claude/mcp-servers.yaml`
-2. Add environment variables to `home/.claude/.env` if needed
-3. Run `cd home/.claude && ./setup-mcp.sh`
+1. Add new server configuration to `chezmoi/dot_claude/mcp-servers.yaml`
+2. Add environment variables to `chezmoi/dot_claude/.env` if needed
+3. Run `cd chezmoi/dot_claude && ./setup-mcp.sh`
 
 ### Configuration Example
 

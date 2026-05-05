@@ -9,12 +9,11 @@
 
 ### 1. リポジトリを clone
 
-clone 先は任意。既存環境に合わせ `~/.homesick/repos/dotfiles` を踏襲しているが、別パスで構わない。
+clone 先は任意。
 
 ```shell
-$ mkdir -p ~/.homesick/repos && cd ~/.homesick/repos
-$ git clone git@github.com:danimal141/dotfiles.git
-$ cd dotfiles
+$ git clone git@github.com:danimal141/dotfiles.git ~/dev/dotfiles
+$ cd ~/dev/dotfiles
 ```
 
 ### 2. `setup.sh` を実行
@@ -41,7 +40,7 @@ $ ./setup.sh personal2   # 個人 2 台目として明示
 
 ### 3. シークレット注入
 
-`home/dot_codex/config.toml.tmpl` などで API key を `{{ env "GEMINI_API_KEY" }}` 形式で読む。1Password CLI を使う場合は `op signin` 後にテンプレを `{{ (onepasswordRead "op://Personal/...") }}` に書き換える。
+`chezmoi/dot_codex/config.toml.tmpl` などで API key を `{{ env "GEMINI_API_KEY" }}` 形式で読む。1Password CLI を使う場合は `op signin` 後にテンプレを `{{ (onepasswordRead "op://Personal/...") }}` に書き換える。
 
 age 経路を使う場合は鍵を `~/.config/age/key.txt` に置いて、`encrypted_` プレフィックス付きの chezmoi ファイルで運ぶ。
 
@@ -50,7 +49,7 @@ age 経路を使う場合は鍵を `~/.config/age/key.txt` に置いて、`encry
 API key の誤コミットを防ぐため secretlint が pre-commit に組み込まれている。
 
 ```shell
-$ cd ~/.homesick/repos/dotfiles
+$ cd <repo>
 $ npm install
 $ pre-commit install        # or `prek install`
 ```
@@ -177,7 +176,7 @@ hostname 規約: 仕事用は `work`、個人用は `personal` / `personal2` / `
 * mise 管理: 言語ランタイム (Node / Python / Ruby / Go / etc.)
 * chezmoi 管理外 (`.chezmoiignore` で除外): `~/.claude/.env`, `~/.claude/.markdownlint.jsonc`, `~/.apm/apm.lock.yaml` などツールが動的に書き換えるファイル群
 
-PATH 解決順 (`home/dot_zshrc.tmpl`):
+PATH 解決順 (`chezmoi/dot_zshrc.tmpl`):
 
 1. `/run/current-system/sw/bin` — Nix store (nix-darwin が管理する CLI)
 2. `/opt/homebrew/bin` — Homebrew (Nix 移行外の formulae / cask)
@@ -197,4 +196,4 @@ $ cd ~/.apm
 $ apm install
 ```
 
-依存スキルを追加・削除する場合は `~/.apm/apm.yml`（実体は `home/dot_apm/apm.yml`）を編集して再度 `chezmoi apply` する。
+依存スキルを追加・削除する場合は `~/.apm/apm.yml`（実体は `chezmoi/dot_apm/apm.yml`）を編集して再度 `chezmoi apply` する。

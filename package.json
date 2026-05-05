@@ -1,7 +1,7 @@
 {
   "name": "dotfiles",
   "version": "1.0.0",
-  "description": "Personal dotfiles managed by chezmoi (Step A onward) and homesick (legacy).",
+  "description": "Personal dotfiles managed by chezmoi + nix-darwin.",
   "private": true,
   "scripts": {
     "secretlint": "secretlint '**/*'"
