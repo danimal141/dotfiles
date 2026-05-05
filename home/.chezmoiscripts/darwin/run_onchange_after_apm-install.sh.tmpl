@@ -29,4 +29,7 @@ if ! command -v apm >/dev/null 2>&1; then
 fi
 
 cd "${HOME}/.apm"
-apm install
+# `--target claude` を付けて `~/.claude/skills/<skill>/` への integration を
+# 強制する。target なしの `apm install` は `~/.apm/apm_modules/` キャッシュ
+# 更新のみで、Claude Code が読む `~/.claude/skills/` は populate されない。
+apm install --target claude
