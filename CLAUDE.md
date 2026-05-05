@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This is a dotfiles repository managed by homesick. All configuration files are stored in the `home/` directory and symlinked to the user's home directory.
+This is a dotfiles repository managed by chezmoi. Configuration files live in `home/` using chezmoi naming (`dot_*` -> `~/.<name>`, `private_*`, `executable_*`, etc.) and are materialized into the user's home directory via `chezmoi apply`.
 
 ## Essential Commands
 
@@ -71,14 +71,16 @@ cd home/.codex && ./apply-config.sh
 
 ## Architecture
 
-The repository follows homesick conventions:
+The repository follows chezmoi conventions:
 
-- `home/` - Contains all dotfiles that will be symlinked to ~/
-- `home/.config/` - XDG config directory (marked as subdir in .homesick_subdir)
-- `home/.claude/` - Claude Code CLI configuration directory with user settings and commands
-- `home/.codex/` - Codex CLI configuration directory with template-based config management
-- `.homesick_subdir` - Declares `.config` as a subdirectory for proper symlinking
-- `setup.sh` - Main setup script that installs dependencies and links dotfiles
+- `home/` - chezmoi source root (declared via `.chezmoiroot`)
+- `home/dot_config/` - materialized as `~/.config/`
+- `home/dot_claude/` - materialized as `~/.claude/` (Claude Code CLI configuration)
+- `home/dot_codex/` - materialized as `~/.codex/` (Codex CLI configuration, template-based)
+- `home/.chezmoi.toml.tmpl` - per-host config (name / email / machineType auto-detection)
+- `home/.chezmoiignore` - paths chezmoi must NOT manage (apps that rewrite ~/  at runtime)
+- `home/.chezmoiscripts/darwin/` - hooks that run on macOS during `chezmoi apply`
+- `setup.sh` - first-time bootstrap (Nix install -> darwin-rebuild -> chezmoi init -> mise install)
 - `tmux-migrate-options.py` - Utility to migrate deprecated tmux options
 - `docs/` - Documentation directory with user guides
 - `vscode/` - VSCode configuration management tools

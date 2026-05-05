@@ -1,5 +1,0 @@
-# APM cache (transient)
-apm_modules/
-
-# Per-machine APM CLI config
-config.json
