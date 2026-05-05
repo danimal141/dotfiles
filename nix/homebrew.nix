@@ -38,12 +38,10 @@
     };
 
     # tap: nixpkgs / nix-homebrew では拾えない formulae の供給元。
-    #   adoptopenjdk/openjdk — 旧 JDK build (cask の adoptopenjdk11 用)
     #   homebrew/cask-fonts  — font cask (font-jetbrains-mono 等)
     #   daipeihust/tap       — im-select の供給元 (IME 切り替え CLI)
     #   microsoft/apm        — APM CLI の供給元
     taps = [
-      "adoptopenjdk/openjdk"
       "homebrew/cask-fonts"
       "daipeihust/tap"
     ];
@@ -118,7 +116,6 @@
     # 引き続き brew 管理。
     casks = [
       "1password-cli"
-      "adoptopenjdk11"
       "avidemux"
       "basictex"
       "brave-browser"
@@ -127,7 +124,7 @@
       "clipy"
       "cursor"
       "dash"
-      "docker"
+      "docker-desktop"
       "firefox"
       "font-jetbrains-mono"
       "font-source-code-pro"
@@ -137,7 +134,7 @@
       "ghostty"
       "google-chrome"
       "google-japanese-ime"
-      "handbrake"
+      "handbrake-app"
       "intellij-idea"
       "kindle"
       "obsidian"
