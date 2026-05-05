@@ -18,6 +18,15 @@
   # primary user 宣言。multi-user 環境ではないので flake から渡された user で固定。
   system.primaryUser = user;
 
+  # nix-darwin に user 本体を宣言する。home-manager の darwin module は
+  # `users.users.<name>.home` から home directory を引くため、これ無しだと
+  # home.homeDirectory が null として merge され「is not of type absolute path」
+  # で activation が落ちる。home-manager 統合の前提条件。
+  users.users.${user} = {
+    name = user;
+    home = "/Users/${user}";
+  };
+
   system.defaults = {
     # Dock: ユーザーが手動で設定済みの 2 項目のみを宣言。
     #   tilesize は宣言しないことで macOS デフォルトを維持する。

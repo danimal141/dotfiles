@@ -47,9 +47,19 @@
       url = "github:numtide/llm-agents.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # home-manager: ~/ 配下 (= user-level) の declarative 管理モジュール。
+    # **release branch を pin する** (yxtay 流): default branch (master) を引くと
+    # 開発中の breaking change を毎日引く可能性があり、新規導入直後の段階では
+    # 安全側に倒す。`release-25.11` は nixpkgs-unstable と整合する 25.11 系
+    # home-manager リリース。upgrade はホスト数に応じて段階的に検証して移行する。
+    home-manager = {
+      url = "github:nix-community/home-manager/release-25.11";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs@{ self, nixpkgs, nix-darwin, nix-homebrew, llm-agents }:
+  outputs = inputs@{ self, nixpkgs, nix-darwin, nix-homebrew, llm-agents, home-manager }:
     let
       # Hostname 規約:
       #   "work"     — 仕事用 Mac
@@ -96,6 +106,24 @@
                 # 既存の手動 Homebrew インストールを乗っ取る (再構築不要)
                 autoMigrate = true;
               };
+            }
+
+            # home-manager を nix-darwin module として統合する。
+            # `darwin-rebuild switch` 1 発で system 層 (nix-darwin) と user 層
+            # (home-manager) の activation が連動し、setup.sh の linear flow を
+            # 崩さない。standalone の `home-manager switch` を別途呼ぶ運用は
+            # 採らない (= bootstrap が複雑化する)。
+            home-manager.darwinModules.home-manager
+            {
+              # useGlobalPkgs: home-manager が独自の pkgs を評価せず、
+              #   nix-darwin の nixpkgs を共有 (= store 重複と評価コストの回避)。
+              # useUserPackages: `home.packages` が `/etc/profiles/per-user/<user>/`
+              #   に install される (= `nix-env -i` 経路ではなく activation 経由)。
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.users.${user} = import ./nix/home;
+              # home-manager 側のモジュールにも `user` を渡す (system 層と整合)。
+              home-manager.extraSpecialArgs = { inherit user; };
             }
           ];
         };
