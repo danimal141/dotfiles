@@ -16,7 +16,8 @@
 
     onActivation = {
       # `brew update` を switch 時に走らせる。安定運用に入ったら off にして
-      # 明示的な `brew update` だけにすると CI 様の決定性が増す。
+      # 明示的な `brew update` だけにすると CI ライクな決定性 (reproducibility)
+      # が増す。
       autoUpdate = true;
 
       # cleanup モード:
