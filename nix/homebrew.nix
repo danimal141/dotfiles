@@ -59,10 +59,9 @@
     # * macOS-only ツール          — terminal-notifier, im-select
     # * shell 本体と plugin       — zsh, zsh-autosuggestions, zsh-syntax-highlighting,
     #                              zsh-completions (brew の方が起動が速い)
-    # * secrets bootstrap         — 1password-cli, age (chezmoi の secrets 注入経路)
+    # * secrets bootstrap         — age (chezmoi の secrets 注入経路、1password-cli は cask 化したので casks 側)
     # * DB / dev サーバー          — mysql, redis, libpq, qemu
     brews = [
-      "1password-cli"
       "FairwindsOps/tap/pluto"
       "age"
       "ansible"
@@ -118,6 +117,7 @@
     # casks: GUI アプリ。Homebrew 経由でしか配布されないものが大半なので
     # 引き続き brew 管理。
     casks = [
+      "1password-cli"
       "adoptopenjdk11"
       "avidemux"
       "brave-browser"
