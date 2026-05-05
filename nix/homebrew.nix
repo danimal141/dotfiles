@@ -20,14 +20,16 @@
       autoUpdate = true;
 
       # cleanup モード:
-      #   "check"     — 未宣言パッケージを表示するだけ (uninstall しない)
+      #   "none"      — 未宣言パッケージを無視 (uninstall も check も走らせない)
+      #   "check"     — 未宣言パッケージがあれば activation を abort する
       #   "uninstall" — 未宣言パッケージを自動 uninstall (= 宣言と完全同期)
       #   "zap"       — uninstall + 設定/データも削除 (危険)
       #
-      # 初回は "check" で実害ゼロのまま「未管理パッケージのリスト」を
-      # 確認する。意図しない uninstall が無いことを確認後に "uninstall"
-      # に切り替えて宣言的同期を有効化する流れ。
-      cleanup = "check";
+      # 初期 bootstrap 中は "none"。flake で宣言した分が brew に確実に入る
+      # ことだけを担保し、ユーザーが手動で入れた alfred / gcloud-cli /
+      # inkdrop 等は触らない。flake 移行が落ち着いて、残したいものを
+      # casks/brews に追加し終えたら "uninstall" に切り替える流れ。
+      cleanup = "none";
 
       # `brew upgrade` は意図しないアップグレードでビルドを壊しがち。
       # バージョン更新は `nix flake lock --update-input` 相当のタイミングで
@@ -36,13 +38,11 @@
     };
 
     # tap: nixpkgs / nix-homebrew では拾えない formulae の供給元。
-    #   adoptopenjdk/openjdk — 旧 JDK build (cask の adoptopenjdk11 用)
-    #   homebrew/cask-fonts  — font cask (font-jetbrains-mono 等)
-    #   daipeihust/tap       — im-select の供給元 (IME 切り替え CLI)
-    #   microsoft/apm        — APM CLI の供給元
+    #   daipeihust/tap — im-select の供給元 (IME 切り替え CLI)
+    #
+    # font-* cask 群はかつて homebrew/cask-fonts tap に居たが、本家 homebrew/cask
+    # に統合されたため tap 宣言は不要 (cask 名だけで resolve される)。
     taps = [
-      "adoptopenjdk/openjdk"
-      "homebrew/cask-fonts"
       "daipeihust/tap"
     ];
 
@@ -54,31 +54,27 @@
     # * tap-only formulae        — FairwindsOps/pluto, fujiwara/tfstate-lookup,
     #                              k1LoW/tbls, kayac/ecspresso, mutagen-io/mutagen,
     #                              yukiarrr/ecsk, argoproj/argocd
-    # * Apple / macOS 統合が強い  — basictex, ffmpeg, imagemagick, llvm, mas, gdb
+    # * Apple / macOS 統合が強い  — ffmpeg, imagemagick, llvm, mas (basictex は cask 化したので casks 側)
     # * Node / Python 前提のツール — markdownlint-cli, marp-cli, repomix, pipx
     # * macOS-only ツール          — terminal-notifier, im-select
     # * shell 本体と plugin       — zsh, zsh-autosuggestions, zsh-syntax-highlighting,
     #                              zsh-completions (brew の方が起動が速い)
-    # * secrets bootstrap         — 1password-cli, age (chezmoi の secrets 注入経路)
+    # * secrets bootstrap         — age (chezmoi の secrets 注入経路、1password-cli は cask 化したので casks 側)
     # * DB / dev サーバー          — mysql, redis, libpq, qemu
     brews = [
-      "1password-cli"
       "FairwindsOps/tap/pluto"
       "age"
       "ansible"
       "argoproj/tap/argocd"
       "automake"
       "azure-cli"
-      "basictex"
       "bash-completion"
       "chezmoi"
-      "chromium"
       "cloudflared"
       "cmake"
       "codex"
       "ffmpeg"
       "fujiwara/tap/tfstate-lookup"
-      "gdb"
       "googleworkspace-cli"
       "im-select"
       "imagemagick"
@@ -118,26 +114,27 @@
     # casks: GUI アプリ。Homebrew 経由でしか配布されないものが大半なので
     # 引き続き brew 管理。
     casks = [
-      "adoptopenjdk11"
+      "1password-cli"
       "avidemux"
+      "basictex"
       "brave-browser"
+      "chromium"
       "claude-code"
       "clipy"
       "cursor"
       "dash"
-      "docker"
+      "docker-desktop"
       "firefox"
       "font-jetbrains-mono"
       "font-source-code-pro"
       "font-source-han-code-jp"
       "freefilesync"
-      "gcloud"
+      "gcloud-cli"
       "ghostty"
       "google-chrome"
       "google-japanese-ime"
-      "handbrake"
+      "handbrake-app"
       "intellij-idea"
-      "kindle"
       "obsidian"
       "raycast"
       "react-native-debugger"
