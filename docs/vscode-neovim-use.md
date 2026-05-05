@@ -28,7 +28,7 @@ if !exists('g:vscode')
 endif
 ```
 
-> **Note**: See the complete configuration in [`home/.vimrc`](../home/.vimrc) (lines 9-39). The conditional block includes all plugins that would conflict with VSCode's native features.
+> **Note**: See the complete configuration in [`chezmoi/dot_vimrc`](../chezmoi/dot_vimrc) (lines 9-39). The conditional block includes all plugins that would conflict with VSCode's native features.
 
 **When VSCode Neovim extension is active:**
 - `g:vscode` variable is automatically set
@@ -144,5 +144,5 @@ This configuration provides several performance improvements when using VSCode:
 
 - [VSCode Neovim Extension README](https://github.com/vscode-neovim/vscode-neovim)
 - [CoC.nvim Documentation](https://github.com/neoclide/coc.nvim)
-- [Project's vim configuration](../home/.vimrc)
+- [Project's vim configuration](../chezmoi/dot_vimrc)
 - [VSCode settings template](../vscode/settings.template.jsonc)

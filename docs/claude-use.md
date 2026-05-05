@@ -45,7 +45,7 @@ Directory containing hook scripts:
 - `todos/`: Todo management data
 
 #### About AI Operation 5 Principles
-The five principles that control the behavior of Claude Code CLI are defined in detail in `home/.claude/CLAUDE.md`.
+The five principles that control the behavior of Claude Code CLI are defined in detail in `chezmoi/dot_claude/CLAUDE.md`.
 
 Reference:
 - https://zenn.dev/sesere/articles/0420ecec9526dc
