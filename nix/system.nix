@@ -1,50 +1,38 @@
 { user, ... }:
 
-# macOS システム全体の設定 (Dock / Finder / KeyRepeat / trackpad / Nix 自体の挙動)。
+# macOS システム設定 + Nix / nix-darwin 自体の運用 (flake / gc / 環境変数 /
+# zsh の取扱い) を宣言するモジュール。
 #
-# `darwin-rebuild switch` 一発で「OS の挙動」も復元できる状態にするためのモジュール。
-# 直接 `defaults write com.apple.dock autohide -bool true` 等を叩く運用は
-# 差分が追えずロールバックも効かないので、すべてここに集約する。
+# `system.defaults.*` の設計方針:
+#   * **既にユーザーが手動で設定済みの項目だけ** を宣言する (= 現状を flake に
+#     スナップショットして以後 drift correction させる)。
+#   * **macOS デフォルトのまま使っている項目は宣言しない**。宣言すると
+#     `darwin-rebuild switch` のたびに値が固定されてしまい、System Settings
+#     から微調整できなくなる。あとから「これも flake で固定したい」と思った
+#     ものを足していくスタイル。
 #
-# スコープの境界:
-#   * 含む: 全ユーザー / システム共通の defaults、Nix 自体の運用 (gc, flakes)
-#   * 含まない: アプリ単位の defaults (1Password, Raycast, Karabiner 等)。
-#     必要なら chezmoi 側 `run_once_*.sh` で `defaults write` を流す方針。
-#     nix-darwin の `system.defaults.CustomUserPreferences` も使えるが、
-#     アプリ側の plist スキーマが頻繁に変わるため運用が脆い。
+# アプリ単体の defaults (1Password / Raycast / Karabiner 等) は引き続きスコープ外。
+# 必要になったら chezmoi 側の `run_once_*.sh` で `defaults write` を流す。
 {
-  # `system.defaults` / GUI 設定の適用先ユーザーを宣言。
-  # multi-user 環境ではないので flake から渡された user で固定する。
+  # `system.defaults` / nix-homebrew が「誰の defaults を書くか」を決めるための
+  # primary user 宣言。multi-user 環境ではないので flake から渡された user で固定。
   system.primaryUser = user;
 
   system.defaults = {
+    # Dock: ユーザーが手動で設定済みの 2 項目のみを宣言。
+    #   tilesize は宣言しないことで macOS デフォルトを維持する。
     dock = {
       autohide = true;
-      # Spaces の自動並べ替えを止める (画面切り替えで Space が動くと混乱)
+      # Spaces (デスクトップ) を最近使った順に勝手に並べ替えないようにする
       mru-spaces = false;
-      tilesize = 48;
     };
 
-    finder = {
-      AppleShowAllFiles = true;
-      FXEnableExtensionChangeWarning = false;
-      ShowPathbar = true;
-    };
-
-    NSGlobalDomain = {
-      # キーリピート: Apple 製の最速設定。Apple の UI で設定すると 15 が下限だが、
-      # nix-darwin 経由なら 1〜 まで指定できる。15 / 2 は実機で痛くない最速ライン。
-      InitialKeyRepeat = 15;
-      KeyRepeat = 2;
-      # vim ユーザー向け: 長押しでアクセント記号メニューを出さず、ただのリピートにする
-      ApplePressAndHoldEnabled = false;
-      AppleShowAllExtensions = true;
-    };
-
+    # Trackpad: タップ-クリックと三本指ドラッグを **OFF のまま固定**。
+    #   現環境境ではいずれも無効が好み、誤って System Settings から有効化されても
+    #   次の switch で戻る。
     trackpad = {
-      Clicking = true;
-      # 三本指ドラッグ (システム環境設定からは消えたが内部 API で生きている)
-      TrackpadThreeFingerDrag = true;
+      Clicking = false;
+      TrackpadThreeFingerDrag = false;
     };
   };
 
