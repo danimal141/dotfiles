@@ -17,64 +17,35 @@ $ git clone git@github.com:danimal141/dotfiles.git
 $ cd dotfiles
 ```
 
-### 2. Nix を install
+### 2. `setup.sh` を実行
 
 ```shell
-$ sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install)
-
-# Flakes 有効化
-$ mkdir -p ~/.config/nix
-$ echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
+$ ./setup.sh             # LocalHostName から flake host を自動判定
+$ ./setup.sh work        # 仕事用 Mac として明示
+$ ./setup.sh personal2   # 個人 2 台目として明示
 ```
 
-### 3. nix-darwin を apply (Homebrew / brew / cask / macOS 設定)
+`setup.sh` がやること:
 
-`darwin-rebuild switch` 一発で brew / cask / macOS defaults が入る。
+1. Xcode CLT / Rosetta インストール
+2. Nix 公式 upstream installer 実行 (既に入っていれば skip)
+3. macOS Keychain から CA bundle を `/etc/nix/ca-bundle.pem` に焼き、`launchctl setenv` で nix-daemon に渡す (社内 VPN の SSL inspection 対策、個人 Mac でも害はない)
+4. Nix 公式 installer が書いた `/etc/bashrc` `/etc/nix/nix.conf` を `*.before-nix-darwin` に退避 (nix-darwin の activation が「unrecognized content」を理由に abort するのを回避)
+5. `sudo -E nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- switch --flake ".#<hostname>"` を実行 — `nix/packages.nix` (Nix store CLI) / `nix/homebrew.nix` (brew/cask) / `nix/system.nix` (macOS 設定) が一括反映
+6. `chezmoi init --apply --source "$(pwd)"` で dotfile を `~/` に展開
+7. `mise install` で `~/.tool-versions` の言語ランタイムを install
+8. LSP server / VSCode 拡張のセットアップ
+9. `exec $SHELL -l` で新 shell に切り替え (PATH と chezmoi の dotfile を反映)
 
-```shell
-$ nix run nix-darwin -- switch --flake ".#$(scutil --get LocalHostName)"
+完走後は `which git` が `/run/current-system/sw/bin/git` を返す状態になる。
 
-# 二度目以降は darwin-rebuild が PATH に居る
-$ darwin-rebuild switch --flake ".#$(scutil --get LocalHostName)"
-```
-
-`onActivation.cleanup = "check"` の状態で動作確認後、`nix/homebrew.nix` を編集して `cleanup = "uninstall"` に切り替えると「宣言から外したパッケージが自動 uninstall」が有効になる。
-
-### 4. chezmoi 用 config を作成
-
-`home/.chezmoi.toml.tmpl` は対話プロンプト (`promptStringOnce`) を使う。Bash 越しに init する場合は config を直接書いてもよい。
-
-```shell
-$ mkdir -p ~/.config/chezmoi
-$ cat > ~/.config/chezmoi/chezmoi.toml <<EOF
-sourceDir = "$HOME/.homesick/repos/dotfiles"
-
-[data]
-    name = "<your name>"
-    email = "<your email>"
-    machineType = "personal"  # or "work" / "ephemeral"
-
-[edit]
-    apply = true
-EOF
-```
-
-### 5. dotfiles を展開
-
-```shell
-$ chezmoi diff --no-pager
-$ chezmoi apply
-```
-
-`chezmoi apply` 時に `home/.chezmoiscripts/darwin/run_onchange_after_apm-install.sh.tmpl` が走り、APM の skill 群が install される。
-
-### 6. シークレット注入
+### 3. シークレット注入
 
 `home/dot_codex/config.toml.tmpl` などで API key を `{{ env "GEMINI_API_KEY" }}` 形式で読む。1Password CLI を使う場合は `op signin` 後にテンプレを `{{ (onepasswordRead "op://Personal/...") }}` に書き換える。
 
 age 経路を使う場合は鍵を `~/.config/age/key.txt` に置いて、`encrypted_` プレフィックス付きの chezmoi ファイルで運ぶ。
 
-### 7. pre-commit + secretlint を有効化
+### 4. pre-commit + secretlint を有効化
 
 API key の誤コミットを防ぐため secretlint が pre-commit に組み込まれている。
 
@@ -83,6 +54,12 @@ $ cd ~/.homesick/repos/dotfiles
 $ npm install
 $ pre-commit install        # or `prek install`
 ```
+
+### 困ったとき
+
+* **Nix の SSL エラー (`self-signed certificate in certificate chain`)** — `setup.sh` の手順 3 が走り終わっているか (`/etc/nix/ca-bundle.pem` が 100KB 以上ある) を確認。社内 IT が新しい CA を Keychain に push した直後は bundle を再生成 (`sudo bash -c "security find-certificate ..." && sudo launchctl kickstart -k system/org.nixos.nix-daemon`)。
+* **`darwin-rebuild` が「unrecognized content in /etc/...」で止まる** — そのファイルを `.before-nix-darwin` に退避してから再実行。
+* **`brew bundle` が cask 名で失敗** — Homebrew 側で改名 / cask 化されたものは `nix/homebrew.nix` を更新して PR。
 
 ## 日常運用
 
