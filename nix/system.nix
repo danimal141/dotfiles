@@ -58,8 +58,12 @@
   # 勝手に node を入れると `which node` が二つ並び、PATH 順次第でビルドが壊れる。
   # `claude` は Anthropic が npm package として配るため、brew 経由で入れたい
   # ライブラリが裏で claude も pull するケースを防ぐ目的で含める。
+  #
+  # NIX_SSL_CERT_FILE は社内 VPN の SSL inspection (中間者 CA) に対応するため。
+  # 詳細は下の `nix.settings.ssl-cert-file` コメント参照。
   environment.variables = {
     HOMEBREW_FORBIDDEN_FORMULAE = "node python python3 pip npm pnpm yarn claude";
+    NIX_SSL_CERT_FILE = "/etc/nix/ca-bundle.pem";
   };
 
   nix = {
@@ -68,6 +72,19 @@
       experimental-features = [ "nix-command" "flakes" ];
       # primaryUser を trusted にして sudo なしで `darwin-rebuild` を打てるようにする
       trusted-users = [ "@admin" user ];
+
+      # 社内 VPN が SSL inspection (中間者 CA) を挟む環境向けに、macOS Keychain
+      # 由来の CA bundle を nix-daemon にも教える。ファイル本体は host で生成し
+      # /etc/nix/ca-bundle.pem に置く前提:
+      #
+      #   sudo bash -c '
+      #     security find-certificate -a -p /Library/Keychains/System.keychain > /etc/nix/ca-bundle.pem
+      #     security find-certificate -a -p /System/Library/Keychains/SystemRootCertificates.keychain >> /etc/nix/ca-bundle.pem
+      #   '
+      #
+      # bundle を更新したら `sudo launchctl kickstart -k system/org.nixos.nix-daemon`。
+      # bundle 自体は社内 CA を含むためリポジトリにはコミットしない。
+      ssl-cert-file = "/etc/nix/ca-bundle.pem";
     };
 
     # Nix store の自動 GC: 30 日以上前の世代を毎週日曜 03:00 に削除。
