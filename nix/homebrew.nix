@@ -20,14 +20,16 @@
       autoUpdate = true;
 
       # cleanup モード:
-      #   "check"     — 未宣言パッケージを表示するだけ (uninstall しない)
+      #   "none"      — 未宣言パッケージを無視 (uninstall も check も走らせない)
+      #   "check"     — 未宣言パッケージがあれば activation を abort する
       #   "uninstall" — 未宣言パッケージを自動 uninstall (= 宣言と完全同期)
       #   "zap"       — uninstall + 設定/データも削除 (危険)
       #
-      # 初回は "check" で実害ゼロのまま「未管理パッケージのリスト」を
-      # 確認する。意図しない uninstall が無いことを確認後に "uninstall"
-      # に切り替えて宣言的同期を有効化する流れ。
-      cleanup = "check";
+      # 初期 bootstrap 中は "none"。flake で宣言した分が brew に確実に入る
+      # ことだけを担保し、ユーザーが手動で入れた alfred / gcloud-cli /
+      # inkdrop 等は触らない。flake 移行が落ち着いて、残したいものを
+      # casks/brews に追加し終えたら "uninstall" に切り替える流れ。
+      cleanup = "none";
 
       # `brew upgrade` は意図しないアップグレードでビルドを壊しがち。
       # バージョン更新は `nix flake lock --update-input` 相当のタイミングで
