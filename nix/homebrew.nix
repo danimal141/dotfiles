@@ -54,7 +54,7 @@
     # * tap-only formulae        — FairwindsOps/pluto, fujiwara/tfstate-lookup,
     #                              k1LoW/tbls, kayac/ecspresso, mutagen-io/mutagen,
     #                              yukiarrr/ecsk, argoproj/argocd
-    # * Apple / macOS 統合が強い  — basictex, ffmpeg, imagemagick, llvm, mas, gdb
+    # * Apple / macOS 統合が強い  — ffmpeg, imagemagick, llvm, mas, gdb (basictex は cask 化したので casks 側)
     # * Node / Python 前提のツール — markdownlint-cli, marp-cli, repomix, pipx
     # * macOS-only ツール          — terminal-notifier, im-select
     # * shell 本体と plugin       — zsh, zsh-autosuggestions, zsh-syntax-highlighting,
@@ -68,10 +68,8 @@
       "argoproj/tap/argocd"
       "automake"
       "azure-cli"
-      "basictex"
       "bash-completion"
       "chezmoi"
-      "chromium"
       "cloudflared"
       "cmake"
       "codex"
@@ -120,7 +118,9 @@
       "1password-cli"
       "adoptopenjdk11"
       "avidemux"
+      "basictex"
       "brave-browser"
+      "chromium"
       "claude-code"
       "clipy"
       "cursor"
