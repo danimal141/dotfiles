@@ -14,15 +14,23 @@ typeset -U path cdpath fpath manpath
 
 # `N` means null glob in Zsh — そのディレクトリが存在しないときは配列から落とす。
 #
-# Nix store (/run/current-system/sw/bin) を Homebrew (/opt/homebrew/bin) より
-# 先に置くことで、Nix と brew の両方に同名の CLI がある場合に Nix 側が勝つ。
-# `which git` 等が `/run/current-system/sw/bin/git` を返すようになり、
-# `flake.lock` で pin されたバージョンが確実に走る。`cleanup = "check"` の
-# 状態で brew 側に旧バイナリが残っていても Nix 側を優先させる防衛策にもなる。
-#
-# mise activate はこの後で言語ランタイム shim を PATH 先頭に差し込むため、
-# node / ruby / python など mise 管理下のランタイム解決には影響しない。
+# 優先順:
+#   1. /etc/profiles/per-user/$USER/bin
+#      home-manager の user profile (`useUserPackages = true` の効果)。
+#      starship など `programs.*.enable` で追加した user-level バイナリが
+#      ここに置かれる。system 層 (/run/current-system/sw/bin) より先に置くのは
+#      home-manager の user package が system package を override する慣習に倣う。
+#   2. /run/current-system/sw/bin
+#      Nix store (nix-darwin の `environment.systemPackages` 経由)。Homebrew
+#      (/opt/homebrew/bin) より先に置くことで、両方に同名の CLI がある場合に
+#      Nix 側が勝つ。`which git` 等が `/run/current-system/sw/bin/git` を返し、
+#      `flake.lock` で pin されたバージョンが確実に走る。
+#   3. /opt/homebrew/bin
+#      Homebrew (Nix 移行外の formulae / cask)。
+#   4. mise activate (後段) が言語ランタイム shim を PATH 先頭に差し込む。
 path=(
+  /etc/profiles/per-user/$USER/bin(N-/)
+  /etc/profiles/per-user/$USER/sbin(N-/)
   /run/current-system/sw/bin(N-/)
   /run/current-system/sw/sbin(N-/)
   /usr/local/bin(N-/)

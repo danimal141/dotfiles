@@ -49,12 +49,16 @@
     };
 
     # home-manager: ~/ 配下 (= user-level) の declarative 管理モジュール。
-    # **release branch を pin する** (yxtay 流): default branch (master) を引くと
-    # 開発中の breaking change を毎日引く可能性があり、新規導入直後の段階では
-    # 安全側に倒す。`release-25.11` は nixpkgs-unstable と整合する 25.11 系
-    # home-manager リリース。upgrade はホスト数に応じて段階的に検証して移行する。
+    # `nixpkgs-unstable` (現状 26.05 系) と整合させる必要があり、release branch
+    # は 25.11 までしか存在しない (release-26.05 は未リリース、2026-05 時点)。
+    # その間は **特定 commit を pin する** ことで両側を取る:
+    #   * 最新 master の修正は取り込める (= 25.11/26.05 の lib mismatch 警告無し)
+    #   * `nix flake update --update-input home-manager` で勝手に master HEAD
+    #     まで進まない (commit 単位 pin なので no-op)。更新は `url` の commit を
+    #     書き換える == PR diff に commit が残り、意識的な更新になる
+    # `release-26.05` がリリースされたらそちらに pin し直す follow-up を打つ。
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.11";
+      url = "github:nix-community/home-manager/00ed86e58bb6979a7921859fd1615d19382eac5c";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
