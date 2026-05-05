@@ -54,7 +54,7 @@
     # * tap-only formulae        — FairwindsOps/pluto, fujiwara/tfstate-lookup,
     #                              k1LoW/tbls, kayac/ecspresso, mutagen-io/mutagen,
     #                              yukiarrr/ecsk, argoproj/argocd
-    # * Apple / macOS 統合が強い  — ffmpeg, imagemagick, llvm, mas, gdb (basictex は cask 化したので casks 側)
+    # * Apple / macOS 統合が強い  — ffmpeg, imagemagick, llvm, mas (basictex は cask 化したので casks 側)
     # * Node / Python 前提のツール — markdownlint-cli, marp-cli, repomix, pipx
     # * macOS-only ツール          — terminal-notifier, im-select
     # * shell 本体と plugin       — zsh, zsh-autosuggestions, zsh-syntax-highlighting,
@@ -75,7 +75,6 @@
       "codex"
       "ffmpeg"
       "fujiwara/tap/tfstate-lookup"
-      "gdb"
       "googleworkspace-cli"
       "im-select"
       "imagemagick"
