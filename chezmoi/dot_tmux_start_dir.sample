@@ -1,13 +1,17 @@
-# tmux-start で開くディレクトリ一覧 (PC ごとにローカル管理する手書きファイル)
+# tmux-start で開くディレクトリ一覧 (PC ごとに chezmoi で管理する手書きファイル)
 # 1行に1ディレクトリまたはグロブパターンを記述
 # コメント行（#）と空行は無視されます
 #
-# セットアップ:
+# セットアップ (各 Mac で 1 度):
 #   cp ~/.tmux_start_dir.sample ~/.tmux_start_dir
 #   $EDITOR ~/.tmux_start_dir
+#   chezmoi re-add ~/.tmux_start_dir       # chezmoi source に取り込む
 #
-# `~/.tmux_start_dir` は chezmoi / git どちらでも追跡されない (= リポにローカル
-# 構成を焼かない意図)。詳細は repo root の .gitignore コメントを参照。
+# 上記の `chezmoi re-add` で chezmoi/dot_tmux_start_dir が source 内に
+# (各 Mac のローカル状態として) 復活し、以降は chezmoi apply で ~/ と同期
+# される。一方 chezmoi/dot_tmux_start_dir は repo root の .gitignore で
+# git 追跡対象から外しているため、各 Mac の作業ディレクトリ一覧が
+# public repo に焼かれることはない。
 #
 # 例:
 # ~/dev/*                    # dev配下の全ディレクトリ

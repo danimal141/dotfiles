@@ -226,7 +226,8 @@ hostname 規約: 仕事用は `work`、個人用は `personal` / `personal2` / `
   * `~/.zshrc` `~/.gitconfig` `~/.tmux.conf` `~/.vimrc` `~/.codex/` `~/.claude/` `~/.config/mise/config.toml` ほか主要 dotfile
   * `~/.apm/apm.yml` (APM 依存マニフェスト)
 * mise 管理: 言語ランタイム (Node / Python / Ruby / Go / etc.)。global 宣言ソースは `~/.config/mise/config.toml` (chezmoi 管理) で、`mise install` がそれを読んで実体を `~/.local/share/mise/installs/` に展開
-* chezmoi 管理外 (`.chezmoiignore` で除外 / そもそも追跡しない): `~/.claude/.credentials.json` など Claude Code が動的に書き換える状態系、`~/.apm/apm.lock.yaml` (apm 由来)、`~/.codex/sessions/`, `~/.codex/log.json`、`~/.vim/plugged/` など vim-plug 管理領域、`~/.config/age/`、`~/.gitconfig.work` (業務 ID 用、public repo に焼かない意図で手書き運用)、`~/.tmux_start_dir` (PC ごとに `~/.tmux_start_dir.sample` をコピーしてから編集する手書きファイル、`.gitignore` で chezmoi source 側も誤コミット防止)
+* chezmoi 管理 (git 追跡なし、各 PC のローカル状態として保持): `~/.tmux_start_dir` (= `dot_tmux_start_dir.sample` をコピーしてから `chezmoi re-add` で各 Mac の source に取り込む。`.gitignore` で `chezmoi/dot_tmux_start_dir` を git 追跡対象から外しているため、作業ディレクトリ一覧が public repo に焼かれない)
+* chezmoi 管理外 (`.chezmoiignore` で除外 / そもそも追跡しない): `~/.claude/.credentials.json` など Claude Code が動的に書き換える状態系、`~/.apm/apm.lock.yaml` (apm 由来)、`~/.codex/sessions/`, `~/.codex/log.json`、`~/.vim/plugged/` など vim-plug 管理領域、`~/.config/age/`、および `~/.gitconfig.work` (業務 ID 用、public repo に焼かない意図で手書き運用)
 
 PATH 解決順 (`chezmoi/dot_zshrc.tmpl`):
 
