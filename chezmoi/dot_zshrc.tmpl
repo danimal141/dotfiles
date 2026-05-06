@@ -30,9 +30,12 @@ typeset -U path cdpath fpath manpath
 #      mysql@8.4 の mysql クライアント等) を expose する。Nix の **後** に置く
 #      ことで、Nix 管理の同名 CLI があれば Nix 側が勝つ (= 「Nix 管理下の
 #      ライブラリは Nix のパスから利用可能」を不変条件として保つ)。
-#   4. /opt/homebrew/bin
+#   4. /usr/local/bin
+#      Docker Desktop / VSCode / Cursor 等の installer が shim を置く先。
+#      Apple Silicon Mac 前提なので Intel Homebrew prefix としては使わない。
+#   5. /opt/homebrew/bin
 #      Homebrew の通常 prefix (Nix 移行外の formulae / cask)。
-#   5. mise activate (後段) が言語ランタイム shim を PATH 先頭に差し込む。
+#   6. mise activate (後段) が言語ランタイム shim を PATH 先頭に差し込む。
 path=(
   /etc/profiles/per-user/$USER/bin(N-/)
   /etc/profiles/per-user/$USER/sbin(N-/)
@@ -41,8 +44,10 @@ path=(
   /opt/homebrew/opt/llvm/bin(N-/)
   /opt/homebrew/opt/libpq/bin(N-/)
   /opt/homebrew/opt/mysql@8.4/bin(N-/)
+  # /usr/local/bin: Docker Desktop / VSCode / Cursor などが shim を置く先。
+  # Apple Silicon Mac でも Homebrew (= /opt/homebrew) 以外の installer が
+  # 使うので残す (Intel Homebrew prefix としての役目はない)。
   /usr/local/bin(N-/)
-  /usr/local/sbin(N-/)
   /opt/homebrew/bin(N-/)
   /opt/homebrew/sbin(N-/)
   /usr/bin(N-/)
@@ -160,8 +165,8 @@ if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]; then
   . "$HOME/google-cloud-sdk/path.zsh.inc";
 fi
 
-# kubectl
-[[ /usr/local/bin/kubectl ]] && source <(kubectl completion zsh)
+# kubectl (mise 管理経由で `~/.local/share/mise/installs/kubectl/.../bin/kubectl` を参照する)
+command -v kubectl >/dev/null 2>&1 && source <(kubectl completion zsh)
 
 # kubectx
 alias kc="kubectx | peco | xargs kubectx"

@@ -88,9 +88,11 @@
       #   `user`     — `nix/system.nix` が primaryUser に使う
       #   `hostname` — モジュール内で host 別判定したい場合の保険 (現状未使用)
       #   `inputs`   — `nix/packages.nix` が llm-agents.packages を参照するため
-      mkHost = hostname: { user, system ? "aarch64-darwin" }:
+      # Apple Silicon 専用想定なので system は aarch64-darwin に固定。
+      # Intel Mac (x86_64-darwin) サポートが必要になったら関数引数に戻す。
+      mkHost = hostname: { user }:
         nix-darwin.lib.darwinSystem {
-          inherit system;
+          system = "aarch64-darwin";
           specialArgs = { inherit user hostname inputs; };
           modules = [
             ./nix/system.nix
@@ -104,8 +106,8 @@
             {
               nix-homebrew = {
                 enable = true;
-                # Apple Silicon 専用想定。Intel Mac は Rosetta なしで動かす。
-                enableRosetta = false;
+                # `enableRosetta` は module default = false なので明示しない。
+                # Apple Silicon 前提なので x86_64 brew は走らせない。
                 inherit user;
                 # 既存の手動 Homebrew インストールを乗っ取る (再構築不要)
                 autoMigrate = true;

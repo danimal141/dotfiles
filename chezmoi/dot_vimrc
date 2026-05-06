@@ -137,7 +137,7 @@ let g:nerdtree_tabs_open_on_new_tab=1
 " Also should setup:
 " https://github.com/tpope/gem-ctags
 " https://github.com/tpope/rbenv-ctags
-let s:ctags_path = executable('/opt/homebrew/bin/ctags') ? '/opt/homebrew/bin/ctags' : '/usr/local/bin/ctags'
+let s:ctags_path = '/opt/homebrew/bin/ctags'
 let g:vim_tags_project_tags_command = s:ctags_path . " -R {OPTIONS} {DIRECTORY} 2>/dev/null"
 let g:vim_tags_gems_tags_command = s:ctags_path . " -R {OPTIONS} `bundle show --paths` 2>/dev/null"
 

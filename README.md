@@ -26,7 +26,7 @@ $ ./setup.sh personal2   # 個人 2 台目として明示
 
 `setup.sh` がやること:
 
-1. Xcode CLT / Rosetta インストール
+1. Xcode CLT インストール (Apple Silicon 専用想定なので Rosetta は入れない)
 2. Nix 公式 upstream installer 実行 (既に入っていれば skip)
 3. macOS Keychain から CA bundle を `/etc/nix/ca-bundle.pem` に焼き、`launchctl setenv` で nix-daemon に渡す (社内 VPN の SSL inspection 対策、個人 Mac でも害はない)
 4. Nix 公式 installer が書いた `/etc/bashrc` `/etc/nix/nix.conf` を `*.before-nix-darwin` に退避 (nix-darwin の activation が「unrecognized content」を理由に abort するのを回避)

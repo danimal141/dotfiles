@@ -7,7 +7,7 @@
 #   ./setup.sh personal    — 個人用 Mac
 #
 # 完走する処理 (上から順):
-#   1. Xcode CLT / Rosetta
+#   1. Xcode CLT (Apple Silicon 専用想定、Rosetta は使わない)
 #   2. Nix (公式 upstream installer) を入れて、現在の shell でも nix を使えるようにする
 #   3. 社内 VPN の SSL inspection 対策 — macOS Keychain から CA bundle を作って
 #      nix-daemon にも渡す
@@ -36,12 +36,11 @@ case "$TARGET_HOST" in
 esac
 echo "[setup] Targeting flake host: .#$TARGET_HOST"
 
-# ---- Xcode CLT / Rosetta ---------------------------------------------------
+# ---- Xcode CLT ------------------------------------------------------------
+# Apple Silicon 前提なので Rosetta は install しない。x86_64 binary が必要に
+# なったら手動で `softwareupdate --install-rosetta` する想定。
 echo "[setup] Installing Xcode CLT..."
 xcode-select --install 2>/dev/null || true
-
-echo "[setup] Installing Rosetta..."
-sudo softwareupdate --install-rosetta --agree-to-license || true
 
 # ---- Nix install ----------------------------------------------------------
 # `https://nixos.org/nix/install` が公式 upstream マルチユーザ installer。
