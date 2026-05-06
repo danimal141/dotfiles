@@ -32,23 +32,15 @@
 {{-   $machineType = "personal" -}}
 {{- end -}}
 
-{{- /* name / email は machineType で分岐:
-        * work       -> 仕事 ID を直書き (Speee 業務 commit を意図しないアドレスで
-                        打たないための保険。public repo に書いても本人特定可能な
-                        情報の追加にはならない)
-        * personal*  -> promptStringOnce で個人 ID を質問・cache。二度目以降は
-                        再質問しない */ -}}
-{{- $name := "" -}}
-{{- $email := "" -}}
-{{- if eq $machineType "work" -}}
-{{-   $name = "hideaki.ishii" -}}
-{{-   $email = "hideaki.ishii@speee.jp" -}}
-{{- else -}}
-{{-   $name = promptStringOnce . "name" "Full name (e.g. Hideaki Ishii)" -}}
-{{-   $email = promptStringOnce . "email" "Primary email" -}}
-{{-   if eq $machineType "" -}}
-{{-     $machineType = promptStringOnce . "machineType" "Machine type (work / personal / ephemeral)" "personal" -}}
-{{-   end -}}
+{{- /* name / email は work / personal を区別せず常に個人 ID を使う。
+        業務 commit (= 仕事ドメインのアドレス) を打ちたい場合だけ
+        ~/.gitconfig.work を手書きで置いて `includeIf` で上書きする
+        (chezmoi/dot_gitconfig.tmpl 参照)。値は public 化しても害がない
+        範囲のものだけ template に直書きしている。 */ -}}
+{{- $name := "danimal141" -}}
+{{- $email := "hideaki.ishii1204@gmail.com" -}}
+{{- if eq $machineType "" -}}
+{{-   $machineType = promptStringOnce . "machineType" "Machine type (work / personal / ephemeral)" "personal" -}}
 {{- end -}}
 
 # `sourceDir` は `chezmoi init --source <path>` 実行時の引数を chezmoi が

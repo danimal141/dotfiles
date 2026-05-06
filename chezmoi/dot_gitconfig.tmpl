@@ -6,3 +6,18 @@
 	editor = nvim
 [diff]
 	ignoreSubmodules = dirty
+
+# 業務 GitHub org (speee) の remote URL を持つ repo だけ別 ID を使うための
+# optional 上書き経路。`~/.gitconfig.work` は chezmoi / git どちらでも追跡
+# しない手書きファイル (= public repo に業務メールを焼かない意図)。各 work
+# Mac で必要になったタイミングで作る:
+#   [user]
+#       name  = Your Work Name
+#       email = you@example.com
+# clone path に依存しないよう yxtay/dotfiles に倣って `hasconfig:remote.*.url:`
+# でマッチする (SSH / HTTPS の双方を網羅)。詳細は README の
+# 「業務 repo の git identity 上書き」セクション。
+[includeIf "hasconfig:remote.*.url:git@github.com:speee/**"]
+	path = ~/.gitconfig.work
+[includeIf "hasconfig:remote.*.url:https://github.com/speee/**"]
+	path = ~/.gitconfig.work
