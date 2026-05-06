@@ -1,0 +1,25 @@
+# tmux-start で開くディレクトリ一覧 (chezmoi tmpl で配布)
+# 1行に1ディレクトリまたはグロブパターンを記述
+# コメント行（#）と空行は無視されます
+#
+# 編集方針:
+#   * このファイルは chezmoi/dot_tmux_start_dir.tmpl で管理。`chezmoi edit
+#     ~/.tmux_start_dir` で source 側 (= .tmpl) を直接編集する
+#   * 全 host 共通の path はそのまま列挙する
+#   * machineType 別の追加 path が必要になったら if/end block を足す
+#     (.machineType は work / personal / personal2 / ephemeral)
+
+# 全 host 共通
+~/Documents/dev/*
+~/Documents/Obsidian/hideaki_ishii_main_vault
+
+{{- /*
+  machineType 別の追加 path 例 (現状は分岐不要、将来必要になったらこの block を活かす):
+
+    if eq .machineType "work"
+      ~/path/to/work-only
+    end
+
+  ※ コメント内に chezmoi template の delimiter を直書きすると engine が
+     block 開始と解釈してパース失敗するため、ここでは生の `{{` `}}` は使わない。
+*/ -}}
