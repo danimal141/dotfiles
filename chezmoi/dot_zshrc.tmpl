@@ -25,14 +25,22 @@ typeset -U path cdpath fpath manpath
 #      (/opt/homebrew/bin) より先に置くことで、両方に同名の CLI がある場合に
 #      Nix 側が勝つ。`which git` 等が `/run/current-system/sw/bin/git` を返し、
 #      `flake.lock` で pin されたバージョンが確実に走る。
-#   3. /opt/homebrew/bin
-#      Homebrew (Nix 移行外の formulae / cask)。
-#   4. mise activate (後段) が言語ランタイム shim を PATH 先頭に差し込む。
+#   3. /opt/homebrew/opt/<formula>/bin
+#      Homebrew の keg-only / 個別 formula (llvm の clang、libpq の psql、
+#      mysql@8.4 の mysql クライアント等) を expose する。Nix の **後** に置く
+#      ことで、Nix 管理の同名 CLI があれば Nix 側が勝つ (= 「Nix 管理下の
+#      ライブラリは Nix のパスから利用可能」を不変条件として保つ)。
+#   4. /opt/homebrew/bin
+#      Homebrew の通常 prefix (Nix 移行外の formulae / cask)。
+#   5. mise activate (後段) が言語ランタイム shim を PATH 先頭に差し込む。
 path=(
   /etc/profiles/per-user/$USER/bin(N-/)
   /etc/profiles/per-user/$USER/sbin(N-/)
   /run/current-system/sw/bin(N-/)
   /run/current-system/sw/sbin(N-/)
+  /opt/homebrew/opt/llvm/bin(N-/)
+  /opt/homebrew/opt/libpq/bin(N-/)
+  /opt/homebrew/opt/mysql@8.4/bin(N-/)
   /usr/local/bin(N-/)
   /usr/local/sbin(N-/)
   /opt/homebrew/bin(N-/)
@@ -197,14 +205,10 @@ eval "$(direnv hook zsh)"
 # を上書きするので、最後に init するのが慣習。
 eval "$(starship init zsh)"
 
-# llvm
-export PATH="$(brew --prefix llvm)/bin:$PATH"
-
-# psql
-export PATH="$(brew --prefix libpq)/bin:$PATH"
-
-# mysql8
-export PATH="$(brew --prefix mysql@8.4)/bin:$PATH"
+# llvm / libpq / mysql@8.4 の keg-only formulae 用 PATH は zshrc 冒頭の
+# path=() 配列内で /opt/homebrew/opt/<formula>/bin として宣言済 (Nix の **後**)。
+# `export PATH="$(brew --prefix <formula>)/bin:$PATH"` 形式は path 配列で
+# 組んだ Nix 優先順序を後から壊すため使わない。
 
 # For M1Mac
 # Fixing "The chromium binary is not available for arm64"
