@@ -19,7 +19,7 @@ repos:
     hooks:
       - id: secretlint
         name: secretlint
-        entry: npx -y secretlint
+        entry: npx secretlint
         language: system
         pass_filenames: true
         files: '.*'
