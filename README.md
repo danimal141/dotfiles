@@ -50,19 +50,15 @@ age 経路を使う場合は鍵を `~/.config/age/key.txt` に置いて、`encry
 
 ```shell
 $ mkdir -p ~/Documents/dev/work    # 業務 clone 先
-$ cat > ~/.gitconfig.work <<'EOF'
-[user]
-    name  = hideaki.ishii
-    email = hideaki.ishii@speee.jp
-EOF
+$ vi ~/.gitconfig.work             # [user] name / email に業務 ID を記入
 $ chmod 600 ~/.gitconfig.work
 ```
 
-`~/.gitconfig.work` は chezmoi / git どちらでも追跡しない手書きファイル。public repo に業務メールを焼かない目的で意図的にこの形にしている。確認:
+`~/.gitconfig.work` は chezmoi / git どちらでも追跡しない手書きファイル。public repo に業務メールを焼かない目的で意図的にこの形にしているので、**作成例の email を README にも書かない**。確認:
 
 ```shell
 $ cd ~/Documents/dev/work/<業務リポジトリ>
-$ git config user.email   # → hideaki.ishii@speee.jp が出れば OK
+$ git config user.email   # → 業務アドレスが出れば OK
 $ cd ~/.homesick/repos/dotfiles
 $ git config user.email   # → 個人アドレスが出れば OK
 ```
