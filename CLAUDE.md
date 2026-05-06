@@ -155,6 +155,7 @@ Key configurations (materialized paths in `~/`):
 ### Documentation
 
 - `docs/` - Comprehensive documentation:
+  - `design-philosophy.md` - Design philosophy: how nix and chezmoi are split
   - `claude-mcp-manager-use.md` - Claude MCP Manager usage guide
   - `claude-use.md` - Claude usage patterns and best practices
   - `vscode.md` - VSCode configuration and workflow documentation
