@@ -88,6 +88,7 @@ Key configurations (materialized paths in `~/`):
 - `.tmux.conf` - tmux with custom prefix (C-t), 256 color support, mouse support
 - `.gitconfig` - Git configuration with user settings and aliases
 - `.gitignore` - Global gitignore patterns
+- `.markdownlint.jsonc` - Global markdownlint config (used by Claude hook, pre-commit hooks, editors)
 - `nix/packages.nix` - CLI tools served from the Nix store (`flake.lock` で pin)
 - `nix/homebrew.nix` - GUI cask + bootstrap binaries + tap-only / Apple-integrated formulae
 - `nix/system.nix` - macOS system defaults (Dock / Finder / KeyRepeat / trackpad)
@@ -127,7 +128,6 @@ Key configurations (materialized paths in `~/`):
   - `rules/` - Authoring rules (e.g., `markdown.md`)
   - `mcp-servers.yaml` - MCP server configurations
   - `dot_env.example` - Environment variables template (materialized as `~/.claude/.env.example`)
-  - `dot_markdownlint.jsonc` - markdownlint config (materialized as `~/.claude/.markdownlint.jsonc`)
   - `setup-mcp.sh` - one-shot script to materialize MCP server configs
   - `skills/` - Local + APM-managed skills (APM-installed dirs are gitignored via `dot_gitignore`)
 
