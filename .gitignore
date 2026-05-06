@@ -30,6 +30,13 @@ chezmoi/dot_codex/*
 !chezmoi/dot_codex/config.toml.tmpl
 !chezmoi/dot_codex/symlink_AGENTS.md
 
+# tmux-start のディレクトリ一覧は PC ごとにローカル管理する手書きファイル。
+# 公開する template は chezmoi/dot_tmux_start_dir.sample に置き、各 Mac で
+# `cp ~/.tmux_start_dir.sample ~/.tmux_start_dir` してから編集して使う。
+# `chezmoi re-add ~/.tmux_start_dir` を誤って打つと chezmoi/dot_tmux_start_dir
+# が source に再生成されるため、git 側でも明示的に ignore して誤コミットを防ぐ。
+chezmoi/dot_tmux_start_dir
+
 # Node modules (pre-commit + secretlint)
 node_modules/
 

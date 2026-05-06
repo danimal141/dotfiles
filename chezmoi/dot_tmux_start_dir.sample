@@ -1,6 +1,13 @@
-# tmux-start で開くディレクトリ一覧
+# tmux-start で開くディレクトリ一覧 (PC ごとにローカル管理する手書きファイル)
 # 1行に1ディレクトリまたはグロブパターンを記述
 # コメント行（#）と空行は無視されます
+#
+# セットアップ:
+#   cp ~/.tmux_start_dir.sample ~/.tmux_start_dir
+#   $EDITOR ~/.tmux_start_dir
+#
+# `~/.tmux_start_dir` は chezmoi / git どちらでも追跡されない (= リポにローカル
+# 構成を焼かない意図)。詳細は repo root の .gitignore コメントを参照。
 #
 # 例:
 # ~/dev/*                    # dev配下の全ディレクトリ
