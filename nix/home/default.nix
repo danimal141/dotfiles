@@ -61,7 +61,9 @@
 
       git_branch = {
         symbol = "";
-        format = "[\\(git\\)\\-\\[$branch\\]]($style) ";
+        # starship の format string で escape が必要なのは ( ) [ ] $ \ のみ。
+        # `-` は通常文字扱いで escape 不要 (`\-` だと parser error)。
+        format = "[\\(git\\)-\\[$branch\\]]($style) ";
         style = "yellow";
       };
 
