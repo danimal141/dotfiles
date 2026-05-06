@@ -32,12 +32,23 @@
 {{-   $machineType = "personal" -}}
 {{- end -}}
 
-{{- /* name / email は秘密情報ではないが PC ごとに違うので tmpl 側で吸収。
-       promptStringOnce にすることで `chezmoi init` 二回目以降は再質問されない */ -}}
-{{- $name := promptStringOnce . "name" "Full name (e.g. Hideaki Ishii)" -}}
-{{- $email := promptStringOnce . "email" "Primary email" -}}
-{{- if eq $machineType "" -}}
-{{-   $machineType = promptStringOnce . "machineType" "Machine type (work / personal / ephemeral)" "personal" -}}
+{{- /* name / email は machineType で分岐:
+        * work       -> 仕事 ID を直書き (Speee 業務 commit を意図しないアドレスで
+                        打たないための保険。public repo に書いても本人特定可能な
+                        情報の追加にはならない)
+        * personal*  -> promptStringOnce で個人 ID を質問・cache。二度目以降は
+                        再質問しない */ -}}
+{{- $name := "" -}}
+{{- $email := "" -}}
+{{- if eq $machineType "work" -}}
+{{-   $name = "hideaki.ishii" -}}
+{{-   $email = "hideaki.ishii@speee.jp" -}}
+{{- else -}}
+{{-   $name = promptStringOnce . "name" "Full name (e.g. Hideaki Ishii)" -}}
+{{-   $email = promptStringOnce . "email" "Primary email" -}}
+{{-   if eq $machineType "" -}}
+{{-     $machineType = promptStringOnce . "machineType" "Machine type (work / personal / ephemeral)" "personal" -}}
+{{-   end -}}
 {{- end -}}
 
 # `sourceDir` は `chezmoi init --source <path>` 実行時の引数を chezmoi が
