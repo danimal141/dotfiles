@@ -44,9 +44,11 @@ $ ./setup.sh personal2   # 個人 2 台目として明示
 
 age 経路を使う場合は鍵を `~/.config/age/key.txt` に置いて、`encrypted_` プレフィックス付きの chezmoi ファイルで運ぶ。
 
-### 4. 業務 repo の git identity 分離 (work Mac のみ)
+### 4. 業務 repo の git identity 上書き (任意 / work Mac のみ)
 
-`~/.gitconfig` (chezmoi 管理) には `chezmoi init` で入力した個人 ID が入る。業務 commit を意図しないアドレスで打たないため、`~/Documents/dev/work/` 配下のリポジトリだけは別 ID を使うように `[includeIf "gitdir:~/Documents/dev/work/"]` で `~/.gitconfig.work` を読み込む構成になっている。
+`~/.gitconfig` (chezmoi 管理) は `chezmoi/.chezmoi.toml.tmpl` の `[data] name` / `email` を `dot_gitconfig.tmpl` で `[user]` に流し込む。値は work / personal どちらの machineType でも個人 ID で固定 (公開しても害のないアドレスだけを直書きする方針)。
+
+業務 commit を業務ドメインのアドレスで打ちたい場合だけ、各 work Mac で `~/.gitconfig.work` を手書きする:
 
 ```shell
 $ mkdir -p ~/Documents/dev/work    # 業務 clone 先
@@ -58,13 +60,13 @@ EOF
 $ chmod 600 ~/.gitconfig.work
 ```
 
-`~/.gitconfig.work` は chezmoi / git どちらでも追跡しない手書きファイル (public repo に業務メールを焼かない意図)。`Your Work Name` / `you@example.com` は example の placeholder なので、各 work Mac で自分の業務 ID に書き換える。確認:
+`~/.gitconfig.work` は chezmoi / git どちらでも追跡しない手書きファイル (public repo に業務メールを焼かない意図)。`Your Work Name` / `you@example.com` は example の placeholder なので、各 work Mac で自分の業務 ID に書き換える。`~/Documents/dev/work/` 配下のリポジトリだけ `[includeIf "gitdir:~/Documents/dev/work/"]` で読み込まれる。確認:
 
 ```shell
 $ cd ~/Documents/dev/work/<業務リポジトリ>
 $ git config user.email   # → 業務アドレス (you@example.com 相当) が出れば OK
 $ cd ~/.homesick/repos/dotfiles
-$ git config user.email   # → 個人アドレスが出れば OK
+$ git config user.email   # → 個人アドレス (hideaki.ishii1204@gmail.com) が出れば OK
 ```
 
 ### 5. pre-commit + secretlint を有効化

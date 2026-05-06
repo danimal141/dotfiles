@@ -32,14 +32,13 @@
 {{-   $machineType = "personal" -}}
 {{- end -}}
 
-{{- /* name / email は public repo に晒さない方針:
-        どの machineType でも `promptStringOnce` で初回だけ対話入力させ、以降は
-        ~/.config/chezmoi/chezmoi.toml に cache される。`[user]` ブロックには
-        この値が入るが、業務 commit 用 ID (= 仕事ドメインのアドレス) は
-        ~/.gitconfig.work に手書きで分離して `includeIf` 経路で上書きする
-        (chezmoi/dot_gitconfig.tmpl 参照)。 */ -}}
-{{- $name := promptStringOnce . "name" "Full name (e.g. Hideaki Ishii)" -}}
-{{- $email := promptStringOnce . "email" "Primary email" -}}
+{{- /* name / email は work / personal を区別せず常に個人 ID を使う。
+        業務 commit (= 仕事ドメインのアドレス) を打ちたい場合だけ
+        ~/.gitconfig.work を手書きで置いて `includeIf` で上書きする
+        (chezmoi/dot_gitconfig.tmpl 参照)。値は public 化しても害がない
+        範囲のものだけ template に直書きしている。 */ -}}
+{{- $name := "danimal141" -}}
+{{- $email := "hideaki.ishii1204@gmail.com" -}}
 {{- if eq $machineType "" -}}
 {{-   $machineType = promptStringOnce . "machineType" "Machine type (work / personal / ephemeral)" "personal" -}}
 {{- end -}}
