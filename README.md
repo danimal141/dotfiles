@@ -44,7 +44,30 @@ $ ./setup.sh personal2   # 個人 2 台目として明示
 
 age 経路を使う場合は鍵を `~/.config/age/key.txt` に置いて、`encrypted_` プレフィックス付きの chezmoi ファイルで運ぶ。
 
-### 4. pre-commit + secretlint を有効化
+### 4. 業務 repo の git identity 分離 (work Mac のみ)
+
+`~/.gitconfig` (chezmoi 管理) には `chezmoi init` で入力した個人 ID が入る。業務 commit を意図しないアドレスで打たないため、`~/Documents/dev/work/` 配下のリポジトリだけは別 ID を使うように `[includeIf "gitdir:~/Documents/dev/work/"]` で `~/.gitconfig.work` を読み込む構成になっている。
+
+```shell
+$ mkdir -p ~/Documents/dev/work    # 業務 clone 先
+$ cat > ~/.gitconfig.work <<'EOF'
+[user]
+    name  = hideaki.ishii
+    email = hideaki.ishii@speee.jp
+EOF
+$ chmod 600 ~/.gitconfig.work
+```
+
+`~/.gitconfig.work` は chezmoi / git どちらでも追跡しない手書きファイル。public repo に業務メールを焼かない目的で意図的にこの形にしている。確認:
+
+```shell
+$ cd ~/Documents/dev/work/<業務リポジトリ>
+$ git config user.email   # → hideaki.ishii@speee.jp が出れば OK
+$ cd ~/.homesick/repos/dotfiles
+$ git config user.email   # → 個人アドレスが出れば OK
+```
+
+### 5. pre-commit + secretlint を有効化
 
 API key の誤コミットを防ぐため secretlint が pre-commit に組み込まれている。
 
@@ -174,7 +197,7 @@ hostname 規約: 仕事用は `work`、個人用は `personal` / `personal2` / `
   * `nix/system.nix` — macOS システム設定 (Dock / Finder / KeyRepeat / trackpad)
 * chezmoi 管理: `~/.zshrc` `~/.gitconfig` `~/.tmux.conf` `~/.vimrc` `~/.codex/` `~/.claude/` ほか主要設定 (PC ごとの差分は tmpl で吸収)
 * mise 管理: 言語ランタイム (Node / Python / Ruby / Go / etc.)
-* chezmoi 管理外 (`.chezmoiignore` で除外): `~/.claude/.env`, `~/.claude/.markdownlint.jsonc`, `~/.apm/apm.lock.yaml` などツールが動的に書き換えるファイル群
+* chezmoi 管理外 (`.chezmoiignore` で除外 / そもそも追跡しない): `~/.claude/.env`, `~/.claude/.markdownlint.jsonc`, `~/.apm/apm.lock.yaml` などツールが動的に書き換えるファイル群、および `~/.gitconfig.work` (業務 ID 用、public repo に焼かない意図で手書き運用)
 
 PATH 解決順 (`chezmoi/dot_zshrc.tmpl`):
 

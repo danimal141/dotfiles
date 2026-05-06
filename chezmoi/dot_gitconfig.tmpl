@@ -6,3 +6,12 @@
 	editor = nvim
 [diff]
 	ignoreSubmodules = dirty
+
+# 業務 repo (~/Documents/dev/work/ 配下) では別 ID を使う。
+# ~/.gitconfig.work は chezmoi / git で追跡しない手書きファイル。
+# 中身の例:
+#   [user]
+#       name  = hideaki.ishii
+#       email = hideaki.ishii@speee.jp
+[includeIf "gitdir:~/Documents/dev/work/"]
+	path = ~/.gitconfig.work
