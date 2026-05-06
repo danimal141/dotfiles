@@ -44,14 +44,22 @@ $ ./setup.sh personal2   # 個人 2 台目として明示
 
 age 経路を使う場合は鍵を `~/.config/age/key.txt` に置いて、`encrypted_` プレフィックス付きの chezmoi ファイルで運ぶ。
 
-### 4. 業務 repo の git identity 上書き (任意 / work Mac のみ)
+### 4. 業務 repo の git identity 上書き (optional)
 
-`~/.gitconfig` (chezmoi 管理) は `chezmoi/.chezmoi.toml.tmpl` の `[data] name` / `email` を `dot_gitconfig.tmpl` で `[user]` に流し込む。値は work / personal どちらの machineType でも個人 ID で固定 (公開しても害のないアドレスだけを直書きする方針)。
+`~/.gitconfig` (chezmoi 管理) は `chezmoi/.chezmoi.toml.tmpl` の `[data] name` / `email` を `dot_gitconfig.tmpl` で `[user]` に流し込む。当面は work / personal どちらでも `danimal141 / hideaki.ishii1204@gmail.com` を共通で使う前提。
 
-業務 commit を業務ドメインのアドレスで打ちたい場合だけ、各 work Mac で `~/.gitconfig.work` を手書きする:
+将来、業務 GitHub org (`speee`) の repo でだけ別 ID を使いたくなった場合のために、`hasconfig:remote.*.url:` を使った optional な上書き経路だけ仕込んでおく (yxtay/dotfiles の発想)。clone path に依存せず、業務 org の remote URL を持つ repo に対してのみ発火する:
+
+```gitconfig
+[includeIf "hasconfig:remote.*.url:git@github.com:speee/**"]
+    path = ~/.gitconfig.work
+[includeIf "hasconfig:remote.*.url:https://github.com/speee/**"]
+    path = ~/.gitconfig.work
+```
+
+業務 ID で commit したくなったら、各 work Mac で `~/.gitconfig.work` を手書き作成する:
 
 ```shell
-$ mkdir -p ~/Documents/dev/work    # 業務 clone 先
 $ cat > ~/.gitconfig.work <<'EOF'
 [user]
     name  = Your Work Name
@@ -60,13 +68,13 @@ EOF
 $ chmod 600 ~/.gitconfig.work
 ```
 
-`~/.gitconfig.work` は chezmoi / git どちらでも追跡しない手書きファイル (public repo に業務メールを焼かない意図)。`Your Work Name` / `you@example.com` は example の placeholder なので、各 work Mac で自分の業務 ID に書き換える。`~/Documents/dev/work/` 配下のリポジトリだけ `[includeIf "gitdir:~/Documents/dev/work/"]` で読み込まれる。確認:
+`~/.gitconfig.work` は chezmoi / git どちらでも追跡しない手書きファイル (public repo に業務メールを焼かない意図)。`Your Work Name` / `you@example.com` は placeholder なので各 work Mac で自分の業務 ID に書き換える。確認:
 
 ```shell
-$ cd ~/Documents/dev/work/<業務リポジトリ>
-$ git config user.email   # → 業務アドレス (you@example.com 相当) が出れば OK
+$ cd <speee org の clone>
+$ git config user.email   # → 業務アドレスが出れば OK (~/.gitconfig.work 未作成なら個人アドレス)
 $ cd ~/.homesick/repos/dotfiles
-$ git config user.email   # → 個人アドレス (hideaki.ishii1204@gmail.com) が出れば OK
+$ git config user.email   # → 個人アドレス (hideaki.ishii1204@gmail.com)
 ```
 
 ### 5. pre-commit + secretlint を有効化
