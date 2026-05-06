@@ -34,7 +34,8 @@ $ ./setup.sh personal2   # 個人 2 台目として明示
 6. `chezmoi init --apply --source "$(pwd)"` で dotfile を `~/` に展開
 7. `mise install` で global ランタイムを install (`~/.config/mise/config.toml` 主、`~/.tool-versions` は legacy fallback)
 8. LSP server / VSCode 拡張のセットアップ
-9. `exec $SHELL -l` で新 shell に切り替え (PATH と chezmoi の dotfile を反映)
+9. `prek install` で `.git/hooks/pre-commit` を冪等に仕込む (`.pre-commit-config.yaml` がある時のみ)
+10. `exec $SHELL -l` で新 shell に切り替え (PATH と chezmoi の dotfile を反映)
 
 完走後は `which git` が `/run/current-system/sw/bin/git` を返す状態になる。
 
@@ -44,7 +45,19 @@ $ ./setup.sh personal2   # 個人 2 台目として明示
 
 age 経路を使う場合は鍵を `~/.config/age/key.txt` に置いて、`encrypted_` プレフィックス付きの chezmoi ファイルで運ぶ。
 
-### 4. 業務 repo の git identity 上書き (optional)
+### 4. pre-commit + secretlint
+
+API key の誤コミットを防ぐため secretlint が pre-commit hook に組み込まれている。`prek` (pre-commit の Rust 実装、drop-in 互換) を `nix/packages.nix` で配布しており、`setup.sh` の最後で `prek install` が自動実行される。手動で再 install する場合:
+
+```shell
+$ cd <repo>
+$ prek install              # .git/hooks/pre-commit 設置
+$ prek run --all-files      # 既存ファイルを 1 度走査 (任意)
+```
+
+secretlint 本体は hook 内の `npx -y secretlint` で初回実行時に自動 download される (= `npm install` 不要)。
+
+### 5. 業務 repo の git identity 上書き (optional)
 
 `~/.gitconfig` (chezmoi 管理) は `chezmoi/.chezmoi.toml.tmpl` の `[data] name` / `email` を `dot_gitconfig.tmpl` で `[user]` に流し込む。当面は work / personal どちらでも `danimal141 / hideaki.ishii1204@gmail.com` を共通で使う前提。
 
@@ -75,16 +88,6 @@ $ cd <speee org の clone>
 $ git config user.email   # → 業務アドレスが出れば OK (~/.gitconfig.work 未作成なら個人アドレス)
 $ cd ~/.homesick/repos/dotfiles
 $ git config user.email   # → 個人アドレス (hideaki.ishii1204@gmail.com)
-```
-
-### 5. pre-commit + secretlint を有効化
-
-API key の誤コミットを防ぐため secretlint が pre-commit に組み込まれている。
-
-```shell
-$ cd <repo>
-$ npm install
-$ pre-commit install
 ```
 
 ### 困ったとき
