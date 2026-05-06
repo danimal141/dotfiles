@@ -6,6 +6,5 @@
 # ~/dev/*                    # dev配下の全ディレクトリ
 # ~/projects/webapp-*        # webapp-で始まるディレクトリ
 # ~/work/specificsymlink-project    # 特定のディレクトリ
-~/.homesick/repos/dotfiles
 ~/Documents/Obsidian/hideaki_ishii_main_vault
 ~/Documents/dev/*
