@@ -86,7 +86,7 @@ $ chmod 600 ~/.gitconfig.work
 ```shell
 $ cd <speee org の clone>
 $ git config user.email   # → 業務アドレスが出れば OK (~/.gitconfig.work 未作成なら個人アドレス)
-$ cd ~/.homesick/repos/dotfiles
+$ cd <この dotfiles repo の clone>
 $ git config user.email   # → 個人アドレス (hideaki.ishii1204@gmail.com)
 ```
 
@@ -191,7 +191,8 @@ hostname 規約: 仕事用は `work`、個人用は `personal` / `personal2` / `
    ```nix
    hosts = {
      "work"      = { user = "hideaki.ishii"; };
-     "personal"  = { user = "danimal141"; };  # ← 追加
+     "personal"  = { user = "danimal141"; };
+     "personal2" = { user = "danimal141"; };  # ← 追加
    };
    ```
 
@@ -225,7 +226,7 @@ hostname 規約: 仕事用は `work`、個人用は `personal` / `personal2` / `
   * `~/.zshrc` `~/.gitconfig` `~/.tmux.conf` `~/.vimrc` `~/.codex/` `~/.claude/` `~/.config/mise/config.toml` ほか主要 dotfile
   * `~/.apm/apm.yml` (APM 依存マニフェスト)
 * mise 管理: 言語ランタイム (Node / Python / Ruby / Go / etc.)。global 宣言ソースは `~/.config/mise/config.toml` (chezmoi 管理) で、`mise install` がそれを読んで実体を `~/.local/share/mise/installs/` に展開
-* chezmoi 管理外 (`.chezmoiignore` で除外 / そもそも追跡しない): `~/.claude/.env`, `~/.claude/.markdownlint.jsonc`, `~/.apm/apm.lock.yaml` などツールが動的に書き換えるファイル群、および `~/.gitconfig.work` (業務 ID 用、public repo に焼かない意図で手書き運用)
+* chezmoi 管理外 (`.chezmoiignore` で除外 / そもそも追跡しない): `~/.claude/.credentials.json` など Claude Code が動的に書き換える状態系、`~/.apm/apm.lock.yaml` (apm 由来)、`~/.codex/sessions/`, `~/.codex/log.json`、`~/.vim/plugged/` など vim-plug 管理領域、`~/.config/age/`、および `~/.gitconfig.work` (業務 ID 用、public repo に焼かない意図で手書き運用)
 
 PATH 解決順 (`chezmoi/dot_zshrc.tmpl`):
 
