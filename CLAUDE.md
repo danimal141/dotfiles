@@ -109,7 +109,7 @@ Key configurations (materialized paths in `~/`):
 ### Shell Environment
 
 - Shell: Zsh with custom prompt showing git branch
-- Path management: Handles both Intel (/usr/local) and Apple Silicon (/opt/homebrew) Homebrew installations
+- Path management: Apple Silicon Homebrew (`/opt/homebrew`) only; `/usr/local/bin` is kept for non-Homebrew installers (Docker Desktop, VSCode, Cursor) that drop shims there
 - Key bindings: Vi-mode with common Emacs bindings in insert mode
 
 ### Language Management
