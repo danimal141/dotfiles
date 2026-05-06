@@ -55,7 +55,7 @@ $ prek install              # .git/hooks/pre-commit 設置
 $ prek run --all-files      # 既存ファイルを 1 度走査 (任意)
 ```
 
-secretlint 本体は hook 内の `npx -y secretlint` で初回実行時に自動 download される (= `npm install` 不要)。
+secretlint 本体と `@secretlint/secretlint-rule-preset-recommend` (`.secretlintrc.json` が参照する rule preset) は `package.json` / `package-lock.json` で pin している。`setup.sh` が `npm ci` でローカル `node_modules/` に install し、hook は `npx secretlint` でこれを参照する。`npx -y secretlint` 単独では rule package が解決できず hook が落ちるため、ローカルに固定する設計。
 
 ### 5. 業務 repo の git identity 上書き (optional)
 

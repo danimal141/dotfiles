@@ -140,7 +140,16 @@ if [ -f ./vscode/sync-extensions.sh ]; then
   ./vscode/sync-extensions.sh --install
 fi
 
-# ---- pre-commit hook (prek) ------------------------------------------------
+# ---- secretlint deps + pre-commit hook (prek) ------------------------------
+# secretlint 本体と rule preset (`@secretlint/secretlint-rule-preset-recommend`)
+# を `package-lock.json` から再現性高く install する。`npx -y` 隔離環境では
+# `.secretlintrc.json` が要求する rule package を解決できず hook が落ちるため、
+# ローカル `node_modules/` に固定して `npx secretlint` 経由で参照させる。
+if [ -f ./package-lock.json ] && command -v npm >/dev/null 2>&1; then
+  echo "[setup] Installing secretlint dependencies via npm ci..."
+  npm ci || true
+fi
+
 # `.pre-commit-config.yaml` の secretlint hook を git hooks に登録する。
 # prek は pre-commit の Rust 実装、`nix/packages.nix` で配布済 (= ここでは
 # 既に PATH にあること前提)。`prek install` は冪等 (`.git/hooks/pre-commit`
