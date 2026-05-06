@@ -141,5 +141,15 @@ if [ -f ./vscode/sync-extensions.sh ]; then
   ./vscode/sync-extensions.sh --install
 fi
 
+# ---- pre-commit hook (prek) ------------------------------------------------
+# `.pre-commit-config.yaml` の secretlint hook を git hooks に登録する。
+# prek は pre-commit の Rust 実装、`nix/packages.nix` で配布済 (= ここでは
+# 既に PATH にあること前提)。`prek install` は冪等 (`.git/hooks/pre-commit`
+# を上書き) なので二度目の setup.sh でも問題ない。
+if [ -f ./.pre-commit-config.yaml ] && command -v prek >/dev/null 2>&1; then
+  echo "[setup] Installing prek hooks (.git/hooks/pre-commit)..."
+  prek install
+fi
+
 # 新 shell を起動して PATH と chezmoi-applied dotfile を反映する。
 exec $SHELL -l

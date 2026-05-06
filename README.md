@@ -44,15 +44,17 @@ $ ./setup.sh personal2   # 個人 2 台目として明示
 
 age 経路を使う場合は鍵を `~/.config/age/key.txt` に置いて、`encrypted_` プレフィックス付きの chezmoi ファイルで運ぶ。
 
-### 4. pre-commit + secretlint を有効化
+### 4. pre-commit + secretlint
 
-API key の誤コミットを防ぐため secretlint が pre-commit に組み込まれている。
+API key の誤コミットを防ぐため secretlint が pre-commit hook に組み込まれている。`prek` (pre-commit の Rust 実装、drop-in 互換) を `nix/packages.nix` で配布しており、`setup.sh` の最後で `prek install` が自動実行される。手動で再 install する場合:
 
 ```shell
 $ cd <repo>
-$ npm install
-$ pre-commit install        # or `prek install`
+$ prek install              # .git/hooks/pre-commit 設置
+$ prek run --all-files      # 既存ファイルを 1 度走査 (任意)
 ```
+
+secretlint 本体は hook 内の `npx -y secretlint` で初回実行時に自動 download される (= `npm install` 不要)。
 
 ### 困ったとき
 
