@@ -86,6 +86,7 @@ setopt prompt_subst
 setopt ignoreeof
 setopt no_tify
 setopt hist_ignore_dups
+setopt hist_ignore_all_dups
 setopt share_history
 
 # -------------------------------------
@@ -169,22 +170,21 @@ fi
 command -v kubectl >/dev/null 2>&1 && source <(kubectl completion zsh)
 
 # kubectx
-alias kc="kubectx | peco | xargs kubectx"
+alias kc="kubectx | fzf | xargs kubectx"
 
 # kubens
-alias kns="kubens | peco | xargs kubens"
+alias kns="kubens | fzf | xargs kubens"
 
 # krew
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 
-# peco
-function peco-history-selection() {
-  BUFFER=$(history 1 | sort -k1,1nr | perl -ne 'BEGIN { my @lines = (); } s/^\s*\d+\*?\s*//; $in=$_; if (!(grep {$in eq $_} @lines)) { push(@lines, $in); print $in; }' | peco --query "$LBUFFER")
-  CURSOR=${#BUFFER}
-  zle reset-prompt
-}
-zle -N peco-history-selection
-bindkey '^R' peco-history-selection
+# fzf key bindings (^R = fzf-history-widget, ^T = fzf-file-widget, M-c = fzf-cd-widget)
+# fzf-share は Nix の fzf に同梱される helper で、share/fzf へのパスを返す。
+# Nix store のパスは hash 込みで可変なので、fzf-share 経由で参照する。
+if command -v fzf-share >/dev/null 2>&1; then
+  source "$(fzf-share)/key-bindings.zsh"
+  source "$(fzf-share)/completion.zsh"
+fi
 
 # for zsh-completions
 fpath=($(brew --prefix zsh-completions) $fpath)

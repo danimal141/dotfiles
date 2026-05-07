@@ -53,7 +53,6 @@
     # shell helpers
     direnv
     parallel
-    peco
 
     # git pre-commit framework (Rust 実装の高速版、`pre-commit` の drop-in 互換)。
     # 本リポジトリの `.pre-commit-config.yaml` と secretlint hook を駆動して、
