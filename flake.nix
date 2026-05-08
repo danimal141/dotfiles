@@ -65,9 +65,18 @@
 
   outputs = inputs@{ self, nixpkgs, nix-darwin, nix-homebrew, llm-agents, home-manager }:
     let
+      # Phase 1 (move-nix): private.nix 経由で identity (username 等) を注入する
+      # prototype host `default` を追加する。private.nix が無いマシンでは default
+      # を生やさないので、既存の work / personal はそのまま動く。Phase 2 で
+      # hosts attrset を default 1つに集約予定。
+      privatePath = ./private.nix;
+      privateExists = builtins.pathExists privatePath;
+      private = if privateExists then import privatePath else null;
+
       # Hostname 規約:
       #   "work"     — 仕事用 Mac
       #   "personal" / "personal2" / "personal3" / ... — 個人用 Mac
+      #   "default"  — Phase 1 prototype (private.nix がある時のみ生える)
       #
       # nix-darwin の `networking.hostName` を各ホストモジュールに書くことで、
       # apply 時に LocalHostName / HostName が必ず上記規約名で固定される。
@@ -78,10 +87,15 @@
       #   1. nix/hosts/<hostname>.nix を作成 (work.nix を雛形に)
       #   2. 下の hosts に 1 エントリ追加
       #   3. 新 Mac で `nix run nix-darwin -- switch --flake .#<hostname>`
-      hosts = {
+      baseHosts = {
         "work"     = { user = "hideaki.ishii"; };
         "personal" = { user = "danimal141"; };
       };
+      hosts = baseHosts // (
+        if privateExists
+        then { "default" = { user = private.username; }; }
+        else { }
+      );
 
       # ホスト attrset を `darwinConfigurations` に展開するヘルパー。
       # specialArgs で `user` / `hostname` / `inputs` を全モジュールに渡す:

@@ -2,13 +2,19 @@
 
 # home-manager (~/ 配下を declarative に管理する Nix module)。
 #
-# 設計上の方針:
-#   * dotfile 本体 (zshrc / tmux.conf / vimrc 等) は引き続き chezmoi 側に集約。
-#     home-manager は「Nix module で型付けして書く方が綺麗な user-level 設定」と
-#     「flake.lock で pin したい user-level バイナリ」だけを引き受ける。
-#   * 編集頻度が低く、Nix module の `programs.*` で恩恵を受けるツール (starship,
-#     direnv, fzf 等) を段階的にここに移していく予定。
+# Phase 1 (move-nix) 以降の方針:
+#   * `home.file` で raw text dotfile (zshrc 等) を `mkOutOfStoreSymlink` で
+#     `~/` に symlink 配置する。中身は repo 内のままなので編集体験は維持される
+#     (vim で開いて即 source できる)。
+#   * Nix module の `programs.*` で型付けして書く方が綺麗なツール (starship,
+#     direnv 等) は home-manager で declarative に書く。境界は移行と共に育てる。
+#   * 移植は `./programs/<tool>.nix` で 1 ファイル 1 ツールに分割する。
+#     prototype (Phase 1) では zsh のみ。Phase 2 以降で順次拡張する。
 {
+  imports = [
+    ./programs/zsh.nix
+  ];
+
   # nixpkgs unstable に対応する home-manager リリース。
   # nix-darwin の system.stateVersion (= 6) とは別の値で、初回設定値を pin する。
   home.stateVersion = "25.11";
