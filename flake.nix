@@ -33,16 +33,13 @@
 
     # nix-homebrew: Homebrew のインストール / brew / cask 宣言を nix-darwin の
     # モジュールとして扱う。`autoMigrate = true` で既存の手動 brew インストールも
-    # 引き継げるため、移行時に Homebrew を再導入する必要がない。
+    # 引き継げる。
     #
-    # 一時 pin: zhaofengli/nix-homebrew は brew 5.1.7 で stuck しており、
-    # 5.1.7 の `cask_struct_generator.process_depends_on` が `nil.to_sym` で
-    # 落ちる API 互換問題 (visual-studio-code / intellij-idea / firefox など
-    # 14 cask が fetch 不能) がある。brew 5.1.10 (Homebrew/brew#22137) で
-    # 修正されており、nix-homebrew の追従 PR #136 (matinzd/nix-homebrew の
-    # patch-1 ブランチ、HEAD = a3b7269) が open。merge 待ちのため、その
-    # フォーク HEAD を一時 pin する。本家マージ後に `github:zhaofengli/nix-homebrew`
-    # へ戻す revert commit を打つ。
+    # 一時 pin (matinzd/nix-homebrew PR #136): zhaofengli 本家は brew 5.1.7
+    # で stuck し、`cask_struct_generator.process_depends_on` の `nil.to_sym`
+    # で 14 cask (visual-studio-code 等) が fetch 不能。brew 5.1.10 で修正
+    # 済み (Homebrew/brew#22137)、PR #136 で追従。本家 merge 後に
+    # `github:zhaofengli/nix-homebrew` へ戻す。
     nix-homebrew = {
       url = "github:matinzd/nix-homebrew/a3b7269392d2b8379434fc3d4d3694c92e9e2278";
     };
@@ -58,14 +55,9 @@
     };
 
     # home-manager: ~/ 配下 (= user-level) の declarative 管理モジュール。
-    # `nixpkgs-unstable` (現状 26.05 系) と整合させる必要があり、release branch
-    # は 25.11 までしか存在しない (release-26.05 は未リリース、2026-05 時点)。
-    # その間は **特定 commit を pin する** ことで両側を取る:
-    #   * 最新 master の修正は取り込める (= 25.11/26.05 の lib mismatch 警告無し)
-    #   * `nix flake update --update-input home-manager` で勝手に master HEAD
-    #     まで進まない (commit 単位 pin なので no-op)。更新は `url` の commit を
-    #     書き換える == PR diff に commit が残り、意識的な更新になる
-    # `release-26.05` がリリースされたらそちらに pin し直す follow-up を打つ。
+    # nixpkgs-unstable (26.05 系) に対応する release branch がまだ無い
+    # (release-25.11 までしか存在しない、2026-05 時点) ので master の特定
+    # commit を pin する。`release-26.05` リリース後にそちらへ切り替える。
     home-manager = {
       url = "github:nix-community/home-manager/00ed86e58bb6979a7921859fd1615d19382eac5c";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -104,9 +96,7 @@
       # を全モジュールに渡す:
       #   `user`     — `nix/system.nix` が primaryUser に使う
       #   `hostname` — モジュール内で host 別判定したい場合の保険 (現状未使用)
-      #   `gitName` / `gitEmail` — Phase 3 の `programs.git` で identity に使う。
-      #     Phase 2 時点ではまだ消費するモジュールはないが、hosts attrset を
-      #     identity の真実源とする枠組みを先に通しておく。
+      #   `gitName` / `gitEmail` — `nix/home/programs/git.nix` の identity に使う
       #   `inputs`   — `nix/packages.nix` が llm-agents.packages を参照するため
       # Apple Silicon 専用想定なので system は aarch64-darwin に固定。
       # Intel Mac (x86_64-darwin) サポートが必要になったら関数引数に戻す。

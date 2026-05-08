@@ -2,9 +2,9 @@
 
 # `~/.gitconfig` を home-manager の `programs.git` で declarative に管理する。
 #
-# identity (gitName / gitEmail) は flake.nix の hosts attrset から specialArgs
-# 経由で流れてくる (Phase 2 で配線済み)。マシン追加時は hosts に 1 entry
-# 足すだけで identity も自動で反映される。
+# identity (gitName / gitEmail) は flake.nix の hosts attrset から
+# specialArgs 経由で流れてくる。マシン追加時は hosts に 1 entry 足すだけで
+# identity も自動で反映される。
 #
 # 業務 (speee org) の remote URL を持つ repo だけ ~/.gitconfig.work で上書き
 # する経路は includeIf で再現する。`~/.gitconfig.work` は git でも repo でも
@@ -12,10 +12,9 @@
 # `hasconfig:remote.*.url:` でマッチするので clone path に依存しない
 # (yxtay/dotfiles に倣う)。
 #
-# global gitignore (旧 ~/.gitignore) は `programs.git.ignores` で declarative
-# に移植 (Phase 3 step 8)。home-manager は ~/.config/git/ignore に XDG 配置
-# する。git は core.excludesfile が未設定の場合 XDG default を自動で読むので
-# excludesfile の手書きは不要。
+# global gitignore は `programs.git.ignores` で ~/.config/git/ignore に
+# XDG 配置する。git は core.excludesfile が未設定なら XDG default を自動で
+# 読むため excludesfile の手書きは不要。
 {
   programs.git = {
     enable = true;

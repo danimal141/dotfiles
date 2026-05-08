@@ -1,13 +1,11 @@
 { config, user, ... }:
 
-# vim 設定 (~/.vimrc, ~/.vim/) を repo に out-of-store symlink で配置する。
-# zsh.nix / tmux.nix と同じ mkOutOfStoreSymlink パターン。
+# vim 設定 (~/.vimrc, ~/.vim/) を out-of-store symlink で配置する。
 #
-# `~/.vim/` 全体を 1 つの symlink で繋ぐと vim-plug が repo 内に
-# `vim/.vim/plugged/` を書いてしまうので、サブディレクトリ単位で個別に
-# symlink する。`~/.vim/plugged/` `~/.vim/sessions/` `~/.vim/.netrwhist`
-# などの動的領域はここで配置せず、vim-plug や vim 自身が普通に書ける
-# mutable directory として残す。
+# ~/.vim/ 全体を 1 つの symlink で繋ぐと vim-plug が repo 内の
+# `vim/.vim/plugged/` を書き換えてしまう。サブディレクトリ単位で個別に
+# symlink して、`~/.vim/plugged/` `~/.vim/sessions/` `~/.vim/.netrwhist`
+# などの動的領域は home.file 対象外で mutable のまま残す。
 let
   dotfilesPath = "/Users/${user}/Documents/dev/dotfiles";
   vimDotDir = "${dotfilesPath}/vim/.vim";

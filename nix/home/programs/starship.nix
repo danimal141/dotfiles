@@ -2,25 +2,22 @@
 
 # starship: shell prompt
 #
-# 旧 zsh prompt は `vcs_info` ベースで `[user] cwd (vcs)-[branch] %` 形式を
-# 出していた。starship に置き換えて宣言的に再現しつつ、Nix module の型付け
-# と `flake.lock` での pin を取りに行く。
+# `[user] cwd (vcs)-[branch] %` 形式を declarative に宣言する。
+# Nix module の型付けと flake.lock の pin が目的。
 #
 # enableZshIntegration を false にする理由:
-# zshrc は repo の zsh/.zshrc を home.file で symlink 配置している。
-# home-manager に zshrc 注入を許すと両者が衝突するため、`eval "$(starship
-# init zsh)"` の 1 行は zshrc に手書きで持たせ続ける (mise.nix と統一の方針)。
+# zshrc は repo の zsh/.zshrc を home.file で symlink 配置しているため、
+# home-manager の zshrc 注入を許すと両者が衝突する。`eval "$(starship
+# init zsh)"` の 1 行は zshrc に手書きで持たせる (mise.nix と同じ方針)。
 {
   programs.starship = {
     enable = true;
     enableZshIntegration = false;
 
-    # 旧 vcs_info prompt のミニマル再現:
-    #   [user] ~/path (git)-[main] %
+    # 出力例: [user] ~/path (git)-[main] %
     #
-    # starship preset (Pure / Tokyo Night 等) を使わない理由は、既存環境からの
-    # 認知負荷を最小化するため。慣れたら `programs.starship.settings` を user
-    # 自身が iterate していけば良い。
+    # starship preset (Pure / Tokyo Night 等) を使わない理由は、既存環境
+    # からの認知負荷を最小化するため。settings は必要に応じて iterate する。
     settings = {
       add_newline = false;
 
