@@ -76,11 +76,37 @@ env として inject する。
 
 #### work GitHub org の git identity (任意)
 
-`programs.git.includes` の `hasconfig:remote.*.url:git@github.com:speee/**`
-条件で work org の repo にだけ別 identity を apply する経路を仕込んでいる。
-work Mac で `~/.gitconfig.work` を手書き作成:
+業務用の identity 上書きは **2 つの user 手書きファイル**で実現する。
+所属組織名や業務メールが public repo に出ないよう、条件分岐 (どの remote
+URL で identity を切り替えるか) と上書き値 (name / email) の両方を user
+側に逃がす設計。
+
+repo の `programs.git.includes` は `~/.gitconfig.local` を unconditional
+に include するだけ (中身は何も知らない)。実際の条件分岐は
+`~/.gitconfig.local` 内の `[includeIf "..."]` で user が記述し、その
+include 先の `~/.gitconfig.work` に identity を書く、という二段構成。
+
+| ファイル | 役割 | 中身 |
+|---|---|---|
+| `~/.gitconfig.local` | dispatcher: どの remote URL pattern で work identity に切り替えるかを宣言 | `[includeIf "hasconfig:remote.*.url:git@github.com:<your-org>/**"]` ブロック |
+| `~/.gitconfig.work` | overrides: 切り替え後に適用する name / email | `[user] name = ... / email = ...` |
+
+両者とも repo / git どちらでも追跡しない (= 個人 Mac には作らない、
+work Mac でだけ存在する手書きファイル)。
+
+##### work Mac でのセットアップ
 
 ```shell
+# 1. dispatcher を作成 (org pattern を 1 行に書く)
+$ cat > ~/.gitconfig.local <<'EOF'
+[includeIf "hasconfig:remote.*.url:git@github.com:<your-org>/**"]
+    path = ~/.gitconfig.work
+[includeIf "hasconfig:remote.*.url:https://github.com/<your-org>/**"]
+    path = ~/.gitconfig.work
+EOF
+$ chmod 600 ~/.gitconfig.local
+
+# 2. overrides を作成 (work identity の値)
 $ cat > ~/.gitconfig.work <<'EOF'
 [user]
     name  = Your Work Name
@@ -89,16 +115,16 @@ EOF
 $ chmod 600 ~/.gitconfig.work
 ```
 
-`~/.gitconfig.work` は repo / git どちらでも追跡しない手書きファイル
-(public repo に業務メールを焼かない意図)。
+`<your-org>` を実際の GitHub org 名に置換、`Your Work Name` /
+`you@example.com` を業務 ID に置換する。
 
-確認:
+##### 動作確認
 
 ```shell
-$ cd <speee org の clone>
-$ git config user.email   # → 業務アドレス (~/.gitconfig.work 配置済みなら)
+$ cd <work org の repo の clone>
+$ git config user.email   # → 業務アドレス (.gitconfig.local + .gitconfig.work 配置済みなら)
 $ cd <この dotfiles repo>
-$ git config user.email   # → 個人アドレス (hideaki.ishii1204@gmail.com)
+$ git config user.email   # → 個人アドレス (flake.nix で宣言)
 ```
 
 ### 4. pre-commit + secretlint
@@ -129,9 +155,10 @@ pin、`setup.sh` の `npm ci` で `node_modules/` に install され、hook は
 * **`darwin-rebuild` の Homebrew step で formula / cask 名解決失敗** —
   上流で改名 / cask 化されたものは `nix/homebrew.nix` を更新
 * **業務 repo で `git config user.email` が個人 ID のまま** —
-  `~/.gitconfig.work` 未作成か、remote URL が `github.com:speee/...` 以外で
-  `hasconfig:` 条件にマッチしていない。`git remote -v` と
-  `~/.gitconfig.work` の存在を確認
+  `~/.gitconfig.local` または `~/.gitconfig.work` 未作成か、remote URL が
+  `~/.gitconfig.local` 内の `hasconfig:remote.*.url:` 条件にマッチしていない。
+  `git remote -v` で URL を確認し、`.gitconfig.local` の pattern に該当 org
+  が入っているか、`.gitconfig.work` が存在するかをチェック
 
 ## 日常運用
 
@@ -278,7 +305,7 @@ LocalHostName` では新 host を検出できず `setup.sh` は `work` にフォ
   * `~/.codex/{sessions,log.json}` (codex 動的領域)
   * `~/.apm/{apm_modules,config.json,.claude,.github}` (APM 動的領域)
   * `~/.vim/{plugged,sessions,.netrwhist}` (vim-plug 動的領域)
-  * `~/.codex/.env`, `~/.gitconfig.work` (secrets、user 手書き)
+  * `~/.codex/.env`, `~/.gitconfig.local`, `~/.gitconfig.work` (secrets / org 名、user 手書き)
 
 PATH 解決順 (`zsh/.zshrc`):
 
