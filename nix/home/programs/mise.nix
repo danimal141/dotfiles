@@ -1,4 +1,4 @@
-{ config, lib, user, ... }:
+{ config, lib, pkgs, user, ... }:
 
 # mise (旧 rtx) を home-manager の nixpkgs ビルドで導入する。
 #
@@ -34,8 +34,7 @@ in
   # 判定して `mise trust` を要求する。home-manager activation で 1 回 trust
   # を登録しておく (~/.local/share/mise/trusted-configs/ に hash 記録、冪等)。
   home.activation.miseTrust = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    if command -v mise >/dev/null 2>&1; then
-      $DRY_RUN_CMD mise trust "${dotfilesPath}/mise/config.toml" >/dev/null 2>&1 || true
-    fi
+    $DRY_RUN_CMD ${pkgs.mise}/bin/mise trust "${dotfilesPath}/mise/config.toml" \
+      || echo "[miseTrust] trust failed (non-fatal)"
   '';
 }
