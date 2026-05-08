@@ -68,6 +68,16 @@ Brewfile
 .vim/colors
 .vim/ftdetect
 .vim/ftplugin
+# Phase 3 step 4: claude 設定。~/.claude/ 全体は ignore せず、home.file で
+# 個別 symlink している領域のみを target ignore する。projects/ todos/ など
+# の動的領域は home.file 対象外なので元の ignore (ファイル冒頭) のまま。
+.claude/CLAUDE.md
+.claude/settings.json
+.claude/mcp-servers.yaml
+.claude/.env.example
+.claude/hooks
+.claude/rules
+.claude/skills/.gitignore
 
 # OS 別の除外: chezmoiscripts/darwin/ は macOS 以外では走らせない
 {{- if ne .chezmoi.os "darwin" }}
