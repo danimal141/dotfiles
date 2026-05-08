@@ -1,9 +1,8 @@
 # 設計思想: nix-darwin + home-manager 一本化
 
 このリポジトリは **nix-darwin + home-manager の二段構成**で運用している。
-chezmoi を併用していた v1 構成を撤去し、`~/` 配下の設定ファイルもすべて
-home-manager で declarative に配置するのが現状の方針。
-旧 v1 構成 (chezmoi 併用) の判断軸は `design-philosophy-v1.md` に保存。
+`~/` 配下の設定ファイルもすべて home-manager で declarative に配置するのが
+現状の方針。
 
 ## TL;DR
 
