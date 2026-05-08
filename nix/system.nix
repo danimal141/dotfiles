@@ -12,7 +12,8 @@
 #     ものを足していくスタイル。
 #
 # アプリ単体の defaults (1Password / Raycast / Karabiner 等) は引き続きスコープ外。
-# 必要になったら chezmoi 側の `run_once_*.sh` で `defaults write` を流す。
+# 必要になったら `system.defaults.CustomUserPreferences` か手動 `defaults write`
+# で対応する。
 {
   # `system.defaults` / nix-homebrew が「誰の defaults を書くか」を決めるための
   # primary user 宣言。multi-user 環境ではないので flake から渡された user で固定。
@@ -45,9 +46,10 @@
     };
   };
 
-  # zsh の rc は chezmoi 管理 (`chezmoi/dot_zshrc.tmpl`) に集約する。
-  # nix-darwin が /etc/zshrc を生成すると chezmoi 側の zshrc と読み込み順で
-  # 競合 (PATH 重複 / completion 多重設定) しうるため明示的に無効化する。
+  # zsh の rc は repo の `zsh/.zshrc` を home.file で `~/.zshrc` に symlink
+  # 配置する (nix/home/programs/zsh.nix)。nix-darwin が /etc/zshrc を生成
+  # すると home-manager 側の zshrc と読み込み順で競合 (PATH 重複 /
+  # completion 多重設定) しうるため、system 側 zsh module は無効化する。
   programs.zsh.enable = false;
 
   # brew で language runtime を入れるのを物理的に禁止する。

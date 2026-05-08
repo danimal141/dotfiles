@@ -9,10 +9,10 @@
 # 強い formulae 等)。
 #
 # PATH 競合に注意:
-#   `chezmoi/dot_zshrc.tmpl` で /run/current-system/sw/bin を /opt/homebrew/bin
-#   より前に置いているため、Nix store と Homebrew の両方に同名バイナリが
-#   ある場合は Nix store 側が勝つ。下のリストに入れたものは brew 側からも
-#   消す (= `nix/homebrew.nix` の brews から削除する) のが原則。
+#   `zsh/.zshrc` で /run/current-system/sw/bin を /opt/homebrew/bin より前に
+#   置いているため、Nix store と Homebrew の両方に同名バイナリがある場合は
+#   Nix store 側が勝つ。下のリストに入れたものは brew 側からも消す
+#   (= `nix/homebrew.nix` の brews から削除する) のが原則。
 {
   environment.systemPackages = (with pkgs; [
     # core text & file utilities — どの言語でも使う薄い CLI 群。

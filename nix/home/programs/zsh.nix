@@ -23,10 +23,6 @@
 #   * 前提: dotfiles を `~/Documents/dev/dotfiles` に clone していること。
 #     別パスを使うマシンが出てきたら specialArgs に `dotfilesPath` を追加して
 #     flake.nix 側で吸収する想定。
-#
-# Phase 1 prototype: chezmoi の dot_zshrc.tmpl とは並立するが、
-# `chezmoi/.chezmoiignore` に `.zshrc` を追加して chezmoi 側を抑止し、
-# home-manager 側の symlink が `~/.zshrc` を所有する。
 {
   home.file.".zshrc".source =
     config.lib.file.mkOutOfStoreSymlink

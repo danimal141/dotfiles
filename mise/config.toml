@@ -10,9 +10,8 @@
 #   3. ~/.config/mise/config.toml      ← このファイル
 #   4. ~/.tool-versions                ← 旧 global、新 Mac では存在しない
 #
-# 既存の ~/.tool-versions は本ファイル導入後 dead weight になるため、
-# 一度 `chezmoi apply` した後で `rm ~/.tool-versions` する想定。
-# (chezmoi はファイル削除を表現できないため手動。)
+# 旧 ~/.tool-versions (asdf 互換 global) を使っていた場合は本ファイル導入後
+# dead weight になるため、`rm ~/.tool-versions` で削除して良い。
 
 [tools]
 ruby = "3.3.0"

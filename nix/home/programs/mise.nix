@@ -10,9 +10,9 @@
 #
 # enableZshIntegration を false にする理由:
 # starship.nix と同じく、zshrc は repo の zsh/.zshrc を home.file で
-# symlink 配置している (= chezmoi 時代の集約方針を維持)。home-manager に
-# zshrc 注入を許すと両者が衝突して片方の設定が消えるため、`mise activate
-# zsh` の eval 行は zsh/.zshrc に手書きで 1 行持たせ続ける。
+# symlink 配置している。home-manager に zshrc 注入を許すと両者が衝突して
+# 片方の設定が消えるため、`mise activate zsh` の eval 行は zsh/.zshrc に
+# 手書きで 1 行持たせ続ける。
 #
 # global tool versions (~/.config/mise/config.toml) は repo の mise/
 # config.toml に raw 配置し、out-of-store symlink で参照させる。

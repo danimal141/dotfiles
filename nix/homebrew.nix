@@ -59,7 +59,7 @@
     # * macOS-only ツール          — terminal-notifier, im-select
     # * shell 本体と plugin       — zsh, zsh-autosuggestions, zsh-syntax-highlighting,
     #                              zsh-completions (brew の方が起動が速い)
-    # * secrets bootstrap         — age (chezmoi の secrets 注入経路、1password-cli は cask 化したので casks 側)
+    # * secrets bootstrap         — age (1password-cli は cask 化したので casks 側)
     # * DB / dev サーバー          — mysql, redis, libpq, qemu
     brews = [
       "FairwindsOps/tap/pluto"

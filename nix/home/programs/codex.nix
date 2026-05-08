@@ -2,18 +2,13 @@
 
 # Codex CLI 設定 (~/.codex/) を home-manager で管理する。
 #
-# 旧 chezmoi 構成 (chezmoi/dot_codex/) との差分:
-#   * config.toml の `{{ env "GEMINI_API_KEY" }}` template 展開を廃止し、
-#     secrets を tracked file から完全分離。GEMINI_API_KEY は
-#     ~/.codex/.env (gitignore で repo 外配置、.env.example をコピーして
-#     user が手動で埋める) に書き、wrapper script (~/.codex/wrappers/
-#     gemini-mcp.sh = repo の codex/wrappers/gemini-mcp.sh) が起動時に
-#     source して inject する。
-#   * AGENTS.md は chezmoi の symlink_AGENTS.md (../.claude/CLAUDE.md への
-#     relative symlink) を踏襲しつつ、新方針では repo の claude/CLAUDE.md
-#     を直接指す out-of-store symlink にする。CLAUDE.md 編集が両方に即
-#     反映される (codex の AGENTS.md は ~/.claude/CLAUDE.md と同一内容で
-#     運用したい意図を維持)。
+#   * GEMINI_API_KEY は ~/.codex/.env (repo 外、user 手動配置) に書き、
+#     wrapper script (~/.codex/wrappers/gemini-mcp.sh = repo の
+#     codex/wrappers/gemini-mcp.sh) が起動時に source して inject する。
+#     secrets を tracked file から完全分離する設計。
+#   * AGENTS.md は repo の claude/CLAUDE.md を直接指す out-of-store
+#     symlink。CLAUDE.md 編集が ~/.claude/CLAUDE.md と ~/.codex/AGENTS.md
+#     の両方に即反映される (両者で同じ system instruction を共有したい意図)。
 #   * config.toml は user 変数 (wrapper 絶対パス) を含むため home.file の
 #     `text =` で生成する。raw 編集即反映の体験は失うが、codex MCP server
 #     の追加・変更は頻度が低く、darwin-rebuild trigger を許容する。

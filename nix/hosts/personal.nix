@@ -3,9 +3,7 @@
 # 個人用 Mac (主機) のホストモジュール。
 #
 # `networking.hostName = "personal"` を宣言することで、apply 時に
-# LocalHostName / HostName が "personal" に固定される。chezmoi 側は
-# hostname が "personal" 始まり (`personal`, `personal2`, ...) で
-# machineType = "personal" を自動判定するため、この命名で必ず一致する。
+# LocalHostName / HostName が "personal" に固定される。
 #
 # 個人用 PC を増やすときは `personal2` / `personal3` ... と連番にし、
 # それぞれ `nix/hosts/<hostname>.nix` を作って `flake.nix` の hosts attrset

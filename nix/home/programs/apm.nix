@@ -2,12 +2,6 @@
 
 # APM (Agent Package Manager) 設定 (~/.apm/) を home-manager で管理する。
 #
-# 旧 chezmoi 構成 (chezmoi/dot_apm/ + chezmoi/.chezmoiscripts/darwin/
-# run_onchange_after_apm-install.sh.tmpl) では `apm.yml` を chezmoi の
-# `run_onchange_after_*` hook で hash 検出し、変更時のみ `apm install
-# --target claude` を発火していた。新方針ではこれを home-manager の
-# `home.activation` に移植する:
-#
 #   * apm.yml / apm.lock.yaml / .gitignore を repo の raw text に
 #     out-of-store symlink で配置 (`vim ~/.apm/apm.yml` で repo 内
 #     ファイルを直接編集できる)。apm install が apm.lock.yaml を更新

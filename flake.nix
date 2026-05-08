@@ -18,7 +18,7 @@
 #     (Nix store CLI) / `nix/homebrew.nix` (brew/cask) の三層に分割し、
 #     ホスト個別差分のみ `nix/hosts/<hostname>.nix` に書く。
 {
-  description = "danimal141 dotfiles - chezmoi + nix-darwin";
+  description = "danimal141 dotfiles - nix-darwin + home-manager";
 
   inputs = {
     # nixpkgs-unstable: nix-darwin と組み合わせる際に安定リリースより追従が
@@ -80,8 +80,7 @@
       #
       # nix-darwin の `networking.hostName` を各ホストモジュールに書くことで、
       # apply 時に LocalHostName / HostName が必ず上記規約名で固定される。
-      # IT 部門が払い出した個別 hostname (例: hideaki-ishii1) に左右されないため、
-      # chezmoi 側の hostname ベース machineType 判定もこのリストと整合する。
+      # IT 部門が払い出した個別 hostname (例: hideaki-ishii1) に左右されない。
       #
       # 新しい Mac を追加する手順:
       #   1. nix/hosts/<hostname>.nix を作成 (work.nix を雛形に)
@@ -150,16 +149,13 @@
               home-manager.useUserPackages = true;
               home-manager.users.${user} = import ./nix/home;
               # home-manager 側のモジュールにも host の specialArgs を渡す
-              # (system 層と整合)。`gitName` / `gitEmail` は Phase 3 で
+              # (system 層と整合)。`gitName` / `gitEmail` は
               # `nix/home/programs/git.nix` が消費する。
               home-manager.extraSpecialArgs = { inherit user gitName gitEmail; };
               # home.file で配置される ~/.zshrc 等が「既に手で書かれた状態」で
-              # 衝突する場合 (Phase 1 の chezmoi 並立期間や、初回 apply 直後)、
-              # `Existing file would be clobbered` で activation が止まる。
-              # ここで backupFileExtension を指定すると、衝突した既存ファイルを
-              # `<path>.backup` にリネームしてから home.file の symlink を貼る。
-              # 初回だけ意味があり、二度目以降は home-manager 管理下の symlink
-              # と整合するので副作用ゼロ。
+              # 衝突する初回 apply で `Existing file would be clobbered` の
+              # activation 中断を避ける。`<path>.backup` にリネームして
+              # symlink を貼り直すので、初回以降は副作用ゼロ。
               home-manager.backupFileExtension = "backup";
             }
           ];

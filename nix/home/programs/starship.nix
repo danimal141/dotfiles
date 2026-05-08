@@ -7,10 +7,9 @@
 # と `flake.lock` での pin を取りに行く。
 #
 # enableZshIntegration を false にする理由:
-# zshrc は repo の zsh/.zshrc を home.file で symlink 配置している (= chezmoi
-# 時代の集約方針を維持)。home-manager に zshrc 注入を許すと両者が衝突するため、
-# `eval "$(starship init zsh)"` の 1 行は zshrc に手書きで持たせ続ける
-# (mise.nix と統一の方針)。
+# zshrc は repo の zsh/.zshrc を home.file で symlink 配置している。
+# home-manager に zshrc 注入を許すと両者が衝突するため、`eval "$(starship
+# init zsh)"` の 1 行は zshrc に手書きで持たせ続ける (mise.nix と統一の方針)。
 {
   programs.starship = {
     enable = true;
