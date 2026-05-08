@@ -24,7 +24,8 @@
 
 `mkOutOfStoreSymlink` を使う場合、`~/.zshrc` は repo 内ファイルへの symlink
 になるので、`vim ~/.zshrc` を開けば repo を直接編集している状態になる。
-chezmoi の `[edit] apply = true` 相当の編集体験を nix で実現できている。
+編集 → shell reload (`source ~/.zshrc`) で即反映、`darwin-rebuild switch`
+を介さない短い iteration cycle が成立する。
 
 ## ディレクトリ構造
 
