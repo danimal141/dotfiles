@@ -16,7 +16,8 @@
 #   5. `darwin-rebuild switch` で nix/packages.nix / nix/homebrew.nix /
 #      nix/system.nix を一括反映 (sudo 必須、experimental-features は CLI フラグで渡す)
 #   6. home-manager (nix-darwin に統合) が ~/ 配下の dotfile を symlink 配置
-#   7. mise で ~/.tool-versions の言語ランタイムを install
+#      mise CLI と global config (~/.config/mise/config.toml) もこの段で配置される
+#   7. mise install で ~/.config/mise/config.toml の言語 binary を実体 install
 #   8. LSP / VSCode 拡張のセットアップ
 set -e
 
@@ -111,10 +112,13 @@ sudo -E nix --extra-experimental-features 'nix-command flakes' \
   run nix-darwin -- switch --flake ".#$TARGET_HOST"
 
 # ---- mise / language runtimes ---------------------------------------------
-# `~/.tool-versions` に書かれた言語ランタイムを mise でまとめて install する。
-# 失敗しても止めないのは、ビルド失敗してもセットアップ全体を最後まで回す方が
-# 後段 (VSCode 等) を別途やり直さなくて済むため。
-echo "[setup] Installing language runtimes from ~/.tool-versions via mise..."
+# `~/.config/mise/config.toml` (home-manager 経由で repo の mise/config.toml
+# を symlink 配置済み) に宣言された言語ランタイムを mise でまとめて install
+# する。mise CLI 自体は darwin-rebuild で home-manager profile に入った
+# 状態で、ここでは各言語の実体 binary を pull する。失敗しても止めないのは、
+# 一部のビルド失敗で全体を中断するより後段 (LSP / VSCode 等) を最後まで
+# 流す方が後で個別にやり直しやすいため。
+echo "[setup] Installing language runtimes from ~/.config/mise/config.toml via mise..."
 mise install || true
 
 # LSP server は npm/gem/go が走る言語でだけ事前 install しておく。
