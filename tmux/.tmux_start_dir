@@ -1,0 +1,17 @@
+# tmux-start で開くディレクトリ一覧 (default、全 PC 共通)。
+#
+# nix/home/programs/tmux.nix が `~/.tmux_start_dir` をこのファイルへの
+# out-of-store symlink として配置するため、`vim ~/.tmux_start_dir` で
+# 開いて編集すれば即反映される。
+#
+# フォーマット:
+#   * 1行に 1 ディレクトリまたはグロブパターン
+#   * `#` で始まる行と空行は無視
+#
+# PC 固有の path が必要になったら、その時点で対応する選択肢:
+#   1. default に追加して全 PC で共有する (このファイルを更新)
+#   2. specialArgs で host 別 list を渡す形に拡張する (hosts.<host>.tmuxStartDirs)
+#   3. 該当 PC でだけ home.file の symlink を解除して手書きに切り替え
+
+~/Documents/dev/*
+~/Documents/Obsidian/hideaki_ishii_main_vault

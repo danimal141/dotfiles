@@ -1,24 +1,23 @@
 { config, user, ... }:
 
-# tmux 設定 (~/.tmux.conf) を repo の raw text に out-of-store symlink で
-# 配置する。zsh.nix と同じ `mkOutOfStoreSymlink` パターンで、
-# `vim ~/.tmux.conf` で開けば repo 内ファイルを直接編集できる。
-# 設定の reload は tmux 側で手動 (`tmux source ~/.tmux.conf`) が必要だが、
-# ファイル更新自体は darwin-rebuild なしで即時反映される。
+# tmux 設定 (~/.tmux.conf, ~/.tmux_start_dir) を repo の raw text に
+# out-of-store symlink で配置する。zsh.nix と同じ `mkOutOfStoreSymlink`
+# パターンで、`vim ~/.tmux.conf` で開けば repo 内ファイルを直接編集できる
+# (tmux 側の reload は手動)。
 #
-# ~/.tmux_start_dir は意図的に home-manager 管理外に置く:
-#   * tmux-start (zshrc から呼ぶ自作 helper) が読むディレクトリ一覧で、
-#     PC ごとに開きたい path が違う (work / personal で repo 配置場所や
-#     Obsidian vault が異なる)。
-#   * これを repo に commit すると PC 横断で同じ path が配布されてしまう。
-#   * よって各 PC で `~/.tmux_start_dir` を手書きする運用にする。
-#     repo には tmux/.tmux_start_dir.sample をテンプレとして commit。
-#   * global gitignore (`chezmoi/dot_gitignore`) で `.tmux_start_dir` を
-#     ignore して、誤って他 repo に track されないよう保護。
+# ~/.tmux_start_dir は tmux-start (zshrc から呼ぶ自作 helper) が読む
+# ディレクトリ一覧。default の 2 path (`~/Documents/dev/*` と Obsidian
+# vault) を repo に commit して全 PC 共通とする。PC ごとに違う path が
+# 必要になったら、その時点で個別対応する (default を更新する / その PC
+# だけ symlink を解除して手書き運用に切り替える / specialArgs で host 別
+# list を渡す形に発展させる、等)。
 let
   dotfilesPath = "/Users/${user}/Documents/dev/dotfiles";
 in
 {
   home.file.".tmux.conf".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tmux/.tmux.conf";
+
+  home.file.".tmux_start_dir".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tmux/.tmux_start_dir";
 }
