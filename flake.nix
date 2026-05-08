@@ -34,8 +34,17 @@
     # nix-homebrew: Homebrew のインストール / brew / cask 宣言を nix-darwin の
     # モジュールとして扱う。`autoMigrate = true` で既存の手動 brew インストールも
     # 引き継げるため、移行時に Homebrew を再導入する必要がない。
+    #
+    # 一時 pin: zhaofengli/nix-homebrew は brew 5.1.7 で stuck しており、
+    # 5.1.7 の `cask_struct_generator.process_depends_on` が `nil.to_sym` で
+    # 落ちる API 互換問題 (visual-studio-code / intellij-idea / firefox など
+    # 14 cask が fetch 不能) がある。brew 5.1.10 (Homebrew/brew#22137) で
+    # 修正されており、nix-homebrew の追従 PR #136 (matinzd/nix-homebrew の
+    # patch-1 ブランチ、HEAD = a3b7269) が open。merge 待ちのため、その
+    # フォーク HEAD を一時 pin する。本家マージ後に `github:zhaofengli/nix-homebrew`
+    # へ戻す revert commit を打つ。
     nix-homebrew = {
-      url = "github:zhaofengli/nix-homebrew";
+      url = "github:matinzd/nix-homebrew/a3b7269392d2b8379434fc3d4d3694c92e9e2278";
     };
 
     # APM (microsoft/apm) は本家 nixpkgs に未収録。numtide が提供する
