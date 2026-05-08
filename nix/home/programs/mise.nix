@@ -1,22 +1,16 @@
 { config, lib, pkgs, user, ... }:
 
-# mise (旧 rtx) を home-manager の nixpkgs ビルドで導入する。
-#
-# 旧構成: nix/homebrew.nix の brews に "mise" を入れて Homebrew で管理し、
-# /opt/homebrew/bin/mise を zsh 関数経由で呼んでいた。新構成では
-# `programs.mise.enable` で home-manager の nixpkgs.mise を入れ、PATH 上
-# で見える mise がこちらに切り替わる (`which mise` が ~/.local/state/nix/
-# profiles/home-manager-path/bin/mise を返す)。
+# mise (language runtime manager) を home-manager の nixpkgs ビルドで導入。
+# binary は `/etc/profiles/per-user/<user>/bin/mise` に配置される。
 #
 # enableZshIntegration を false にする理由:
-# starship.nix と同じく、zshrc は repo の zsh/.zshrc を home.file で
-# symlink 配置している。home-manager に zshrc 注入を許すと両者が衝突して
-# 片方の設定が消えるため、`mise activate zsh` の eval 行は zsh/.zshrc に
-# 手書きで 1 行持たせ続ける。
+# zshrc は repo の zsh/.zshrc を home.file で symlink 配置しているため、
+# home-manager の zshrc 注入を許すと両者が衝突する。`mise activate zsh` の
+# eval 行は zsh/.zshrc に手書きで 1 行持たせる (starship.nix と同じ方針)。
 #
-# global tool versions (~/.config/mise/config.toml) は repo の mise/
-# config.toml に raw 配置し、out-of-store symlink で参照させる。
-# `vim ~/.config/mise/config.toml` で repo 内ファイルを直接編集できる。
+# global tool versions (~/.config/mise/config.toml) は repo の
+# mise/config.toml への out-of-store symlink。`vim ~/.config/mise/config.toml`
+# で repo 内ファイルを直接編集できる。
 let
   dotfilesPath = "/Users/${user}/Documents/dev/dotfiles";
 in

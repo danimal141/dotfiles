@@ -3,17 +3,14 @@
 # macOS システム設定 + Nix / nix-darwin 自体の運用 (flake / gc / 環境変数 /
 # zsh の取扱い) を宣言するモジュール。
 #
-# `system.defaults.*` の設計方針:
-#   * **既にユーザーが手動で設定済みの項目だけ** を宣言する (= 現状を flake に
-#     スナップショットして以後 drift correction させる)。
-#   * **macOS デフォルトのまま使っている項目は宣言しない**。宣言すると
-#     `darwin-rebuild switch` のたびに値が固定されてしまい、System Settings
-#     から微調整できなくなる。あとから「これも flake で固定したい」と思った
-#     ものを足していくスタイル。
+# `system.defaults.*` の設計方針: **既にユーザーが手動で設定済みの項目だけ**
+# を宣言して以後 drift correction させる。macOS デフォルトのままで満足
+# している項目は宣言しない (宣言すると System Settings からの微調整が
+# `darwin-rebuild switch` で巻き戻されるため)。
 #
-# アプリ単体の defaults (1Password / Raycast / Karabiner 等) は引き続きスコープ外。
-# 必要になったら `system.defaults.CustomUserPreferences` か手動 `defaults write`
-# で対応する。
+# アプリ単体の defaults (1Password / Raycast / Karabiner 等) はスコープ外。
+# 必要になったら `system.defaults.CustomUserPreferences` か手動
+# `defaults write` で対応する。
 {
   # `system.defaults` / nix-homebrew が「誰の defaults を書くか」を決めるための
   # primary user 宣言。multi-user 環境ではないので flake から渡された user で固定。
@@ -29,17 +26,14 @@
   };
 
   system.defaults = {
-    # Dock: ユーザーが手動で設定済みの 2 項目のみを宣言。
-    #   tilesize は宣言しないことで macOS デフォルトを維持する。
     dock = {
       autohide = true;
       # Spaces (デスクトップ) を最近使った順に勝手に並べ替えないようにする
       mru-spaces = false;
     };
 
-    # Trackpad: タップ-クリックと三本指ドラッグを **OFF のまま固定**。
-    #   現環境境ではいずれも無効が好み、誤って System Settings から有効化されても
-    #   次の switch で戻る。
+    # タップ-クリック / 三本指ドラッグを OFF で固定 (誤って System Settings
+    # で有効化されても次の switch で戻る)。
     trackpad = {
       Clicking = false;
       TrackpadThreeFingerDrag = false;
@@ -52,14 +46,13 @@
   # completion 多重設定) しうるため、system 側 zsh module は無効化する。
   programs.zsh.enable = false;
 
-  # brew で language runtime を入れるのを物理的に禁止する。
-  # 動機: Node / Python / Ruby は mise が管理する。brew が依存解決の都合で
-  # 勝手に node を入れると `which node` が二つ並び、PATH 順次第でビルドが壊れる。
-  # `claude` は Anthropic が npm package として配るため、brew 経由で入れたい
-  # ライブラリが裏で claude も pull するケースを防ぐ目的で含める。
+  # HOMEBREW_FORBIDDEN_FORMULAE: language runtime (node / python / ruby) は
+  # mise が管理する。brew の依存解決が裏で node を pull すると PATH 順次第で
+  # ビルドが壊れるため物理的に禁止する。`claude` は Anthropic 公式の npm
+  # package で同様の二重 install を避けたいので含める。
   #
-  # NIX_SSL_CERT_FILE は社内 VPN の SSL inspection (中間者 CA) に対応するため。
-  # 詳細は下の `nix.settings.ssl-cert-file` コメント参照。
+  # NIX_SSL_CERT_FILE: 社内 VPN の SSL inspection 対策 (下の
+  # `nix.settings.ssl-cert-file` と同じ bundle を user shell にも見せる)。
   environment.variables = {
     HOMEBREW_FORBIDDEN_FORMULAE = "node python python3 pip npm pnpm yarn claude";
     NIX_SSL_CERT_FILE = "/etc/nix/ca-bundle.pem";
@@ -72,17 +65,10 @@
       # primaryUser を trusted にして sudo なしで `darwin-rebuild` を打てるようにする
       trusted-users = [ "@admin" user ];
 
-      # 社内 VPN が SSL inspection (中間者 CA) を挟む環境向けに、macOS Keychain
-      # 由来の CA bundle を nix-daemon にも教える。ファイル本体は host で生成し
-      # /etc/nix/ca-bundle.pem に置く前提:
-      #
-      #   sudo bash -c '
-      #     security find-certificate -a -p /Library/Keychains/System.keychain > /etc/nix/ca-bundle.pem
-      #     security find-certificate -a -p /System/Library/Keychains/SystemRootCertificates.keychain >> /etc/nix/ca-bundle.pem
-      #   '
-      #
-      # bundle を更新したら `sudo launchctl kickstart -k system/org.nixos.nix-daemon`。
-      # bundle 自体は社内 CA を含むためリポジトリにはコミットしない。
+      # 社内 VPN の SSL inspection (中間者 CA) 対策。bundle は setup.sh が
+      # macOS Keychain から `/etc/nix/ca-bundle.pem` に焼き出す。社内 CA を
+      # 含むため bundle 自体はリポジトリに commit しない。bundle を更新した
+      # ときは `sudo launchctl kickstart -k system/org.nixos.nix-daemon`。
       ssl-cert-file = "/etc/nix/ca-bundle.pem";
     };
 

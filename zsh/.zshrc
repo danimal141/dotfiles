@@ -189,10 +189,12 @@ fi
 # for zsh-completions
 fpath=($(brew --prefix zsh-completions) $fpath)
 
-# 言語ランタイム管理は mise (`~/.tool-versions` を読む)。asdf 互換のフォーマット
-# を流用しているので既存プロジェクトはそのまま動く。mise は precompiled binary
-# (`core` plugin) を優先利用するため、Python の openssl 依存や Ruby の
-# libyaml/readline で詰まらず新規 Mac での `mise install` が実用時間で完走する。
+# 言語ランタイム管理は mise。global は `~/.config/mise/config.toml`
+# (home-manager 経由で repo の mise/config.toml への symlink) を読み、
+# project 個別は `<project>/mise.toml` または `.tool-versions` (asdf 互換)
+# で上書きする。precompiled binary を優先利用するため Python の openssl 依存
+# や Ruby の libyaml/readline で詰まらず新規 Mac での `mise install` が実用
+# 時間で完走する。
 #
 # 配置の意図:
 #   `mise activate zsh` は実行時点の PATH 先頭に shim ディレクトリを差し込む。
