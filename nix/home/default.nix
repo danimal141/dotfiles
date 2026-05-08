@@ -19,6 +19,7 @@
     ./programs/claude.nix
     ./programs/codex.nix
     ./programs/apm.nix
+    ./programs/mise.nix
   ];
 
   # nixpkgs unstable に対応する home-manager リリース。

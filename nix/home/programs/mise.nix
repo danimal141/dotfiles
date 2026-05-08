@@ -1,0 +1,21 @@
+{ ... }:
+
+# mise (旧 rtx) を home-manager の nixpkgs ビルドで導入する。
+#
+# 旧構成: nix/homebrew.nix の brews に "mise" を入れて Homebrew で管理し、
+# /opt/homebrew/bin/mise を zsh 関数経由で呼んでいた。新構成では
+# `programs.mise.enable` で home-manager の nixpkgs.mise を入れ、PATH 上
+# で見える mise がこちらに切り替わる (`which mise` が ~/.local/state/nix/
+# profiles/home-manager-path/bin/mise を返す)。
+#
+# enableZshIntegration を false にする理由:
+# starship.nix と同じく、zshrc は repo の zsh/.zshrc を home.file で
+# symlink 配置している (= chezmoi 時代の集約方針を維持)。home-manager に
+# zshrc 注入を許すと両者が衝突して片方の設定が消えるため、`mise activate
+# zsh` の eval 行は zsh/.zshrc に手書きで 1 行持たせ続ける。
+{
+  programs.mise = {
+    enable = true;
+    enableZshIntegration = false;
+  };
+}
