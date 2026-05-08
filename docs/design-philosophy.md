@@ -1,153 +1,167 @@
-# 設計思想: nix と chezmoi の使い分け
+# 設計思想: nix-darwin + home-manager 一本化
 
-このリポジトリは `chezmoi/` と `nix/` をトップレベルで分離した二層構成で運用している。
-新しい設定を追加するときに「これは nix 側か chezmoi 側か」を毎回考えなくて済むよう、判断軸をここに固定する。
-将来の自分向けの覚書。
+このリポジトリは **nix-darwin + home-manager の二段構成**で運用している。
+chezmoi を併用していた v1 構成を撤去し、`~/` 配下の設定ファイルもすべて
+home-manager で declarative に配置するのが現状の方針。
+旧 v1 構成 (chezmoi 併用) の判断軸は `design-philosophy-v1.md` に保存。
 
-## 1. 判断軸 TL;DR
+## TL;DR
 
-前提として、Nix と chezmoi は「置き換え」ではなく「役割分担」。どちらが上位でもなく、`setup.sh` が両方を対等に司令する。
+新しい設定を追加するとき、置き場所の判断は次の 1 軸でほぼ決まる。
 
-新しい設定を追加するときに次の3軸を順に適用すれば置き場所は機械的に決まる。
+* nixpkgs に対応 module (`programs.<tool>`) があり、設定が複雑 → home-manager の
+  `programs.*` で declarative に書く (例: starship / git / mise / markdownlint)
+* それ以外 (raw text の dotfile を編集体験を保ったまま運用したい) → repo の
+  `<tool>/` 配下に raw text を置き、`home.file.<path>.source` を
+  `mkOutOfStoreSymlink` で symlink 配置する (例: zshrc / tmux.conf / vimrc /
+  claude config / nvim / ctags / ghostty / mise/config.toml)
 
-### 軸1: 存在 vs 中身
+両者の決定的な違いは「編集してから反映までの操作」:
 
-* 何かが「存在する」ことを宣言したい (バイナリ / OS defaults / GUI アプリ) → Nix
-* ファイルに「何が書かれているか」を宣言したい → chezmoi
+| 配置方式 | 反映操作 |
+|---|---|
+| `home.file` + `mkOutOfStoreSymlink` (out-of-store) | repo 内ファイルを編集 → 即反映 (`source ~/.zshrc` のような shell reload) |
+| `home.file` + `text =` (in-store 生成) / `programs.<tool>.settings` | 編集 → `darwin-rebuild switch` で再反映 |
 
-### 軸2: 共通 vs 分岐
+`mkOutOfStoreSymlink` を使う場合、`~/.zshrc` は repo 内ファイルへの symlink
+になるので、`vim ~/.zshrc` を開けば repo を直接編集している状態になる。
+chezmoi の `[edit] apply = true` 相当の編集体験を nix で実現できている。
 
-* 全ホストで同じ値で良い → Nix で OK
-* work / personal や identity で値が変わる → chezmoi の `*.tmpl` (`machineType` / hostname を参照)
+## ディレクトリ構造
 
-### 軸3: 静的 vs 自走
-
-* 自分だけが触る静的ファイル → 軸1, 2 で決まる
-* ツールが自走で書き換える領域 → どちらも管理しない (`.chezmoiignore` で除外)
-
-### Nix 内部の細分
-
-* `nix/packages.nix`: nixpkgs にある CLI を全ホスト pin
-* `nix/homebrew.nix`: GUI Cask / bootstrap binary (chezmoi 自身, mise) / Apple 統合が強いもの
-* `nix/system.nix`: macOS system defaults (Dock / Trackpad / KeyRepeat)
-* `nix/home/default.nix`: home-manager `programs.*` (型付きで pin したい複雑な設定。例: starship)
-* `mise`: 言語ランタイムだけは project 単位切替が要るので Nix から外す
-
-### オーケストレータ
-
-* `setup.sh` が Nix と chezmoi を並立で司令する
-* hostname (`scutil --get LocalHostName`) を両ツールの共有真実源にして、ホスト追加時の書き換えを1箇所に集約
-
-## 2. 軸の詳細と境界事例
-
-### 軸1 の本質
-
-Nix は宣言で再現したい「存在」を扱うのが得意。flake.lock でバイナリのバージョンまで pin でき、世代単位でロールバック可能。
-chezmoi はテキスト編集と per-host 値埋め込みが得意で、zshrc や gitconfig のように人が頻繁に書き換えるファイルの中身を扱うのに向く。
-逆をやると無理が出る:
-
-* Nix で zshrc 全文を declarative に書く → per-host 値の埋め込みが煩雑、編集体験が悪化
-* chezmoi で CLI バイナリの version を pin → 再現性が崩れる (chezmoi はバイナリを管理しない)
-
-### 軸2 の本質
-
-work と personal で git の `user.email` / `signingkey` が違う、`tmux-start` の起動 dir が機械ごとに違う、といった分岐は chezmoi の `*.tmpl` で `machineType` を参照する1行で済む。
-Nix にも `lib.mkIf` で条件分岐は書けるが、テンプレート埋め込みの記述量と編集のしやすさで chezmoi に分がある。
-
-### 軸3 の本質
-
-`.claude/projects/` (Claude Code が session 単位で生成)、`.apm/apm_modules/` (apm install が動的展開)、`.vim/plugged/` (vim-plug 自動 DL)、IDE cache はツール側が自走で書き換える。
-これらを chezmoi 管理にすると drift loop に入る (chezmoi apply が上書き → ツールが書き戻す → 永久に diff が出る)。
-だから chezmoi では `.chezmoiignore` で除外し、Nix 側にも持ち込まない。
-
-### 軸1 の補強根拠: 学習コストと編集体験
-
-軸1 で「中身は chezmoi」としている根拠は形式論だけでなく実用性にもある。
-
-* chezmoi はテキストファイル + Go template。既存 zshrc を `git mv` でそのまま取り込めるし、単体バイナリで即動作する
-* Nix で同じ中身を書くには Nix 言語と home-manager `programs.*` モジュールの習得が必要で、記述量も増える代わりに型付き宣言になる
-* この非対称性を見て「型付き宣言の利益 > 学習コスト」になる複雑な設定 (例: starship) だけ home-manager に上げる、という線引きをしている
-
-### 軸1 の派生特性: 編集頻度
-
-軸1 を採用すると結果として、chezmoi 側には編集頻度が高いファイル (zshrc, gitconfig, claude/settings.json, claude/hooks) が集まり、Nix 側には編集頻度が低い宣言 (system defaults, パッケージリスト) が集まる傾向が出る。
-これは判断軸の根拠ではなく結果だが、軸1 の判定が難しい境界事例で迷ったときの補助ヒューリスティクスとして機能する。
-
-* 月に数回以上編集する見込み → chezmoi
-* 年に数回程度しか触らない → Nix
-
-例: starship の設定 TOML はそれなりに育ちうるが、現状は半年単位の編集頻度なので home-manager `programs.starship.settings` に寄せている。逆に zshrc の alias は週単位で増えるため chezmoi 側に置く。
-
-### 境界事例: home-manager と mise
-
-* `home-manager programs.*` は「中身がそこそこ複雑な設定ファイル」を Nix に上げて型付き宣言にしたケース。chezmoi でも書けるが、設定が育ちそうなら home-manager に寄せる
-* `mise` は Nix の代替ではなく、「言語ランタイムだけは project 単位で切替が要る」という Nix の粒度では扱いにくい要件への割当て。`HOMEBREW_FORBIDDEN_FORMULAE` で node/python/yarn を brew 側で禁止し、衝突を防いでいる
-
-## 3. レイヤー責任分担
-
-```mermaid
-flowchart TB
-  subgraph S["macOS system layer (nix-darwin)"]
-    A1["nix/system.nix<br/>(Dock / Trackpad / KeyRepeat)"]
-    A2["nix/homebrew.nix<br/>(GUI cask / bootstrap binary / tap-only)"]
-  end
-  subgraph P["Package layer"]
-    B1["nix/packages.nix<br/>(CLI: bat, fd, gh, kubectx ...)"]
-    B2["nix/home/default.nix<br/>(home-manager: programs.*)"]
-    B3["mise<br/>(Node / Python / Ruby / Go runtime)"]
-  end
-  subgraph D["Dotfile layer (chezmoi/)"]
-    C1["dot_zshrc.tmpl / dot_vimrc / dot_tmux.conf"]
-    C2["dot_gitconfig.tmpl<br/>(work/personal で identity 切替)"]
-    C3["dot_claude/ / dot_codex/ / dot_apm/"]
-    C4[".chezmoiscripts/darwin/<br/>(run_onchange_after_apm-install)"]
-  end
-  S --> P --> D
+```
+dotfiles/
+├── flake.nix                      # darwinConfigurations.{work,personal,...}
+├── flake.lock
+├── nix/
+│   ├── system.nix                 # macOS defaults / nix gc / SSL CA
+│   ├── packages.nix               # Nix store CLI
+│   ├── homebrew.nix               # GUI cask + tap-only / Apple-integrated formulae
+│   ├── hosts/
+│   │   ├── work.nix               # networking.hostName 強制 (per host)
+│   │   └── personal.nix
+│   └── home/
+│       ├── default.nix            # imports + home.{stateVersion,username,homeDirectory}
+│       └── programs/              # 1 ファイル 1 ツール
+│           ├── zsh.nix            # ~/.zshrc symlink
+│           ├── git.nix            # programs.git + ignores + includeIf
+│           ├── tmux.nix           # ~/.tmux.conf, ~/.tmux_start_dir, ~/.local/bin/tmux-start
+│           ├── vim.nix            # ~/.vimrc + サブディレクトリ symlink (plugged/ 除く)
+│           ├── nvim.nix           # ~/.config/nvim/* (vim と coc-settings 共有)
+│           ├── claude.nix         # ~/.claude/* (動的領域除く)
+│           ├── codex.nix          # ~/.codex/* (config は text 生成、wrapper は symlink)
+│           ├── apm.nix            # ~/.apm/* + home.activation.apmInstall hook
+│           ├── mise.nix           # programs.mise + ~/.config/mise/config.toml + miseTrust hook
+│           ├── markdownlint.nix   # ~/.markdownlint.jsonc symlink
+│           ├── starship.nix       # programs.starship.settings
+│           ├── ghostty.nix        # ~/Library/Application Support/com.mitchellh.ghostty/config
+│           └── ctags.nix          # ~/.ctags.d/exclude.ctags
+├── zsh/.zshrc
+├── tmux/{.tmux.conf, .tmux_start_dir, bin/tmux-start}
+├── vim/{.vimrc, .vim/{coc-settings.json, filetype.vim, autoload, colors, ftdetect, ftplugin}}
+├── nvim/{init.vim, lua/telescope-config.lua}
+├── claude/{CLAUDE.md, settings.json, mcp-servers.yaml, hooks/, rules/, skills/.gitignore, .env.example, setup-mcp.sh}
+├── codex/{wrappers/gemini-mcp.sh, .env.example}
+├── apm/{apm.yml, apm.lock.yaml, .gitignore}
+├── mise/config.toml
+├── markdownlint/.markdownlint.jsonc
+├── ghostty/config
+├── ctags/exclude.ctags
+├── setup.sh                       # 初回 bootstrap
+├── vscode/                        # VSCode は repo 直下に独立 (Nix 管理外)
+└── docs/                          # 設計ドキュメント
 ```
 
-各レイヤを表で再掲:
+## 三つの配置パターン
 
-| レイヤ | 管理対象 | 配置基準 |
-|---|---|---|
-| nix-darwin (system) | macOS defaults / Homebrew Cask / bootstrap binary | sudo 必要、または Apple 統合が強い |
-| nix packages | 安定 CLI ツール | nixpkgs にあり、バージョン pin したい |
-| home-manager | `programs.*` で型付き宣言したいユーザバイナリ | 設定が複雑で declarative にしたい |
-| mise | 言語ランタイム | project 単位の切替が要る |
-| chezmoi | dotfile / Claude / Codex / APM 設定 | テキスト編集 + per-host 値の埋め込み |
-| `.chezmoiignore` | `.claude/projects/`, `.apm/apm_modules/`, `.vim/plugged/` 等 | ツールが自走で書き換える領域 |
+### A. out-of-store symlink (大半の dotfile)
 
-## 4. ホスト分岐 (hostname を共有真実源にする)
+`home.file."<path>".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/<tool>/<file>"` の形。
+repo の絶対 path を user 変数 (`/Users/${user}/Documents/dev/dotfiles`) で構築し、
+`~/<path>` から repo を直接 symlink する。
 
-ホスト追加時に1箇所書けば nix/chezmoi の両方に伝播する設計。
+* **編集体験**: `vim ~/.zshrc` で repo 内ファイルを開いて編集 → `source ~/.zshrc` で即反映
+* **darwin-rebuild 不要**: ファイルの中身変更だけなら symlink target の中身が変わるだけ
+* **使い所**: zshrc / tmux.conf / vimrc / claude config / nvim / ghostty / etc.
 
-* `scutil --get LocalHostName` を真実の源にする
-* `setup.sh` が hostname を `work` / `personal*` / それ以外 (= `ephemeral`) の3クラスに自動分類
-* nix-darwin 側: `nix/hosts/<hostname>.nix` で per-host delta (例: ホスト専用 brew パッケージ) を宣言
-* chezmoi 側: `.chezmoi.toml.tmpl` で hostname → `machineType` を導出し、`dot_gitconfig.tmpl` 等で `{{ if eq .machineType "work" }}` のように分岐
-* nix-darwin が `networking.hostName` を固定するため、hostname の真実性が担保される (IT 部門が払い出した hostname の影響を受けない)
+### B. text 生成 (text =)
 
-## 5. Bootstrap ライフサイクル
+`home.file."<path>".text = ''...''`。home-manager が Nix store に実体ファイルを
+焼き、`~/<path>` をそこへの symlink にする。
 
-```mermaid
-sequenceDiagram
-  participant U as ./setup.sh
-  participant N as Nix installer
-  participant D as darwin-rebuild
-  participant C as chezmoi
-  participant M as mise
-  participant A as apm
-  U->>N: install (multi-user)
-  U->>D: switch --flake .#&lt;host&gt;
-  Note over D: nix/packages.nix +<br/>nix/homebrew.nix +<br/>nix/system.nix +<br/>home-manager
-  U->>C: init --apply --source $(pwd)
-  Note over C: dot_* を $HOME に展開<br/>run_onchange_* hook 発火
-  C->>A: apm install --target claude
-  U->>M: install (言語ランタイム)
+* **使い所**: Nix の `${user}` などで内容を user/host 別にレンダリングしたい場合 (例: codex
+  `config.toml` の wrapper 絶対パス)
+* **トレードオフ**: 編集には `nix/home/programs/<tool>.nix` の `text = ''...''` を書き換え
+  → `darwin-rebuild switch` が必要
+
+### C. declarative module (programs.\*)
+
+`programs.<tool>.{enable, settings, ...}`。home-manager が module を解釈して
+適切な path に出力する。
+
+* **使い所**: nixpkgs に対応 module があり、設定構造を Nix の attrset で書く方が
+  bracket / quote 地獄を避けられる場合 (starship / git / mise)
+* **トレードオフ**: 同上 (`darwin-rebuild` 必要)。raw text と比較して編集即反映の
+  cycle が遅い
+
+## 動的領域の扱い
+
+ツールが自走で書き換える領域 (Claude Code の `~/.claude/projects/`, codex の
+`~/.codex/sessions/`, vim-plug の `~/.vim/plugged/`, apm の `~/.apm/apm_modules/`)
+は **home.file 対象外**として ~/ 配下に普通の mutable directory として残す。
+home-manager は配置に介入しない。
+
+これにより:
+
+* ツール側の自走書き換えと home-manager の symlink 配置が衝突しない
+* `darwin-rebuild` 後にも user data が消えない
+* repo に dynamic な内容が流入しない (= git status が綺麗)
+
+## secrets 設計
+
+repo は public 想定で運用しているため secrets を tracked file に置かない。
+注入経路は 2 種類:
+
+* **wrapper script + .env** (codex の `GEMINI_API_KEY`):
+  `~/.codex/.env` (gitignore 不要 = repo 外配置) を user が手動配置し、
+  wrapper (`codex/wrappers/gemini-mcp.sh`) が起動時に source して child process
+  に env として inject する。
+* **手書き includeIf 上書き** (work git identity):
+  `~/.gitconfig.work` (repo 外、user 手書き) を `programs.git.includes` の
+  `hasconfig:remote.*.url:` 条件で speee org の repo にだけ apply する。
+
+両者とも repo に `.env.example` のみ tracked。新マシンでは copy + 値埋めの
+手動 1 ステップ。将来 sops-nix / agenix で declarative にしたければ独立 task。
+
+## ホスト別分岐
+
+work / personal で `user` (macOS account name) と git identity (`gitName` /
+`gitEmail`) が違うので、`flake.nix` の `hosts` attrset で 1 entry / host
+として宣言:
+
+```nix
+hosts = {
+  "work"     = { user = "hideaki.ishii"; gitName = "danimal141"; gitEmail = "..."; };
+  "personal" = { user = "danimal141";    gitName = "danimal141"; gitEmail = "..."; };
+};
 ```
 
-ライフサイクルの軸:
+`mkHost` がこれらを `specialArgs` 経由で全モジュール (system / home /
+hosts/<hostname>.nix) に流す。マシン追加は 1 entry 足すだけ。
 
-* 初回: `setup.sh` の一本道 bootstrap
-* 日次: `darwin-rebuild switch` (system / pkg) と `chezmoi apply` (dotfile) を独立に
-* `apm.yml` 編集時: `chezmoi apply` で `run_onchange_*` hook が hash 差分検出して `apm install` を自動実行
-* MCP サーバ追加時: `chezmoi/dot_claude/setup-mcp.sh` を手動実行 (apply に組み込まないのは、失敗時に他ツールへ波及させないため)
+`networking.hostName` は `nix/hosts/<hostname>.nix` で強制 (IT 部門が払い出す
+hostname を上書き)、`scutil --get LocalHostName` を flake host の真実源にする。
+
+## activation hooks
+
+home-manager の `home.activation.<name>` で apply 時に副作用を打てる。
+現状 2 つ:
+
+* `apmInstall` (apm.nix): `~/.apm/apm.yml` の sha256 を `~/.apm/.apm.yml.hash`
+  に保存し、差分があるときだけ `apm install --target claude` を実行 (冪等)
+* `miseTrust` (mise.nix): repo path の `mise/config.toml` を mise の trust
+  store に登録 (out-of-store symlink で外部 path 扱いになる対策)
+
+両者とも `pkgs.<tool>` で binary パスを直接呼ぶ (PATH 依存を避ける)。
+apm は nix-darwin の `environment.systemPackages` 経由で居るので
+`/run/current-system/sw/bin` への PATH export を追加している。
