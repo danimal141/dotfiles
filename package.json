@@ -1,7 +1,7 @@
 {
   "name": "dotfiles",
   "version": "1.0.0",
-  "description": "Personal dotfiles managed by chezmoi + nix-darwin.",
+  "description": "Personal dotfiles managed by nix-darwin + home-manager.",
   "private": true,
   "scripts": {
     "secretlint": "secretlint '**/*'"

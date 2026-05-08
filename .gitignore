@@ -1,7 +1,7 @@
-# Vim plugin caches (chezmoi-managed)
-chezmoi/dot_vim/plugged/*
-chezmoi/dot_vim/.netrwhist
-chezmoi/dot_vim/sessions/*
+# Vim plugin caches (vim-plug が動的に管理する third-party plugin)
+vim/.vim/plugged/*
+vim/.vim/.netrwhist
+vim/.vim/sessions/*
 
 # Claude local work directories (only the ones that may appear at repo root)
 /.claude/*
@@ -11,24 +11,6 @@ chezmoi/dot_vim/sessions/*
 
 # VSCode settings backup
 vscode/settings.bak.json
-
-# Claude configuration (chezmoi-managed)
-chezmoi/dot_claude/*
-!chezmoi/dot_claude/CLAUDE.md
-!chezmoi/dot_claude/settings.json
-!chezmoi/dot_claude/dot_markdownlint.jsonc
-!chezmoi/dot_claude/skills/
-!chezmoi/dot_claude/hooks/
-!chezmoi/dot_claude/rules/
-!chezmoi/dot_claude/mcp-servers.yaml
-!chezmoi/dot_claude/dot_env.example
-!chezmoi/dot_claude/setup-mcp.sh
-
-# Codex configuration (chezmoi-managed)
-chezmoi/dot_codex/*
-!chezmoi/dot_codex/dot_env.example
-!chezmoi/dot_codex/config.toml.tmpl
-!chezmoi/dot_codex/symlink_AGENTS.md
 
 # Node modules (pre-commit + secretlint)
 node_modules/
