@@ -1,4 +1,4 @@
-{ ... }:
+{ config, user, ... }:
 
 # mise (旧 rtx) を home-manager の nixpkgs ビルドで導入する。
 #
@@ -13,9 +13,19 @@
 # symlink 配置している (= chezmoi 時代の集約方針を維持)。home-manager に
 # zshrc 注入を許すと両者が衝突して片方の設定が消えるため、`mise activate
 # zsh` の eval 行は zsh/.zshrc に手書きで 1 行持たせ続ける。
+#
+# global tool versions (~/.config/mise/config.toml) は repo の mise/
+# config.toml に raw 配置し、out-of-store symlink で参照させる。
+# `vim ~/.config/mise/config.toml` で repo 内ファイルを直接編集できる。
+let
+  dotfilesPath = "/Users/${user}/Documents/dev/dotfiles";
+in
 {
   programs.mise = {
     enable = true;
     enableZshIntegration = false;
   };
+
+  home.file.".config/mise/config.toml".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/mise/config.toml";
 }

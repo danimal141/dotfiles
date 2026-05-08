@@ -16,12 +16,15 @@
     ./programs/git.nix
     ./programs/tmux.nix
     ./programs/vim.nix
+    ./programs/nvim.nix
     ./programs/claude.nix
     ./programs/codex.nix
     ./programs/apm.nix
     ./programs/mise.nix
     ./programs/markdownlint.nix
     ./programs/starship.nix
+    ./programs/ghostty.nix
+    ./programs/ctags.nix
   ];
 
   # nixpkgs unstable に対応する home-manager リリース。

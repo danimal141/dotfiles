@@ -1,0 +1,26 @@
+# Global language runtime versions for mise.
+#
+# このファイルは mise の global config で、全プロジェクトのデフォルト
+# バージョンを宣言する。プロジェクト個別の上書きは <project>/mise.toml
+# または <project>/.tool-versions で行う。
+#
+# mise の解決優先度 (上ほど優先):
+#   1. <project>/mise.toml | <project>/.mise.toml
+#   2. <project>/.tool-versions
+#   3. ~/.config/mise/config.toml      ← このファイル
+#   4. ~/.tool-versions                ← 旧 global、新 Mac では存在しない
+#
+# 既存の ~/.tool-versions は本ファイル導入後 dead weight になるため、
+# 一度 `chezmoi apply` した後で `rm ~/.tool-versions` する想定。
+# (chezmoi はファイル削除を表現できないため手動。)
+
+[tools]
+ruby = "3.3.0"
+node = "25.8.1"
+python = "3.12.13"
+go = "1.23.2"
+rust = "1.76.0"
+deno = "1.40.5"
+terraform = "1.8.3"
+kubectl = "1.33.9"
+awscli = "2.19.0"

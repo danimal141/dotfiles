@@ -103,6 +103,16 @@ Brewfile
 #     を target ignore して二重配置を防ぐ。
 .markdownlint.jsonc
 .gitignore
+# Phase 3 step 9: 残りの chezmoi 領域 (ghostty / mise config / nvim / ctags /
+# tmux-start) を home.file の out-of-store symlink で配置済み。chezmoi/
+# 側を target ignore して二重配置を防ぐ。
+Library/Application Support/com.mitchellh.ghostty/config
+.config/mise/config.toml
+.config/nvim/init.vim
+.config/nvim/lua/telescope-config.lua
+.config/nvim/coc-settings.json
+.ctags.d/exclude.ctags
+.local/bin/tmux-start
 
 # OS 別の除外: chezmoiscripts/darwin/ は macOS 以外では走らせない
 {{- if ne .chezmoi.os "darwin" }}
