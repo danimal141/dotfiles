@@ -87,6 +87,14 @@ Brewfile
 .codex/AGENTS.md
 .codex/.env.example
 .codex/wrappers
+# Phase 3 step 6: APM 設定。apm.yml / apm.lock.yaml / .gitignore は home.file で
+# 配置し、apm install hook も home.activation.apmInstall に移植済み。chezmoi
+# 側の `run_onchange_after_apm-install.sh.tmpl` は Phase 4 で chezmoi 一式と
+# ともに削除する (それまでは冪等な二重発火として温存、apm.yml hash 一致なら
+# どちらも no-op)。
+.apm/apm.yml
+.apm/apm.lock.yaml
+.apm/.gitignore
 
 # OS 別の除外: chezmoiscripts/darwin/ は macOS 以外では走らせない
 {{- if ne .chezmoi.os "darwin" }}
