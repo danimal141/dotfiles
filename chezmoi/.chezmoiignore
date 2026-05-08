@@ -57,6 +57,17 @@ Brewfile
 # Phase 3 step 2: home.file で repo の raw text を symlink。
 .tmux.conf
 .tmux_start_dir
+# Phase 3 step 3: vim 設定。~/.vim/ 全体は ignore せず、home.file で
+# サブディレクトリ単位 symlink している領域だけを target ignore する。
+# .vim/plugged/** などの動的領域は home.file 対象外なので元の ignore
+# (ファイル冒頭) のままで良い。
+.vimrc
+.vim/coc-settings.json
+.vim/filetype.vim
+.vim/autoload
+.vim/colors
+.vim/ftdetect
+.vim/ftplugin
 
 # OS 別の除外: chezmoiscripts/darwin/ は macOS 以外では走らせない
 {{- if ne .chezmoi.os "darwin" }}

@@ -15,6 +15,7 @@
     ./programs/zsh.nix
     ./programs/git.nix
     ./programs/tmux.nix
+    ./programs/vim.nix
   ];
 
   # nixpkgs unstable に対応する home-manager リリース。
