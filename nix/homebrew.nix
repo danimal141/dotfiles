@@ -51,7 +51,6 @@
     # 大半の CLI は `nix/packages.nix` (Nix store) 側に移してあり、ここに残すのは
     # Nix 経由では現実的でない or brew 側に置く方が扱いやすいものに絞る:
     #
-    # * shell bootstrap binaries — chezmoi (darwin-rebuild の前段階で必要)
     # * tap-only formulae        — FairwindsOps/pluto, fujiwara/tfstate-lookup,
     #                              k1LoW/tbls, kayac/ecspresso, mutagen-io/mutagen,
     #                              yukiarrr/ecsk, argoproj/argocd
@@ -70,7 +69,6 @@
       "automake"
       "azure-cli"
       "bash-completion"
-      "chezmoi"
       "cloudflared"
       "cmake"
       "codex"
