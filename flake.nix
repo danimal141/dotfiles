@@ -139,6 +139,14 @@
               home-manager.users.${user} = import ./nix/home;
               # home-manager 側のモジュールにも `user` を渡す (system 層と整合)。
               home-manager.extraSpecialArgs = { inherit user; };
+              # home.file で配置される ~/.zshrc 等が「既に手で書かれた状態」で
+              # 衝突する場合 (Phase 1 の chezmoi 並立期間や、初回 apply 直後)、
+              # `Existing file would be clobbered` で activation が止まる。
+              # ここで backupFileExtension を指定すると、衝突した既存ファイルを
+              # `<path>.backup` にリネームしてから home.file の symlink を貼る。
+              # 初回だけ意味があり、二度目以降は home-manager 管理下の symlink
+              # と整合するので副作用ゼロ。
+              home-manager.backupFileExtension = "backup";
             }
           ];
         };
