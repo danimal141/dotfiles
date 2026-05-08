@@ -31,12 +31,22 @@ in
     config.lib.file.mkOutOfStoreSymlink "${apmDir}/.gitignore";
 
   home.activation.apmInstall = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    # home-manager の activation hook はデフォルト PATH に nix-darwin の
+    # system profile (/run/current-system/sw/bin) を含まない。apm は
+    # nix-darwin の environment.systemPackages 経由でそこに居るため、
+    # PATH に明示的に足してから command -v で解決する。
+    export PATH="/run/current-system/sw/bin:$PATH"
+
     HASH_FILE="$HOME/.apm/.apm.yml.hash"
     NEW_HASH=$(${pkgs.coreutils}/bin/sha256sum "$HOME/.apm/apm.yml" | ${pkgs.gawk}/bin/awk '{print $1}')
     OLD_HASH=$(${pkgs.coreutils}/bin/cat "$HASH_FILE" 2>/dev/null || echo "")
-    if [ "$NEW_HASH" != "$OLD_HASH" ] && command -v apm >/dev/null 2>&1; then
-      (cd "$HOME/.apm" && $DRY_RUN_CMD apm install --target claude)
+    APM_BIN=$(command -v apm || true)
+    if [ "$NEW_HASH" != "$OLD_HASH" ] && [ -n "$APM_BIN" ]; then
+      echo "[apmInstall] running apm install --target claude (apm=$APM_BIN)"
+      (cd "$HOME/.apm" && $DRY_RUN_CMD "$APM_BIN" install --target claude)
       echo "$NEW_HASH" > "$HASH_FILE"
+    else
+      echo "[apmInstall] skip (hash unchanged or apm missing; apm=$APM_BIN)"
     fi
   '';
 }
