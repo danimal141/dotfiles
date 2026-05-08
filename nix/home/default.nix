@@ -20,6 +20,7 @@
     ./programs/codex.nix
     ./programs/apm.nix
     ./programs/mise.nix
+    ./programs/markdownlint.nix
   ];
 
   # nixpkgs unstable に対応する home-manager リリース。

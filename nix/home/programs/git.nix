@@ -12,17 +12,27 @@
 # `hasconfig:remote.*.url:` でマッチするので clone path に依存しない
 # (yxtay/dotfiles に倣う)。
 #
-# `~/.gitignore` (global gitignore) は引き続き chezmoi 配置を借りる。
-# Phase 3 後段で home.file に移植する想定。
+# global gitignore (旧 ~/.gitignore) は `programs.git.ignores` で declarative
+# に移植 (Phase 3 step 8)。home-manager は ~/.config/git/ignore に XDG 配置
+# する。git は core.excludesfile が未設定の場合 XDG default を自動で読むので
+# excludesfile の手書きは不要。
 {
   programs.git = {
     enable = true;
     userName = gitName;
     userEmail = gitEmail;
 
+    ignores = [
+      ".DS_Store"
+      "tags"
+      ".tags"
+      "*.code-workspace"
+      "**/.claude/reports/"
+      ".serena/"
+    ];
+
     extraConfig = {
       core = {
-        excludesfile = "~/.gitignore";
         editor = "nvim";
       };
       diff = {

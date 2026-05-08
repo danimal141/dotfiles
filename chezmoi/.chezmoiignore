@@ -95,6 +95,14 @@ Brewfile
 .apm/apm.yml
 .apm/apm.lock.yaml
 .apm/.gitignore
+# Phase 3 step 8: markdownlint / global gitignore。
+#   * .markdownlint.jsonc は home.file で out-of-store symlink。
+#   * .gitignore は programs.git.ignores で ~/.config/git/ignore に declarative
+#     配置に切り替えた。core.excludesfile = "~/.gitignore" の手書きを削除した
+#     ため、~/.gitignore (chezmoi 配置) を読まなくなる。chezmoi 側 dot_gitignore
+#     を target ignore して二重配置を防ぐ。
+.markdownlint.jsonc
+.gitignore
 
 # OS 別の除外: chezmoiscripts/darwin/ は macOS 以外では走らせない
 {{- if ne .chezmoi.os "darwin" }}
