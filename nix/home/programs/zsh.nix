@@ -30,5 +30,5 @@
 {
   home.file.".zshrc".source =
     config.lib.file.mkOutOfStoreSymlink
-      "/Users/${user}/Documents/dev/dotfiles/zsh/zshrc";
+      "/Users/${user}/Documents/dev/dotfiles/zsh/.zshrc";
 }
