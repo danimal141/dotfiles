@@ -46,6 +46,12 @@ Brewfile
 .vim/sessions/**
 .vim/.netrwhist
 
+# Phase 1 (move-nix) 並立期間中の措置:
+# home-manager 側 (nix/home/programs/zsh.nix) が ~/.zshrc を out-of-store symlink
+# で所有するため、chezmoi の dot_zshrc.tmpl は target ignore する。
+# Phase 4 で chezmoi/ ごと削除予定。
+.zshrc
+
 # OS 別の除外: chezmoiscripts/darwin/ は macOS 以外では走らせない
 {{- if ne .chezmoi.os "darwin" }}
 Library/**
