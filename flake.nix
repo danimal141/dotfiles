@@ -88,21 +88,33 @@
       #   2. 下の hosts に 1 エントリ追加
       #   3. 新 Mac で `nix run nix-darwin -- switch --flake .#<hostname>`
       hosts = {
-        "work"     = { user = "hideaki.ishii"; };
-        "personal" = { user = "danimal141"; };
+        "work" = {
+          user = "hideaki.ishii";
+          gitName = "danimal141";
+          gitEmail = "hideaki.ishii1204@gmail.com";
+        };
+        "personal" = {
+          user = "danimal141";
+          gitName = "danimal141";
+          gitEmail = "hideaki.ishii1204@gmail.com";
+        };
       };
 
       # ホスト attrset を `darwinConfigurations` に展開するヘルパー。
-      # specialArgs で `user` / `hostname` / `inputs` を全モジュールに渡す:
+      # specialArgs で `user` / `hostname` / `gitName` / `gitEmail` / `inputs`
+      # を全モジュールに渡す:
       #   `user`     — `nix/system.nix` が primaryUser に使う
       #   `hostname` — モジュール内で host 別判定したい場合の保険 (現状未使用)
+      #   `gitName` / `gitEmail` — Phase 3 の `programs.git` で identity に使う。
+      #     Phase 2 時点ではまだ消費するモジュールはないが、hosts attrset を
+      #     identity の真実源とする枠組みを先に通しておく。
       #   `inputs`   — `nix/packages.nix` が llm-agents.packages を参照するため
       # Apple Silicon 専用想定なので system は aarch64-darwin に固定。
       # Intel Mac (x86_64-darwin) サポートが必要になったら関数引数に戻す。
-      mkHost = hostname: { user }:
+      mkHost = hostname: { user, gitName, gitEmail }:
         nix-darwin.lib.darwinSystem {
           system = "aarch64-darwin";
-          specialArgs = { inherit user hostname inputs; };
+          specialArgs = { inherit user hostname gitName gitEmail inputs; };
           modules = [
             ./nix/system.nix
             # 並び順は責務 (Nix store -> Homebrew) の論理順序として揃えている。
@@ -137,8 +149,10 @@
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.users.${user} = import ./nix/home;
-              # home-manager 側のモジュールにも `user` を渡す (system 層と整合)。
-              home-manager.extraSpecialArgs = { inherit user; };
+              # home-manager 側のモジュールにも host の specialArgs を渡す
+              # (system 層と整合)。`gitName` / `gitEmail` は Phase 3 で
+              # `nix/home/programs/git.nix` が消費する。
+              home-manager.extraSpecialArgs = { inherit user gitName gitEmail; };
               # home.file で配置される ~/.zshrc 等が「既に手で書かれた状態」で
               # 衝突する場合 (Phase 1 の chezmoi 並立期間や、初回 apply 直後)、
               # `Existing file would be clobbered` で activation が止まる。
