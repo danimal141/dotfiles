@@ -35,7 +35,3 @@ node_modules/
 
 # pre-commit cache
 .pre-commit-cache/
-
-# Identity injection for flake.nix (username / gitName / gitEmail)
-# Sample committed as private.nix.sample. Real values stay machine-local.
-private.nix
