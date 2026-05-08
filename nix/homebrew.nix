@@ -51,7 +51,6 @@
     # 大半の CLI は `nix/packages.nix` (Nix store) 側に移してあり、ここに残すのは
     # Nix 経由では現実的でない or brew 側に置く方が扱いやすいものに絞る:
     #
-    # * shell bootstrap binaries — chezmoi, mise (darwin-rebuild の前段階で必要)
     # * tap-only formulae        — FairwindsOps/pluto, fujiwara/tfstate-lookup,
     #                              k1LoW/tbls, kayac/ecspresso, mutagen-io/mutagen,
     #                              yukiarrr/ecsk, argoproj/argocd
@@ -60,7 +59,7 @@
     # * macOS-only ツール          — terminal-notifier, im-select
     # * shell 本体と plugin       — zsh, zsh-autosuggestions, zsh-syntax-highlighting,
     #                              zsh-completions (brew の方が起動が速い)
-    # * secrets bootstrap         — age (chezmoi の secrets 注入経路、1password-cli は cask 化したので casks 側)
+    # * secrets bootstrap         — age (1password-cli は cask 化したので casks 側)
     # * DB / dev サーバー          — mysql, redis, libpq, qemu
     brews = [
       "FairwindsOps/tap/pluto"
@@ -70,7 +69,6 @@
       "automake"
       "azure-cli"
       "bash-completion"
-      "chezmoi"
       "cloudflared"
       "cmake"
       "codex"
@@ -89,10 +87,6 @@
       "marp-cli"
       "mas"
       "mecab"
-      # mise は bootstrap binary。darwin-rebuild が走り終わる前段階 (新規 Mac の
-      # 初回セットアップで VSCode 拡張用に node が必要、等) で言語ランタイムを
-      # 用意するパスがあるため、Nix store ではなく brew 側に置いておく。
-      "mise"
       "mutagen-io/mutagen/mutagen-compose"
       "mysql"
       "pipx"

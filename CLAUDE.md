@@ -1,161 +1,160 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+このファイルは Claude Code (claude.ai/code) がこのリポジトリで作業する際の
+ガイドです。
 
 ## Repository Overview
 
-This is a dotfiles repository managed by chezmoi. Configuration files live in `chezmoi/` (declared via `.chezmoiroot`) using chezmoi naming (`dot_*` -> `~/.<name>`, `private_*`, `executable_*`, etc.) and are materialized into the user's home directory via `chezmoi apply`.
+`nix-darwin` + `home-manager` で macOS の system / Homebrew / dotfile を
+declarative に管理する dotfiles リポジトリ。`flake.nix` の
+`darwinConfigurations.<host>` を `darwin-rebuild switch` で適用する単一経路。
+
+設計思想の詳細は `docs/design-philosophy.md` を参照。
 
 ## Essential Commands
 
 ### Setup and Installation
 
 ```bash
-# Initial setup (run from repository root)
-./setup.sh                  # auto-detect host from LocalHostName
-./setup.sh work             # explicitly target the work host
-./setup.sh personal2        # explicitly target personal2
+# 初回 bootstrap (新規 Mac)
+./setup.sh                  # LocalHostName から flake host を自動判定
+./setup.sh work             # work host を明示
+./setup.sh personal         # personal host を明示
 
-# Apply dotfiles after editing (chezmoi)
-chezmoi apply
-
-# Apply Nix store CLI / Homebrew packages / macOS settings (nix-darwin)
+# 日常的な反映 (system 設定 / Homebrew / home-manager dotfile すべて 1 発)
 darwin-rebuild switch --flake ".#$(scutil --get LocalHostName)"
 
-# Install language runtimes via mise (replaces asdf, reads ~/.tool-versions)
+# mise で global tool versions を実体 install (~/.config/mise/config.toml 参照)
 mise install
 
-# Setup MCP servers for Claude (one-shot, after editing chezmoi/dot_claude/mcp-servers.yaml)
-cd chezmoi/dot_claude && ./setup-mcp.sh
+# Claude MCP server を更新したいとき (apply 時には自動実行されない)
+cd claude && ./setup-mcp.sh
 
-# Setup VSCode with extensions and settings
+# VSCode の拡張 / 設定を sync
 cd vscode && ./apply-settings.sh && ./sync-extensions.sh
 ```
 
 ### Managing Dotfiles
 
-```bash
-# Add new dotfile - place it in chezmoi/ with chezmoi naming
-# (e.g. chezmoi/dot_newconfig, chezmoi/dot_config/foo/bar)
-# then run `chezmoi apply` to materialize ~/.newconfig from the source
+新規 dotfile を追加するときの手順:
 
-# Update tmux config for deprecated options
-python tmux-migrate-options.py chezmoi/dot_tmux.conf > chezmoi/dot_tmux.conf.new
-mv chezmoi/dot_tmux.conf.new chezmoi/dot_tmux.conf
+1. `<tool>/` ディレクトリ (repo root) に raw file を置く
+   (例: `mytool/config.toml`)
+2. `nix/home/programs/<tool>.nix` を作成し、`home.file."<path>".source` を
+   `mkOutOfStoreSymlink "${dotfilesPath}/<tool>/config.toml"` で配置
+3. `nix/home/default.nix` の `imports` リストに `./programs/<tool>.nix` を追加
+4. `darwin-rebuild switch --flake ".#$(scutil --get LocalHostName)"`
 
-# Sync VSCode extensions from current installation
-cd vscode && ./sync-extensions.sh
-
-# Apply VSCode settings and keybindings templates
-cd vscode && ./apply-settings.sh
-
-# Update Claude MCP server configurations
-cd chezmoi/dot_claude && ./setup-mcp.sh
-```
+raw symlink でなく declarative module (`programs.<tool>.settings`) で書く方が
+綺麗な場合 (型付きで pin したい)、step 2 を `programs.<tool>.{enable,settings}`
+形式にする。判断軸は `docs/design-philosophy.md` 参照。
 
 ### Common Development Commands
 
-```bash
-# No repository-specific build/test commands - use language-specific tools:
-# Ruby: bundle install, rake test
-# Node.js: npm install, npm test
-# Python: pip install -r requirements.txt, pytest
-# Go: go mod download, go test
-# Rust: cargo build, cargo test
-```
+このリポジトリ自体には特別な build / test コマンドはない。各言語ツールチェイン
+を mise 経由で使う。
 
 ## Architecture
 
-The repository follows chezmoi conventions:
+* `flake.nix` — `darwinConfigurations.<host>` を `mkHost` でホスト分宣言。
+  `hosts` attrset の各 entry に `user` (macOS account) / `gitName` /
+  `gitEmail` を持ち、`specialArgs` で全モジュールに流す
+* `nix/system.nix` — macOS system defaults (Dock / Trackpad / KeyRepeat /
+  primary user / nix gc / SSL CA bundle)
+* `nix/packages.nix` — Nix store CLI (環境 systemPackages)
+* `nix/homebrew.nix` — GUI cask + tap-only / Apple-integrated formulae
+  (Brewfile で Nix declarative 対応外のもの)
+* `nix/hosts/<hostname>.nix` — per-host overrides (`networking.hostName` 強制 +
+  ホスト固有 brew package)
+* `nix/home/default.nix` — home-manager の entry point (imports + home meta)
+* `nix/home/programs/<tool>.nix` — 1 ファイル 1 ツールで分割
+* `<tool>/` (repo root に複数) — `home.file` で symlink される raw text
+  dotfile の置き場 (zsh / tmux / vim / nvim / claude / codex / apm / mise /
+  markdownlint / ghostty / ctags)
+* `setup.sh` — 初回 bootstrap (Xcode CLT → Nix → CA bundle → /etc 退避 →
+  darwin-rebuild → mise install → LSP global → VSCode → prek)
+* `vscode/` — repo root 直下に独立 (Nix 管理外、`apply-settings.sh` /
+  `sync-extensions.sh` で運用)
+* `tmux-migrate-options.py` — tmux deprecated option 移行 utility
 
-- `chezmoi/` - chezmoi source root (declared via `.chezmoiroot`)
-- `chezmoi/dot_config/` - materialized as `~/.config/`
-- `chezmoi/dot_claude/` - materialized as `~/.claude/` (Claude Code CLI configuration)
-- `chezmoi/dot_codex/` - materialized as `~/.codex/` (Codex CLI configuration; `config.toml.tmpl` is a chezmoi template)
-- `chezmoi/dot_apm/` - materialized as `~/.apm/` (APM dependency manifest for skill management)
-- `chezmoi/.chezmoi.toml.tmpl` - per-host config (name / email / machineType auto-detection)
-- `chezmoi/.chezmoiignore` - paths chezmoi must NOT manage (apps that rewrite ~/  at runtime)
-- `chezmoi/.chezmoiscripts/darwin/` - hooks that run on macOS during `chezmoi apply`
-- `setup.sh` - first-time bootstrap (Nix install -> darwin-rebuild -> chezmoi init -> mise install)
-- `tmux-migrate-options.py` - Utility to migrate deprecated tmux options
-- `docs/` - Documentation directory with user guides
-- `vscode/` - VSCode configuration management tools (NOT chezmoi-managed; lives at repo root)
+主要 dotfile の `~/` 配置先:
 
-Key configurations (materialized paths in `~/`):
-
-- `.zshrc` - Zsh shell with vi-mode keybindings, git branch in prompt, mise integration
-- `.vimrc` - Vim/Neovim config using vim-plug, CoC for LSP, Syntastic for linting
-- `.tmux.conf` - tmux with custom prefix (C-t), 256 color support, mouse support
-- `.gitconfig` - Git configuration with user settings and aliases
-- `.gitignore` - Global gitignore patterns
-- `.markdownlint.jsonc` - Global markdownlint config (used by Claude hook, pre-commit hooks, editors)
-- `nix/packages.nix` - CLI tools served from the Nix store (`flake.lock` で pin)
-- `nix/homebrew.nix` - GUI cask + bootstrap binaries + tap-only / Apple-integrated formulae
-- `nix/system.nix` - macOS system defaults (Dock / Finder / KeyRepeat / trackpad)
-- `nix/hosts/<hostname>.nix` - per-host overrides (work / personal / personal2 ...)
-- `.vim/coc-settings.json` - CoC configuration for language servers
-- `.config/nvim/` - Neovim configuration with symlinked coc-settings.json
-- `.ctags.d/` - Universal Ctags configuration directory
+* `.zshrc` `.tmux.conf` `.tmux_start_dir` `.vimrc` `.markdownlint.jsonc` `.ctags.d/`
+* `.config/{git,mise,nvim}/` (XDG)
+* `.claude/` (CLAUDE.md / settings.json / hooks/ / rules/ / mcp-servers.yaml /
+  skills/.gitignore + 動的領域 projects/ todos/ shell-snapshots/ statsig/ ide/)
+* `.codex/` (config.toml は text 生成 / wrappers / AGENTS.md → claude/CLAUDE.md
+  symlink + 動的領域 sessions/ log.json)
+* `.apm/` (apm.yml / apm.lock.yaml / .gitignore + 動的領域 apm_modules/
+  config.json / .claude/ / .github/)
+* `.local/bin/tmux-start` (executable)
+* `Library/Application Support/com.mitchellh.ghostty/config`
 
 ## Development Notes
 
-### Vim/Neovim Setup
+### Vim/Neovim
 
-- Plugin manager: vim-plug
-- LSP support: CoC (Conquer of Completion)
-- Linting: Syntastic with local eslint support
-- Language plugins: Go, Ruby, JavaScript/TypeScript, Rust, Terraform, etc.
-- To share coc-settings between vim and nvim: `ln -s ~/.vim/coc-settings.json ~/.config/nvim/coc-settings.json`
+* Plugin manager: vim-plug (`~/.vim/plugged/` は home.file 対象外、vim-plug
+  自走で書き換える領域)
+* LSP: CoC (`~/.vim/coc-settings.json`)。nvim も同じ実体を共有 (`~/.config/
+  nvim/coc-settings.json` は repo の `vim/.vim/coc-settings.json` への symlink)
+* Lua plugin (telescope) は `nvim/lua/telescope-config.lua` で nvim 専用
 
 ### Shell Environment
 
-- Shell: Zsh with custom prompt showing git branch
-- Path management: Apple Silicon Homebrew (`/opt/homebrew`) only; `/usr/local/bin` is kept for non-Homebrew installers (Docker Desktop, VSCode, Cursor) that drop shims there
-- Key bindings: Vi-mode with common Emacs bindings in insert mode
+* Shell: Zsh + starship prompt (`programs.starship.settings` で declarative 管理)
+* mise の zsh integration は無効化 (`enableZshIntegration = false`)、`zsh/.zshrc`
+  に `eval "$(mise activate zsh)"` を手書き 1 行 (starship も同様)。これは
+  zshrc を repo の raw text として symlink 配置している都合上、home-manager
+  に zshrc 注入を許すと衝突するため
 
-### Language Management
+### Claude Code
 
-- mise manages multiple language versions (Ruby, Node.js, Python, Go, Rust, Deno, Terraform, kubectl, AWS CLI). Reads `~/.tool-versions` for asdf compatibility; `mise.toml` is preferred for new projects.
-- Languages are installed per-project via `mise install`; precompiled binaries (mise's `core` plugins) avoid the openssl/libyaml build pitfalls common with asdf.
+* `claude/skills/.gitignore` のみ tracked、APM が install する skill (chrome-cdp,
+  codebase-analyzer, ...) は `~/.claude/skills/` 配下に展開され gitignore で
+  ignore される
+* MCP server 設定は `claude/mcp-servers.yaml` に手書き、`claude/setup-mcp.sh`
+  を `cd claude && ./setup-mcp.sh` で実行して `~/.claude/mcp.json` に展開
+  (apply 時には自動実行されない)
 
-### Claude Configuration
+### Codex
 
-- `chezmoi/dot_claude/` - source for `~/.claude/` (Claude Code CLI configuration). Tracked files:
-  - `CLAUDE.md` - Global user instructions for Claude (in Japanese)
-  - `settings.json` - Claude CLI settings and preferences
-  - `commands/` - Custom slash commands for Claude
-  - `hooks/` - Shell hooks for Claude operations
-  - `rules/` - Authoring rules (e.g., `markdown.md`)
-  - `mcp-servers.yaml` - MCP server configurations
-  - `dot_env.example` - Environment variables template (materialized as `~/.claude/.env.example`)
-  - `setup-mcp.sh` - one-shot script to materialize MCP server configs
-  - `skills/` - Local + APM-managed skills (APM-installed dirs are gitignored via `dot_gitignore`)
+* `~/.codex/config.toml` は home-manager の `text =` で生成 (user 変数で
+  wrapper 絶対パスを補完)。raw 編集即反映の体験は失うので、編集後は
+  `darwin-rebuild` 必須
+* `GEMINI_API_KEY` は `~/.codex/.env` (gitignore 対象、user 手動配置) を
+  wrapper (`codex/wrappers/gemini-mcp.sh`) が起動時に source して
+  `mcp-gemini-google-search` の env として inject
+* `~/.codex/AGENTS.md` は `claude/CLAUDE.md` への out-of-store symlink (両者で
+  同じ system instruction を共有)
 
-### Codex Configuration
+### APM
 
-- `chezmoi/dot_codex/` - source for `~/.codex/`:
-  - `config.toml.tmpl` - chezmoi template; secrets are injected via `{{ env "..." }}` from shell env or 1Password CLI
-  - `dot_env.example` - environment variables template (materialized as `~/.codex/.env.example`)
-  - `symlink_AGENTS.md` - chezmoi symlink directive
+* `apm/apm.yml` を編集 → `darwin-rebuild switch` で `home.activation.apmInstall`
+  hook が `~/.apm/apm.yml` の sha256 を比較し、差分があるときだけ
+  `apm install --target claude` を発火 (冪等)。`~/.apm/.apm.yml.hash` で
+  state 追跡
 
-### APM Configuration
+### secrets
 
-- `chezmoi/dot_apm/apm.yml` - APM dependency manifest (= `~/.apm/apm.yml`)
-- `chezmoi/.chezmoiscripts/darwin/run_onchange_after_apm-install.sh.tmpl` - hash-based hook that runs `apm install --target claude` whenever `apm.yml` changes, integrating skills into `~/.claude/skills/`
+repo は public 想定で運用しているため secrets を tracked file に置かない。
+2 経路で注入:
 
-### VSCode Management
+* `~/.codex/.env` (codex `GEMINI_API_KEY`): `codex/.env.example` を
+  `cp ~/.codex/.env` で配置して値を埋める。wrapper が起動時に source
+* `~/.gitconfig.work` (work GitHub org の git identity): repo 外手書き、
+  `programs.git.includes` の `hasconfig:remote.*.url:` 条件で speee org の
+  repo にだけ apply
 
-- `vscode/` - lives at **repo root**, NOT under `chezmoi/`. Holds settings/keybinding templates and an extension list:
-  - `apply-settings.sh` - Script to apply VSCode settings templates
-  - `sync-extensions.sh` - Script to sync VSCode extensions
-  - `extensions.txt` - List of installed VSCode extensions
-  - `settings.template.jsonc` - VSCode settings template
-  - `keybindings.template.jsonc` - VSCode keybindings template
+将来 sops-nix / agenix で declarative にしたい場合は独立 task で。
 
-### Documentation
+### VSCode
 
-- `docs/` - Comprehensive documentation:
-  - `design-philosophy.md` - Design philosophy: how nix and chezmoi are split
-  - `claude-mcp-manager-use.md` - Claude MCP Manager usage guide
-  - `claude-use.md` - Claude usage patterns and best practices
-  - `vscode.md` - VSCode configuration and workflow documentation
+`vscode/` は repo root 直下に独立 (Nix 管理外)。`apply-settings.sh` /
+`sync-extensions.sh` で運用。`extensions.txt` で拡張一覧を track。
+
+## Documentation
+
+* `docs/design-philosophy.md` — 設計思想 (nix-darwin + home-manager 一本化方針)
+* `docs/vscode-use.md` / `docs/vscode-neovim-use.md` — VSCode 運用
+* `README.md` — bootstrap / 日常運用 / 新マシン追加

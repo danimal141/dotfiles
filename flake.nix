@@ -18,7 +18,7 @@
 #     (Nix store CLI) / `nix/homebrew.nix` (brew/cask) の三層に分割し、
 #     ホスト個別差分のみ `nix/hosts/<hostname>.nix` に書く。
 {
-  description = "danimal141 dotfiles - chezmoi + nix-darwin";
+  description = "danimal141 dotfiles - nix-darwin + home-manager";
 
   inputs = {
     # nixpkgs-unstable: nix-darwin と組み合わせる際に安定リリースより追従が
@@ -34,8 +34,17 @@
     # nix-homebrew: Homebrew のインストール / brew / cask 宣言を nix-darwin の
     # モジュールとして扱う。`autoMigrate = true` で既存の手動 brew インストールも
     # 引き継げるため、移行時に Homebrew を再導入する必要がない。
+    #
+    # 一時 pin: zhaofengli/nix-homebrew は brew 5.1.7 で stuck しており、
+    # 5.1.7 の `cask_struct_generator.process_depends_on` が `nil.to_sym` で
+    # 落ちる API 互換問題 (visual-studio-code / intellij-idea / firefox など
+    # 14 cask が fetch 不能) がある。brew 5.1.10 (Homebrew/brew#22137) で
+    # 修正されており、nix-homebrew の追従 PR #136 (matinzd/nix-homebrew の
+    # patch-1 ブランチ、HEAD = a3b7269) が open。merge 待ちのため、その
+    # フォーク HEAD を一時 pin する。本家マージ後に `github:zhaofengli/nix-homebrew`
+    # へ戻す revert commit を打つ。
     nix-homebrew = {
-      url = "github:zhaofengli/nix-homebrew";
+      url = "github:matinzd/nix-homebrew/a3b7269392d2b8379434fc3d4d3694c92e9e2278";
     };
 
     # APM (microsoft/apm) は本家 nixpkgs に未収録。numtide が提供する
@@ -71,29 +80,40 @@
       #
       # nix-darwin の `networking.hostName` を各ホストモジュールに書くことで、
       # apply 時に LocalHostName / HostName が必ず上記規約名で固定される。
-      # IT 部門が払い出した個別 hostname (例: hideaki-ishii1) に左右されないため、
-      # chezmoi 側の hostname ベース machineType 判定もこのリストと整合する。
+      # IT 部門が払い出した個別 hostname (例: hideaki-ishii1) に左右されない。
       #
       # 新しい Mac を追加する手順:
       #   1. nix/hosts/<hostname>.nix を作成 (work.nix を雛形に)
       #   2. 下の hosts に 1 エントリ追加
       #   3. 新 Mac で `nix run nix-darwin -- switch --flake .#<hostname>`
       hosts = {
-        "work"     = { user = "hideaki.ishii"; };
-        "personal" = { user = "danimal141"; };
+        "work" = {
+          user = "hideaki.ishii";
+          gitName = "danimal141";
+          gitEmail = "hideaki.ishii1204@gmail.com";
+        };
+        "personal" = {
+          user = "danimal141";
+          gitName = "danimal141";
+          gitEmail = "hideaki.ishii1204@gmail.com";
+        };
       };
 
       # ホスト attrset を `darwinConfigurations` に展開するヘルパー。
-      # specialArgs で `user` / `hostname` / `inputs` を全モジュールに渡す:
+      # specialArgs で `user` / `hostname` / `gitName` / `gitEmail` / `inputs`
+      # を全モジュールに渡す:
       #   `user`     — `nix/system.nix` が primaryUser に使う
       #   `hostname` — モジュール内で host 別判定したい場合の保険 (現状未使用)
+      #   `gitName` / `gitEmail` — Phase 3 の `programs.git` で identity に使う。
+      #     Phase 2 時点ではまだ消費するモジュールはないが、hosts attrset を
+      #     identity の真実源とする枠組みを先に通しておく。
       #   `inputs`   — `nix/packages.nix` が llm-agents.packages を参照するため
       # Apple Silicon 専用想定なので system は aarch64-darwin に固定。
       # Intel Mac (x86_64-darwin) サポートが必要になったら関数引数に戻す。
-      mkHost = hostname: { user }:
+      mkHost = hostname: { user, gitName, gitEmail }:
         nix-darwin.lib.darwinSystem {
           system = "aarch64-darwin";
-          specialArgs = { inherit user hostname inputs; };
+          specialArgs = { inherit user hostname gitName gitEmail inputs; };
           modules = [
             ./nix/system.nix
             # 並び順は責務 (Nix store -> Homebrew) の論理順序として揃えている。
@@ -128,8 +148,15 @@
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.users.${user} = import ./nix/home;
-              # home-manager 側のモジュールにも `user` を渡す (system 層と整合)。
-              home-manager.extraSpecialArgs = { inherit user; };
+              # home-manager 側のモジュールにも host の specialArgs を渡す
+              # (system 層と整合)。`gitName` / `gitEmail` は
+              # `nix/home/programs/git.nix` が消費する。
+              home-manager.extraSpecialArgs = { inherit user gitName gitEmail; };
+              # home.file で配置される ~/.zshrc 等が「既に手で書かれた状態」で
+              # 衝突する初回 apply で `Existing file would be clobbered` の
+              # activation 中断を避ける。`<path>.backup` にリネームして
+              # symlink を貼り直すので、初回以降は副作用ゼロ。
+              home-manager.backupFileExtension = "backup";
             }
           ];
         };

@@ -10,8 +10,8 @@ This repository uses the [VSCode Neovim extension](https://marketplace.visualstu
 
 The extension runs Neovim in headless mode in the background and creates a clear division of responsibilities:
 
-- **VSCode handles**: Syntax highlighting, LSP features, IntelliSense, debugging, insert mode
-- **Neovim handles**: Normal mode, visual mode, vim motions, and custom key mappings
+* **VSCode handles**: Syntax highlighting, LSP features, IntelliSense, debugging, insert mode
+* **Neovim handles**: Normal mode, visual mode, vim motions, and custom key mappings
 
 ## Configuration Strategy
 
@@ -28,18 +28,18 @@ if !exists('g:vscode')
 endif
 ```
 
-> **Note**: See the complete configuration in [`chezmoi/dot_vimrc`](../chezmoi/dot_vimrc) (lines 9-39). The conditional block includes all plugins that would conflict with VSCode's native features.
+> **Note**: See the complete configuration in [`vim/.vimrc`](../vim/.vimrc) (lines 9-39). The conditional block includes all plugins that would conflict with VSCode's native features.
 
 **When VSCode Neovim extension is active:**
-- `g:vscode` variable is automatically set
-- CoC (Conquer of Completion) is disabled
-- Syntastic linting is disabled
-- VSCode's native LSP and linting take precedence
+* `g:vscode` variable is automatically set
+* CoC (Conquer of Completion) is disabled
+* Syntastic linting is disabled
+* VSCode's native LSP and linting take precedence
 
 **When using standalone Neovim:**
-- `g:vscode` variable doesn't exist
-- All plugins load normally
-- Full CoC functionality is available
+* `g:vscode` variable doesn't exist
+* All plugins load normally
+* Full CoC functionality is available
 
 ## Feature Comparison
 
@@ -79,11 +79,11 @@ nnoremap <C-p> :CocList files <CR>  " Only works in standalone Neovim
 ### 1. Install Required Extensions
 
 VSCode extensions that complement this setup:
-- `asvetliakov.vscode-neovim` - Core Neovim integration
-- `shopify.ruby-lsp` - Ruby language support
-- `golang.go` - Go language support
-- `ms-python.python` - Python language support
-- `esbenp.prettier-vscode` - Code formatting
+* `asvetliakov.vscode-neovim` - Core Neovim integration
+* `shopify.ruby-lsp` - Ruby language support
+* `golang.go` - Go language support
+* `ms-python.python` - Python language support
+* `esbenp.prettier-vscode` - Code formatting
 
 ### 2. Apply Configuration Changes
 
@@ -119,19 +119,19 @@ This configuration provides several performance improvements when using VSCode:
 ## Troubleshooting
 
 ### CoC Still Active in VSCode
-- Verify `g:vscode` variable exists: `:echo exists('g:vscode')`
-- Restart VSCode completely
-- Check that the conditional plugin loading syntax is correct
+* Verify `g:vscode` variable exists: `:echo exists('g:vscode')`
+* Restart VSCode completely
+* Check that the conditional plugin loading syntax is correct
 
 ### Language Features Not Working
-- Ensure appropriate VSCode extensions are installed
-- Check VSCode's Output panel for LSP errors
-- Verify language servers are properly configured in VSCode settings
+* Ensure appropriate VSCode extensions are installed
+* Check VSCode's Output panel for LSP errors
+* Verify language servers are properly configured in VSCode settings
 
 ### Vim Motions Not Working
-- Confirm VSCode Neovim extension is enabled
-- Check for conflicting VSCode keybindings
-- Restart VSCode and try again
+* Confirm VSCode Neovim extension is enabled
+* Check for conflicting VSCode keybindings
+* Restart VSCode and try again
 
 ## Best Practices
 
@@ -142,7 +142,7 @@ This configuration provides several performance improvements when using VSCode:
 
 ## Related Documentation
 
-- [VSCode Neovim Extension README](https://github.com/vscode-neovim/vscode-neovim)
-- [CoC.nvim Documentation](https://github.com/neoclide/coc.nvim)
-- [Project's vim configuration](../chezmoi/dot_vimrc)
-- [VSCode settings template](../vscode/settings.template.jsonc)
+* [VSCode Neovim Extension README](https://github.com/vscode-neovim/vscode-neovim)
+* [CoC.nvim Documentation](https://github.com/neoclide/coc.nvim)
+* [Project's vim configuration](../vim/.vimrc)
+* [VSCode settings template](../vscode/settings.template.jsonc)

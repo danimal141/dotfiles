@@ -1,11 +1,11 @@
-# テンプレートにシークレット (API key, OAuth token, AWS credential 等) が
-# 紛れ込むのを「コミット前」に止める防衛線。chezmoi のテンプレで 1Password
-# CLI / age を使う運用に置き換えても、レビューや手動編集の過程で平文鍵を
+# 設定ファイルにシークレット (API key, OAuth token, AWS credential 等) が
+# 紛れ込むのを「コミット前」に止める防衛線。secrets を別ファイル分離して
+# 運用していても (~/.codex/.env など)、レビューや手動編集の過程で平文鍵を
 # 貼り付ける事故はゼロにできない。
 #
 # 二重防衛の意味:
-#   * 主防衛: テンプレ側で `{{ env "..." }}` / `{{ onepasswordRead "..." }}`
-#     を使い、平文鍵をリポジトリに置かない。
+#   * 主防衛: secrets を tracked file に置かない (~/.codex/.env / ~/.gitconfig
+#     .work など repo 外の untracked file から注入する設計)。
 #   * 副防衛: secretlint で誤コミットを物理的に block する (これ)。
 #
 # secretlint を採った理由:

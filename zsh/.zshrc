@@ -94,8 +94,8 @@ setopt share_history
 # -------------------------------------
 # starship バイナリと ~/.config/starship.toml は home-manager (`nix/home/`) で
 # declarative に管理。`programs.starship.enableZshIntegration = false` にして
-# eval 行はここに 1 行だけ手書きしている (chezmoi が zshrc を所有して
-# home-manager の自動注入と衝突しないようにするため)。
+# eval 行はここに 1 行だけ手書きしている (zshrc を home.file で symlink 配置
+# しているため home-manager の自動注入と衝突しないようにするため)。
 
 # -------------------------------------
 # key binding
@@ -222,22 +222,9 @@ export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 export PUPPETEER_EXECUTABLE_PATH=`which chromium`
 
 # pnpm
-export PNPM_HOME="{{ .chezmoi.homeDir }}/Library/pnpm"
+export PNPM_HOME="$HOME/Library/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
-
-{{- if eq .machineType "work" }}
-# -------------------------------------
-# work-specific (machineType = work)
-# -------------------------------------
-# 例: export AWS_PROFILE=work
-{{- end }}
-
-{{- if eq .machineType "personal" }}
-# -------------------------------------
-# personal-specific (machineType = personal)
-# -------------------------------------
-{{- end }}
