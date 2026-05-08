@@ -4,3 +4,8 @@ tags
 *.code-workspace
 **/.claude/reports/
 .serena/
+# tmux-start で読む path 一覧。PC ごとに開きたいディレクトリが違う
+# (work / personal で repo 配置場所や Obsidian vault が異なる) ため、
+# 各 PC で `~/.tmux_start_dir` を手書きする運用。dotfiles repo には
+# tmux/.tmux_start_dir.sample をテンプレとして commit している。
+.tmux_start_dir
