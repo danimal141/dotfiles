@@ -78,6 +78,15 @@ Brewfile
 .claude/hooks
 .claude/rules
 .claude/skills/.gitignore
+# Phase 3 step 5: codex 設定。~/.codex/ 全体は ignore せず、home.file で
+# 配置している領域のみを target ignore する。.codex/sessions/ .codex/log.json
+# などの動的領域は home.file 対象外なので元の ignore (ファイル冒頭) のまま。
+# secrets (~/.codex/.env) は home.file 対象外、user 手動配置 (codex/.env.example
+# を $HOME/.codex/.env にコピーして埋める)。
+.codex/config.toml
+.codex/AGENTS.md
+.codex/.env.example
+.codex/wrappers
 
 # OS 別の除外: chezmoiscripts/darwin/ は macOS 以外では走らせない
 {{- if ne .chezmoi.os "darwin" }}

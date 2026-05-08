@@ -17,6 +17,7 @@
     ./programs/tmux.nix
     ./programs/vim.nix
     ./programs/claude.nix
+    ./programs/codex.nix
   ];
 
   # nixpkgs unstable に対応する home-manager リリース。
