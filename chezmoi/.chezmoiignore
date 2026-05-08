@@ -46,11 +46,14 @@ Brewfile
 .vim/sessions/**
 .vim/.netrwhist
 
-# Phase 1 (move-nix) 並立期間中の措置:
-# home-manager 側 (nix/home/programs/zsh.nix) が ~/.zshrc を out-of-store symlink
-# で所有するため、chezmoi の dot_zshrc.tmpl は target ignore する。
-# Phase 4 で chezmoi/ ごと削除予定。
+# Phase 1-3 (move-nix) 並立期間中の措置:
+# home-manager (nix/home/programs/<tool>.nix) が ~/<file> を所有するため、
+# chezmoi 側の dot_<file>.tmpl を target ignore する。Phase 4 で chezmoi/
+# ごと削除予定。
 .zshrc
+# Phase 3 step 1: programs.git で declarative 管理 (gitName/gitEmail は
+# specialArgs 経由)。
+.gitconfig
 
 # OS 別の除外: chezmoiscripts/darwin/ は macOS 以外では走らせない
 {{- if ne .chezmoi.os "darwin" }}

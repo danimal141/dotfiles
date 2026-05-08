@@ -13,6 +13,7 @@
 {
   imports = [
     ./programs/zsh.nix
+    ./programs/git.nix
   ];
 
   # nixpkgs unstable に対応する home-manager リリース。
