@@ -1,4 +1,4 @@
-{ config, user, ... }:
+{ config, lib, user, ... }:
 
 # mise (旧 rtx) を home-manager の nixpkgs ビルドで導入する。
 #
@@ -28,4 +28,14 @@ in
 
   home.file.".config/mise/config.toml".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/mise/config.toml";
+
+  # mise の trust 機構対策。out-of-store symlink で ~/.config/mise/config.toml
+  # を repo 内 path に向けると、mise が「~/.config 直下でない外部 config」と
+  # 判定して `mise trust` を要求する。home-manager activation で 1 回 trust
+  # を登録しておく (~/.local/share/mise/trusted-configs/ に hash 記録、冪等)。
+  home.activation.miseTrust = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    if command -v mise >/dev/null 2>&1; then
+      $DRY_RUN_CMD mise trust "${dotfilesPath}/mise/config.toml" >/dev/null 2>&1 || true
+    fi
+  '';
 }
