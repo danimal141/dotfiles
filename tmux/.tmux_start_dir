@@ -1,0 +1,13 @@
+# tmux-start で開くディレクトリ一覧
+# 1行に1ディレクトリまたはグロブパターンを記述
+# コメント行（#）と空行は無視されます
+#
+# 編集方針:
+#   * 全 host 共通の path をそのまま列挙する
+#   * マシン別の追加 path が必要になったら nix/home/programs/tmux.nix の
+#     home.activation で host 別 append する仕組みを後付けする
+#     (chezmoi の machineType 分岐は move-nix で撤去済み)
+
+# 全 host 共通
+~/Documents/dev/*
+~/Documents/Obsidian/hideaki_ishii_main_vault

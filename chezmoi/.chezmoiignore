@@ -54,6 +54,9 @@ Brewfile
 # Phase 3 step 1: programs.git で declarative 管理 (gitName/gitEmail は
 # specialArgs 経由)。
 .gitconfig
+# Phase 3 step 2: home.file で repo の raw text を symlink。
+.tmux.conf
+.tmux_start_dir
 
 # OS 別の除外: chezmoiscripts/darwin/ は macOS 以外では走らせない
 {{- if ne .chezmoi.os "darwin" }}
