@@ -2,20 +2,20 @@
 
 # `~/.gitconfig` を home-manager の `programs.git` で declarative に管理する。
 #
-# identity (gitName / gitEmail) は flake.nix の hosts attrset から specialArgs
-# 経由で流れてくる (Phase 2 で配線済み)。マシン追加時は hosts に 1 entry
-# 足すだけで identity も自動で反映される。
+# identity (gitName / gitEmail) は flake.nix の hosts attrset から
+# specialArgs 経由で流れてくる。マシン追加時は hosts に 1 entry 足すだけで
+# identity も自動で反映される。
 #
-# 業務 (speee org) の remote URL を持つ repo だけ ~/.gitconfig.work で上書き
-# する経路は includeIf で再現する。`~/.gitconfig.work` は git でも repo でも
-# 追跡しない手書きファイル (public repo に業務メールを焼かない意図)。
-# `hasconfig:remote.*.url:` でマッチするので clone path に依存しない
-# (yxtay/dotfiles に倣う)。
+# 業務用の identity 上書きは `~/.gitconfig.local` (user 手書き、repo 外、
+# tracked しない) を unconditional に include する経路で実現する。条件分岐
+# (どの remote URL pattern で identity を切り替えるか) と上書き値そのもの
+# (~/.gitconfig.work) の双方を user 側に逃がして、所属組織名や業務メール
+# を public repo に出さない設計。詳細は README.md の「業務 git identity
+# 上書き」セクション参照。
 #
-# global gitignore (旧 ~/.gitignore) は `programs.git.ignores` で declarative
-# に移植 (Phase 3 step 8)。home-manager は ~/.config/git/ignore に XDG 配置
-# する。git は core.excludesfile が未設定の場合 XDG default を自動で読むので
-# excludesfile の手書きは不要。
+# global gitignore は `programs.git.ignores` で ~/.config/git/ignore に
+# XDG 配置する。git は core.excludesfile が未設定なら XDG default を自動で
+# 読むため excludesfile の手書きは不要。
 {
   programs.git = {
     enable = true;
@@ -41,14 +41,9 @@
     };
 
     includes = [
-      {
-        condition = "hasconfig:remote.*.url:git@github.com:speee/**";
-        path = "~/.gitconfig.work";
-      }
-      {
-        condition = "hasconfig:remote.*.url:https://github.com/speee/**";
-        path = "~/.gitconfig.work";
-      }
+      # 条件分岐込みで全部 user 側 (~/.gitconfig.local) に逃がす。詳細は
+      # README.md「業務 git identity 上書き」セクション参照。
+      { path = "~/.gitconfig.local"; }
     ];
   };
 }
