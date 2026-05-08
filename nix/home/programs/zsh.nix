@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, user, ... }:
 
 # zshrc を home.file 経由で `~/.zshrc` に out-of-store symlink で配置する。
 #
@@ -10,14 +10,25 @@
 #     `vim ~/.zshrc` がそのまま `dotfiles/zsh/zshrc` を編集することになり、
 #     `source ~/.zshrc` で即反映できる。darwin-rebuild は不要。
 #
+# パスを **絶対パス文字列** で渡す理由:
+#   * Nix flake では `../../zsh/zshrc` のような相対 Nix path は flake source
+#     tree の Nix store コピーを指す。`toString` してもそれは store path
+#     (`/nix/store/...-source/zsh/zshrc`) になり、結果として
+#     `mkOutOfStoreSymlink` が store 内のコピーを target にしてしまい
+#     out-of-store にならない (~/.zshrc -> /nix/store/.../hm_zshrc という
+#     store-internal symlink chain になる)。
+#   * よって repo の絶対パスを文字列でハードコードする。`user` は specialArgs
+#     経由で host から流れてくるので、work / personal で username が違っても
+#     正しいパスに解決される。
+#   * 前提: dotfiles を `~/Documents/dev/dotfiles` に clone していること。
+#     別パスを使うマシンが出てきたら specialArgs に `dotfilesPath` を追加して
+#     flake.nix 側で吸収する想定。
+#
 # Phase 1 prototype: chezmoi の dot_zshrc.tmpl とは並立するが、
-# `chezmoi/.chezmoiignore` に `dot_zshrc.tmpl` を追加して chezmoi 側を抑止し、
-# home-manager 側の symlink が `~/.zshrc` を所有する。1 週間運用判定して
-# Phase 2 以降に進む想定。
-let
-  dotfilesRoot = toString ../../..;
-in
+# `chezmoi/.chezmoiignore` に `.zshrc` を追加して chezmoi 側を抑止し、
+# home-manager 側の symlink が `~/.zshrc` を所有する。
 {
   home.file.".zshrc".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfilesRoot}/zsh/zshrc";
+    config.lib.file.mkOutOfStoreSymlink
+      "/Users/${user}/Documents/dev/dotfiles/zsh/zshrc";
 }
