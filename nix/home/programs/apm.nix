@@ -14,7 +14,7 @@
 #     claude` を実行する。冪等で、apm 未インストール環境では skip する。
 let
   dotfilesPath = "/Users/${user}/Documents/dev/dotfiles";
-  apmDir = "${dotfilesPath}/apm";
+  apmDir = "${dotfilesPath}/tools/apm";
 in
 {
   home.file.".apm/apm.yml".source =

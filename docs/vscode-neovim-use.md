@@ -28,15 +28,17 @@ if !exists('g:vscode')
 endif
 ```
 
-> **Note**: See the complete configuration in [`vim/.vimrc`](../vim/.vimrc) (lines 9-39). The conditional block includes all plugins that would conflict with VSCode's native features.
+> **Note**: See the complete configuration in [`tools/vim/.vimrc`](../tools/vim/.vimrc) (lines 9-39). The conditional block includes all plugins that would conflict with VSCode's native features.
 
 **When VSCode Neovim extension is active:**
+
 * `g:vscode` variable is automatically set
 * CoC (Conquer of Completion) is disabled
 * Syntastic linting is disabled
 * VSCode's native LSP and linting take precedence
 
 **When using standalone Neovim:**
+
 * `g:vscode` variable doesn't exist
 * All plugins load normally
 * Full CoC functionality is available
@@ -57,6 +59,7 @@ endif
 ## Settings That Work in Both Environments
 
 ### Basic Vim Settings
+
 ```vim
 set tabstop=2
 set shiftwidth=2
@@ -68,6 +71,7 @@ set clipboard=unnamed
 ```
 
 ### Custom Key Mappings
+
 ```vim
 nnoremap ; :
 nnoremap : ;
@@ -79,6 +83,7 @@ nnoremap <C-p> :CocList files <CR>  " Only works in standalone Neovim
 ### 1. Install Required Extensions
 
 VSCode extensions that complement this setup:
+
 * `asvetliakov.vscode-neovim` - Core Neovim integration
 * `shopify.ruby-lsp` - Ruby language support
 * `golang.go` - Go language support
@@ -88,6 +93,7 @@ VSCode extensions that complement this setup:
 ### 2. Apply Configuration Changes
 
 After modifying `.vimrc`, restart VSCode or run:
+
 ```vim
 :PlugClean
 :PlugInstall
@@ -96,12 +102,14 @@ After modifying `.vimrc`, restart VSCode or run:
 ### 3. Verify Setup
 
 **In VSCode with Neovim extension:**
+
 ```vim
 :echo exists('g:vscode')  " Should return 1
 :CocInfo                  " Should show CoC is not active
 ```
 
 **In standalone Neovim:**
+
 ```vim
 :echo exists('g:vscode')  " Should return 0
 :CocInfo                  " Should show CoC status and extensions
@@ -119,16 +127,19 @@ This configuration provides several performance improvements when using VSCode:
 ## Troubleshooting
 
 ### CoC Still Active in VSCode
+
 * Verify `g:vscode` variable exists: `:echo exists('g:vscode')`
 * Restart VSCode completely
 * Check that the conditional plugin loading syntax is correct
 
 ### Language Features Not Working
+
 * Ensure appropriate VSCode extensions are installed
 * Check VSCode's Output panel for LSP errors
 * Verify language servers are properly configured in VSCode settings
 
 ### Vim Motions Not Working
+
 * Confirm VSCode Neovim extension is enabled
 * Check for conflicting VSCode keybindings
 * Restart VSCode and try again

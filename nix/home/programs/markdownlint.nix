@@ -12,5 +12,5 @@ let
 in
 {
   home.file.".markdownlint.jsonc".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/markdownlint/.markdownlint.jsonc";
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/markdownlint/.markdownlint.jsonc";
 }

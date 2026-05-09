@@ -11,11 +11,11 @@
 # が install する skill ディレクトリ群 (chrome-cdp/ 等) は対象外。
 # skills/.gitignore 自体が APM 産物を ignore する役割を果たす。
 #
-# setup-mcp.sh は ~/.claude には配置せず、repo 内で `cd claude &&
+# setup-mcp.sh は ~/.claude には配置せず、repo 内で `cd tools/claude &&
 # ./setup-mcp.sh` で直接呼ぶ運用。
 let
   dotfilesPath = "/Users/${user}/Documents/dev/dotfiles";
-  claudeDir = "${dotfilesPath}/claude";
+  claudeDir = "${dotfilesPath}/tools/claude";
 in
 {
   home.file = {

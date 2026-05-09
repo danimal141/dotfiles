@@ -9,5 +9,5 @@ let
 in
 {
   home.file.".ctags.d/exclude.ctags".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/ctags/exclude.ctags";
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/ctags/exclude.ctags";
 }
