@@ -82,6 +82,10 @@
     file            # libmagic 同梱 (旧 brew "libmagic" の代替)
     mecab           # 日本語形態素解析 (旧 brew、純 C++)
     zlib            # 圧縮 lib
+
+    # Python tooling — Python runtime 自体は mise 配下、これは Python に
+    # 依存しない (Rust 実装) project / package manager。pipx を置換する用途。
+    uv              # `uv tool install <cli>` 系も含めて pip / pipx / venv を統合
   ]) ++ [
     # APM (microsoft/apm) は本家 nixpkgs に未収録。
     # numtide が `llm-agents.nix` flake で daily auto-update を提供しているので

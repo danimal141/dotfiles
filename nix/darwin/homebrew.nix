@@ -56,7 +56,7 @@
     #                              yukiarrr/ecsk, argoproj/argocd
     # * Apple / macOS 統合が強い  — ffmpeg, imagemagick, llvm, mas
     #                              (basictex は cask 化したので casks 側)
-    # * Node / Python 前提のツール — markdownlint-cli, marp-cli, repomix, pipx
+    # * Node / Python 前提のツール — markdownlint-cli, marp-cli
     # * macOS-only ツール          — terminal-notifier, im-select
     # * shell 本体と plugin       — zsh, zsh-autosuggestions, zsh-syntax-highlighting,
     #                              zsh-completions (brew の方が起動が速い)
@@ -84,11 +84,9 @@
       "mas"
       "mutagen-io/mutagen/mutagen-compose"
       "mysql"
-      "pipx"
       "qemu"
       "readline"
       "redis"
-      "repomix"
       "ruby-build"
       "terminal-notifier"
       "yukiarrr/tap/ecsk"
