@@ -66,11 +66,23 @@
     pandoc
 
     # kubernetes ecosystem — kubectl 本体は mise 管理。kubectx / kustomize /
-    # helm / stern は補助ツールとしてバージョン pin したいので Nix 側に置く。
+    # helm / stern / krew は補助ツールとしてバージョン pin したいので Nix 側に置く。
     kubectx
     kustomize
     kubernetes-helm
+    krew            # kubectl plugin manager (旧 brew、単独 Go binary)
     stern
+
+    # build / system 補助 — 多くの言語ビルドで前提になる薄い CLI / lib。
+    # 旧 brew から移植: Apple 特殊な機能を使っていない単独 binary / lib。
+    age             # 暗号化 CLI (旧 brew、Go 単一 binary)
+    automake        # GNU autotools
+    bash-completion # bash の補完スクリプト群
+    cloudflared     # Cloudflare Tunnel CLI (旧 brew、Go 単一 binary)
+    cmake           # C/C++ build tool
+    file            # libmagic 同梱 (旧 brew "libmagic" の代替)
+    mecab           # 日本語形態素解析 (旧 brew、純 C++)
+    zlib            # 圧縮 lib
   ]) ++ [
     # APM (microsoft/apm) は本家 nixpkgs に未収録。
     # numtide が `llm-agents.nix` flake で daily auto-update を提供しているので

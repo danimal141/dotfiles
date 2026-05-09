@@ -47,29 +47,27 @@
     ];
 
     # brews: Homebrew で運ぶ CLI / formulae。
-    # 大半の CLI は `nix/packages.nix` (Nix store) 側に移してあり、ここに残すのは
-    # Nix 経由では現実的でない or brew 側に置く方が扱いやすいものに絞る:
+    # 大半の CLI は `nix/darwin/packages.nix` (Nix store) 側に移してあり、ここに
+    # 残すのは Nix 経由では現実的でない or brew 側に置く方が扱いやすいものに絞る:
     #
     # * tap-only formulae        — FairwindsOps/pluto, fujiwara/tfstate-lookup,
     #                              k1LoW/tbls, kayac/ecspresso, mutagen-io/mutagen,
     #                              yukiarrr/ecsk, argoproj/argocd
-    # * Apple / macOS 統合が強い  — ffmpeg, imagemagick, llvm, mas (basictex は cask 化したので casks 側)
+    # * Apple / macOS 統合が強い  — ffmpeg, imagemagick, llvm, mas
+    #                              (basictex は cask 化したので casks 側)
     # * Node / Python 前提のツール — markdownlint-cli, marp-cli, repomix, pipx
     # * macOS-only ツール          — terminal-notifier, im-select
     # * shell 本体と plugin       — zsh, zsh-autosuggestions, zsh-syntax-highlighting,
     #                              zsh-completions (brew の方が起動が速い)
-    # * secrets bootstrap         — age (1password-cli は cask 化したので casks 側)
     # * DB / dev サーバー          — mysql, redis, libpq, qemu
+    # * Ruby ecosystem            — ruby-build, tmuxinator (mise 経由 Ruby 前提)
+    # * その他 (調査要 / 大物 Python) — codex, googleworkspace-cli, ansible, azure-cli,
+    #                              readline (build dep として他 brew が引いている可能性)
     brews = [
       "FairwindsOps/tap/pluto"
-      "age"
       "ansible"
       "argoproj/tap/argocd"
-      "automake"
       "azure-cli"
-      "bash-completion"
-      "cloudflared"
-      "cmake"
       "codex"
       "ffmpeg"
       "fujiwara/tap/tfstate-lookup"
@@ -78,14 +76,11 @@
       "imagemagick"
       "k1LoW/tap/tbls"
       "kayac/tap/ecspresso"
-      "krew"
-      "libmagic"
       "libpq"
       "llvm"
       "markdownlint-cli"
       "marp-cli"
       "mas"
-      "mecab"
       "mutagen-io/mutagen/mutagen-compose"
       "mysql"
       "pipx"
@@ -96,9 +91,7 @@
       "ruby-build"
       "terminal-notifier"
       "tmuxinator"
-      "yarn"
       "yukiarrr/tap/ecsk"
-      "zlib"
       "zsh"
       "zsh-autosuggestions"
       "zsh-completions"
