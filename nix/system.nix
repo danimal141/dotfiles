@@ -48,9 +48,9 @@
 
       # icon サイズ (px)。tilesize は通常状態のサイズ、largesize は
       # magnification 時の拡大サイズ。default は tilesize=48 / largesize=64。
-      # 通常 64 / hover で 96 に拡大 (1.5x ratio で hover 効果を視認しやすく)。
-      tilesize = 64;
-      largesize = 96;
+      # 48 と 64 の中間 56 / hover で 80 (約 1.43x ratio)。
+      tilesize = 56;
+      largesize = 80;
 
       # マウスホバーで icon を拡大表示する。視認性向上のため有効。
       magnification = true;

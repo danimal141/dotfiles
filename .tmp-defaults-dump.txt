@@ -1,0 +1,217 @@
+=== NSGlobalDomain ===
+{
+    AKLastIDMSEnvironment = 0;
+    AKLastLocale = "ja_JP";
+    AppleAntiAliasingThreshold = 4;
+    AppleLanguages =     (
+        "ja-JP",
+        "en-JP"
+    );
+    AppleLanguagesDidMigrate = "13.3";
+    AppleLanguagesSchemaVersion = 4000;
+    AppleLocale = "ja_JP";
+    AppleMiniaturizeOnDoubleClick = 0;
+    "KB_DoubleQuoteOption" = "\\U201cabc\\U201d";
+    "KB_SingleQuoteOption" = "\\U2018abc\\U2019";
+    "KB_SpellingLanguage" =     {
+        "KB_SpellingLanguageIsAutomatic" = 1;
+    };
+    NSAutomaticCapitalizationEnabled = 1;
+    NSAutomaticDashSubstitutionEnabled = 1;
+    NSAutomaticPeriodSubstitutionEnabled = 1;
+    NSAutomaticQuoteSubstitutionEnabled = 1;
+    NSLinguisticDataAssetsRequestLastInterval = 86400;
+    NSLinguisticDataAssetsRequestTime = "2026-05-08 01:01:09 +0000";
+    NSLinguisticDataAssetsRequested =     (
+        ja,
+        en,
+        tr,
+        da,
+        de,
+        pl,
+        it
+    );
+    NSLinguisticDataAssetsRequestedByChecker =     (
+        en,
+        tr,
+        da,
+        de,
+        pl,
+        it
+    );
+    NSPreferredWebServices =     {
+        NSWebServicesProviderWebSearch =         {
+            NSDefaultDisplayName = Google;
+            NSProviderIdentifier = "com.google.www";
+        };
+    };
+    NSSpellCheckerInputAnalyticsTime = "2026-05-08 07:35:56 +0000";
+    NSUserDictionaryReplacementItems =     (
+    );
+    NSUserQuotesArray =     (
+
+=== com.apple.dock ===
+{
+    autohide = 1;
+    largesize = 46;
+    "last-analytics-stamp" =     (
+        "799914142.73474"
+    );
+    lastShowIndicatorTime = "799893794.725474";
+    loc = "ja_JP:(null)";
+    magnification = 1;
+    "mod-count" = 378;
+    "mru-spaces" = 0;
+    "persistent-apps" =     (
+                {
+            GUID = 2793054671;
+            "tile-data" =             {
+                book = {length = 584, bytes = 0x626f6f6b 48020000 00000410 30000000 ... 04000000 00000000 };
+                "bundle-identifier" = "com.apple.launchpad.launcher";
+                "dock-extra" = 0;
+                "file-data" =                 {
+                    "_CFURLString" = "file:///System/Applications/Launchpad.app/";
+                    "_CFURLStringType" = 15;
+                };
+                "file-label" = Launchpad;
+                "file-mod-date" = 3761958876;
+                "file-type" = 169;
+                "is-beta" = 0;
+                "parent-mod-date" = 3761958876;
+            };
+            "tile-type" = "file-tile";
+        },
+                {
+            GUID = 2793054690;
+            "tile-data" =             {
+                book = {length = 588, bytes = 0x626f6f6b 4c020000 00000410 30000000 ... 04000000 00000000 };
+                "bundle-identifier" = "com.apple.systempreferences";
+                "dock-extra" = 1;
+                "file-data" =                 {
+                    "_CFURLString" = "file:///System/Applications/System%20Settings.app/";
+                    "_CFURLStringType" = 15;
+                };
+                "file-label" = "\\U30b7\\U30b9\\U30c6\\U30e0\\U8a2d\\U5b9a";
+                "file-mod-date" = 3789739171;
+                "file-type" = 41;
+                "is-beta" = 0;
+                "parent-mod-date" = 3789739171;
+            };
+            "tile-type" = "file-tile";
+        },
+                {
+            GUID = 1638961343;
+
+=== com.apple.finder ===
+{
+    CopyProgressWindowLocation = "{556, 258}";
+    DesktopViewSettings =     {
+        IconViewSettings =         {
+            arrangeBy = name;
+            backgroundColorBlue = 1;
+            backgroundColorGreen = 1;
+            backgroundColorRed = 1;
+            backgroundType = 0;
+            gridOffsetX = 0;
+            gridOffsetY = 0;
+            gridSpacing = 54;
+            iconSize = 64;
+            labelOnBottom = 1;
+            showIconPreview = 1;
+            showItemInfo = 0;
+            textSize = 12;
+            viewOptionsVersion = 1;
+        };
+    };
+    DownloadsFolderListViewSettingsVersion = 1;
+    EmptyTrashProgressWindowLocation = "{1080, 341}";
+    "FK_AppCentricShowSidebar" = 1;
+    "FK_ArrangeBy" = "Date Added";
+    "FK_DefaultIconViewSettings" =     {
+        arrangeBy = name;
+        backgroundColorBlue = 1;
+        backgroundColorGreen = 1;
+        backgroundColorRed = 1;
+        backgroundType = 0;
+        gridOffsetX = 0;
+        gridOffsetY = 0;
+        gridSpacing = 54;
+        iconSize = 64;
+        labelOnBottom = 1;
+        showIconPreview = 1;
+        showItemInfo = 1;
+        textSize = 12;
+        viewOptionsVersion = 1;
+    };
+    "FK_DefaultListViewSettings" =     {
+        calculateAllSizes = 0;
+        columns =         (
+                        {
+                ascending = 1;
+                identifier = name;
+                visible = 1;
+                width = 300;
+            },
+                        {
+
+=== com.apple.screencapture ===
+{
+    "last-analytics-stamp" = "799919357.061644";
+    "last-selection" =     {
+        Height = 923;
+        Width = 1886;
+        X = 3;
+        Y = 147;
+    };
+    "last-selection-display" = 0;
+    style = selection;
+    video = 1;
+}
+
+=== com.apple.AppleMultitouchTrackpad ===
+{
+    ActuateDetents = 1;
+    Clicking = 0;
+    DragLock = 0;
+    Dragging = 0;
+    FirstClickThreshold = 1;
+    ForceSuppressed = 0;
+    SecondClickThreshold = 1;
+    TrackpadCornerSecondaryClick = 0;
+    TrackpadFiveFingerPinchGesture = 2;
+    TrackpadFourFingerHorizSwipeGesture = 2;
+    TrackpadFourFingerPinchGesture = 2;
+    TrackpadFourFingerVertSwipeGesture = 2;
+    TrackpadHandResting = 1;
+    TrackpadHorizScroll = 1;
+    TrackpadMomentumScroll = 1;
+    TrackpadPinch = 1;
+    TrackpadRightClick = 1;
+    TrackpadRotate = 1;
+    TrackpadScroll = 1;
+    TrackpadThreeFingerDrag = 0;
+    TrackpadThreeFingerHorizSwipeGesture = 2;
+    TrackpadThreeFingerTapGesture = 0;
+    TrackpadThreeFingerVertSwipeGesture = 2;
+    TrackpadTwoFingerDoubleTapGesture = 1;
+    TrackpadTwoFingerFromRightEdgeSwipeGesture = 3;
+    USBMouseStopsTrackpad = 0;
+    UserPreferences = 1;
+    version = 12;
+}
+
+=== com.apple.WindowManager ===
+{
+    AppWindowGroupingBehavior = 1;
+    AutoHide = 1;
+    EnableStandardClickToShowDesktop = 0;
+    HasDisplayedShowDesktopEducation = 1;
+    HideDesktop = 1;
+    LastDailyHeartbeatDateString = "2024-02-17T03:13:31Z";
+    "LastHeartbeatDateString.daily" = "2026-05-08T00:51:49Z";
+    StageManagerHideWidgets = 1;
+    StandardHideWidgets = 0;
+}
+
+=== com.apple.LaunchServices ===
+
