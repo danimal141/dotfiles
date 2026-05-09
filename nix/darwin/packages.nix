@@ -24,7 +24,6 @@
     gnused          # macOS の sed は BSD 版でスクリプト互換性が低い
     jq
     ripgrep
-    silver-searcher # `ag` 本体
     tig
     tree
     yq-go           # Go 実装の yq (Python 版より速い)

@@ -26,9 +26,10 @@
       #   "uninstall" — 未宣言パッケージを自動 uninstall (= 宣言と完全同期)
       #   "zap"       — uninstall + 設定/データも削除 (危険)
       #
-      # "none" を採用: alfred / gcloud-cli / inkdrop など手動で入れた brew
-      # を意図せず消したくないため。残したいものをすべて casks/brews に書き
-      # 切ったタイミングで "uninstall" に切り替える。
+      # "none" を採用: 試験的に手動で入れた brew / cask を意図せず消したく
+      # ないため (= 「declarative に書く前の試用期間」を許容)。常用するものは
+      # 下の casks / brews に書き切る。declared な entries だけが残る状態に
+      # 揃った段階で "uninstall" に切り替えれば宣言と完全同期になる。
       cleanup = "none";
 
       # `brew upgrade` は意図しないアップグレードでビルドを壊しがち。
@@ -60,7 +61,7 @@
     # * shell 本体と plugin       — zsh, zsh-autosuggestions, zsh-syntax-highlighting,
     #                              zsh-completions (brew の方が起動が速い)
     # * DB / dev サーバー          — mysql, redis, libpq, qemu
-    # * Ruby ecosystem            — ruby-build, tmuxinator (mise 経由 Ruby 前提)
+    # * Ruby ecosystem            — ruby-build (mise 経由 Ruby のビルド helper)
     # * その他 (調査要 / 大物 Python) — codex, googleworkspace-cli, ansible, azure-cli,
     #                              readline (build dep として他 brew が引いている可能性)
     brews = [
@@ -90,7 +91,6 @@
       "repomix"
       "ruby-build"
       "terminal-notifier"
-      "tmuxinator"
       "yukiarrr/tap/ecsk"
       "zsh"
       "zsh-autosuggestions"
