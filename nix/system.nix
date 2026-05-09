@@ -175,6 +175,18 @@
         # 0 = NO (no minimize), 1 = YES (default)
         AppleMiniaturizeOnDoubleClick = 0;
       };
+
+      # 日本語 IM (Kotoeri / 「ことえり」) の挙動。
+      # JIMPrefLiveConversionKey: ライブ変換 (入力中の自動漢字変換) を無効化。
+      # 入力途中で勝手に候補が確定して visual に飛ぶのが煩わしいため OFF。
+      # 1 = ON (default), 0 = OFF
+      # JIMPrefConvertWithPunctuationKey: 句読点入力時の自動変換を無効化。
+      # 「、」「。」を打った瞬間に変換が走るのを止め、明示的に space で
+      # 変換するスタイルに揃える。
+      "com.apple.inputmethod.Kotoeri" = {
+        JIMPrefLiveConversionKey = 0;
+        JIMPrefConvertWithPunctuationKey = 0;
+      };
     };
 
     # ============================================================
