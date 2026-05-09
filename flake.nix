@@ -150,11 +150,106 @@
             }
           ];
         };
+      # `apps.<system>.<name>` 経由で expose する shell script の生成に使う pkgs。
+      # `nix run .#<name>` が走るたびに評価されるので legacyPackages で十分
+      # (overlay や config 拡張が無い純 nixpkgs)。Apple Silicon 専用想定。
+      pkgs = nixpkgs.legacyPackages.aarch64-darwin;
+
+      # AI agent (Claude Code / Codex / Gemini CLI 等) から呼ばれた時は
+      # nix-output-monitor (nom) のような TTY-rich な出力を抑制する。
+      # nom は ANSI escape を多用して live-update する仕様で、PTY なしの
+      # subprocess (= AI agent から見た tool execution) では文字化けや
+      # 巨大ログ量で context を浪費するため。
+      isAgentCheck = ''
+        IS_AI_AGENT=false
+        for var in CLAUDE_CODE CLAUDECODE CODEX_SANDBOX CODEX_THREAD_ID GEMINI_CLI OPENCODE AUGMENT_AGENT GOOSE_PROVIDER CURSOR_AGENT AI_AGENT; do
+          eval "val=\''${!var:-}"
+          if [ -n "$val" ]; then
+            IS_AI_AGENT=true
+            break
+          fi
+        done
+      '';
+
+      # `pkgs.writeShellScript` で書いた shell を `nix run` から呼べる
+      # `apps.*` 形式に包む。`darwin-rebuild` 等は flake input から絶対 path で
+      # 解決し、PATH に依存しない (= 初回 bootstrap でも動く)。
+      # `meta.description` は `nix flake show` での一覧表示用。
+      mkApp = name: description: script: {
+        type = "app";
+        program = toString (pkgs.writeShellScript name script);
+        meta = { inherit description; };
+      };
+
+      # 現在の Mac の hostname を `darwinConfigurations.<host>` の host 名に
+      # 揃えるための shell snippet。`scutil --get LocalHostName` は
+      # nix-darwin が apply 時に強制した名前 (work / personal / ...) を返す。
+      hostnameSnippet = ''HOST=$(/usr/sbin/scutil --get LocalHostName)'';
+
+      darwinRebuild = "${nix-darwin.packages.aarch64-darwin.darwin-rebuild}/bin/darwin-rebuild";
     in
     {
       darwinConfigurations = nixpkgs.lib.mapAttrs mkHost hosts;
 
       # `nix fmt` 用フォーマッタ。RFC スタイルで nix ファイルを揃える。
       formatter.aarch64-darwin = nixpkgs.legacyPackages.aarch64-darwin.nixfmt-rfc-style;
+
+      # ============================================================
+      # `nix run .#<name>` で呼べる日常運用 utility
+      # ============================================================
+      # 設計方針:
+      #   * ホスト判定は実行時に `scutil --get LocalHostName` で動的解決
+      #     (= work / personal を 1 つの app で兼ねる)。
+      #   * darwin-rebuild は flake input の `nix-darwin.packages` から
+      #     絶対 path で呼ぶ。`/run/current-system/sw/bin/...` 経由だと
+      #     初回 bootstrap (= まだ system が build されていない) で
+      #     PATH 解決できないため。
+      #   * AI agent 環境では nom 連携をスキップ (上の `isAgentCheck` 参照)。
+      apps.aarch64-darwin = {
+        # `nix run .#switch` — system 設定を build + activate。
+        # 日常運用の主役 (元の `darwin-rebuild switch --flake ...` 直叩きを置換)。
+        #
+        # `sudo -v` で先に credential cache を埋めてから本体を起動する。
+        # `sudo darwin-rebuild ... |& nom` の `|&` は sudo の password
+        # prompt (stderr) ごと nom に流すため、`-v` を挟まないと prompt が
+        # nom UI に呑み込まれてユーザーが入力タイミングを見失う。
+        switch = mkApp "darwin-switch" "Build and activate the darwin configuration for this host" ''
+          set -eo pipefail
+          ${isAgentCheck}
+          ${hostnameSnippet}
+          echo "Switching darwin configuration: .#$HOST"
+          sudo -v
+          if [ "$IS_AI_AGENT" = true ]; then
+            sudo ${darwinRebuild} switch --flake ".#$HOST"
+          else
+            sudo ${darwinRebuild} switch --flake ".#$HOST" |& ${pkgs.nix-output-monitor}/bin/nom
+          fi
+          echo "Done!"
+        '';
+
+        # `nix run .#build` — system 設定を build (activate せず dry-run)。
+        # apply 前に評価エラーや build 失敗を検出する用途。
+        build = mkApp "darwin-build" "Dry-build the darwin configuration without activating" ''
+          set -eo pipefail
+          ${isAgentCheck}
+          ${hostnameSnippet}
+          echo "Building darwin configuration: .#$HOST"
+          if [ "$IS_AI_AGENT" = true ]; then
+            nix build ".#darwinConfigurations.$HOST.system"
+          else
+            ${pkgs.nix-output-monitor}/bin/nom build ".#darwinConfigurations.$HOST.system"
+          fi
+          echo "Build successful. Run 'nix run .#switch' to apply."
+        '';
+
+        # `nix run .#update` — flake.lock を更新 (全 input)。
+        # 個別 input だけ更新したい場合は通常の `nix flake update <input>` を使う。
+        update = mkApp "flake-update" "Update flake.lock for all inputs" ''
+          set -eo pipefail
+          echo "Updating flake.lock..."
+          nix flake update
+          echo "Done. Run 'nix run .#switch' to apply changes."
+        '';
+      };
     };
 }
