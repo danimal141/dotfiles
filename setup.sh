@@ -113,7 +113,7 @@ sudo -E nix --extra-experimental-features 'nix-command flakes' \
   run nix-darwin -- switch --flake ".#$TARGET_HOST"
 
 # ---- mise / language runtimes ---------------------------------------------
-# `~/.config/mise/config.toml` (home-manager 経由で repo の mise/config.toml
+# `~/.config/mise/config.toml` (home-manager 経由で repo の tools/mise/config.toml
 # を symlink 配置済み) に宣言された言語ランタイムを mise でまとめて install
 # する。mise CLI 自体は darwin-rebuild で home-manager profile に入った
 # 状態で、ここでは各言語の実体 binary を pull する。失敗しても止めないのは、

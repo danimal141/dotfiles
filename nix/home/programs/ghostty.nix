@@ -10,5 +10,5 @@ let
 in
 {
   home.file."Library/Application Support/com.mitchellh.ghostty/config".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/ghostty/config";
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/ghostty/config";
 }

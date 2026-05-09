@@ -12,7 +12,7 @@
 # その PC だけ symlink を解除して手書き運用に切り替える / specialArgs で
 # host 別 list を渡す形に発展させる、等)。
 #
-# tmux-start 本体 (bash script) も repo の tmux/bin/tmux-start に置き、
+# tmux-start 本体 (bash script) も repo の tools/tmux/bin/tmux-start に置き、
 # ~/.local/bin/tmux-start に symlink 配置する。executable bit は repo
 # 側のファイル mode (chmod +x 済み) を out-of-store symlink 経由で読む。
 let
@@ -20,11 +20,11 @@ let
 in
 {
   home.file.".tmux.conf".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tmux/.tmux.conf";
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/tmux/.tmux.conf";
 
   home.file.".tmux_start_dir".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tmux/.tmux_start_dir";
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/tmux/.tmux_start_dir";
 
   home.file.".local/bin/tmux-start".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tmux/bin/tmux-start";
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/tmux/bin/tmux-start";
 }

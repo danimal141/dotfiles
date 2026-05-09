@@ -7,13 +7,13 @@
 #     ファイルへの symlink を作る。エディタで開いて編集するときに store 内の
 #     ファイルを書き換えようとして失敗する。
 #   * `mkOutOfStoreSymlink` は repo 内の実体ファイルへ直接 symlink を張るので
-#     `vim ~/.zshrc` がそのまま repo の `zsh/.zshrc` を編集することになり、
-#     `source ~/.zshrc` で即反映できる。darwin-rebuild は不要。
+#     `vim ~/.zshrc` がそのまま repo の `tools/zsh/.zshrc` を編集することに
+#     なり、`source ~/.zshrc` で即反映できる。`nix run .#switch` は不要。
 #
 # パスを **絶対パス文字列** で渡す理由:
-#   * Nix flake では `../../zsh/.zshrc` のような相対 Nix path は flake source
-#     tree の Nix store コピーを指す。`toString` してもそれは store path
-#     (`/nix/store/...-source/zsh/.zshrc`) になり、結果として
+#   * Nix flake では `../../../tools/zsh/.zshrc` のような相対 Nix path は
+#     flake source tree の Nix store コピーを指す。`toString` してもそれは
+#     store path (`/nix/store/...-source/tools/zsh/.zshrc`) になり、結果として
 #     `mkOutOfStoreSymlink` が store 内のコピーを target にしてしまい
 #     out-of-store にならなくなる。
 #   * よって repo の絶対パスを文字列でハードコードする。`user` は specialArgs
@@ -25,5 +25,5 @@
 {
   home.file.".zshrc".source =
     config.lib.file.mkOutOfStoreSymlink
-      "/Users/${user}/Documents/dev/dotfiles/zsh/.zshrc";
+      "/Users/${user}/Documents/dev/dotfiles/tools/zsh/.zshrc";
 }
