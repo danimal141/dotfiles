@@ -44,9 +44,9 @@ $ ./setup.sh personal    # 個人用 Mac として明示
    `*.before-nix-darwin` に退避 (nix-darwin の activation が「unrecognized
    content」を理由に abort するのを回避)
 5. `sudo -E nix run nix-darwin -- switch --flake ".#<hostname>"` を実行 —
-   `nix/packages.nix` (Nix store CLI) / `nix/homebrew.nix` (brew/cask) /
-   `nix/system.nix` (macOS 設定) / `nix/home/programs/*.nix` (home-manager
-   経由の dotfile symlink) が一括反映
+   `nix/darwin/{defaults,keyboard,nix-daemon,system,packages,homebrew}.nix`
+   (system 層 / Nix store CLI / brew / cask) / `nix/home/programs/*.nix`
+   (home-manager 経由の dotfile symlink) が一括反映
 6. `mise install` で `~/.config/mise/config.toml` の言語 binary を実体 install
 7. LSP server (typescript / pyright / ruby-lsp / gopls) を global install
 8. VSCode の設定 / 拡張を sync
@@ -130,7 +130,7 @@ $ git config user.email   # → 個人アドレス (flake.nix で宣言)
 ### 4. pre-commit + secretlint
 
 API key の誤コミット防止に secretlint が pre-commit hook に組み込まれている。
-`prek` (pre-commit の Rust 実装、drop-in 互換) を `nix/packages.nix` で配布、
+`prek` (pre-commit の Rust 実装、drop-in 互換) を `nix/darwin/packages.nix` で配布、
 `setup.sh` の最後で `prek install` が自動実行される。手動再 install:
 
 ```shell
@@ -153,7 +153,7 @@ pin、`setup.sh` の `npm ci` で `node_modules/` に install され、hook は
 * **`darwin-rebuild` が「unrecognized content in /etc/...」で止まる** —
   該当ファイルを `.before-nix-darwin` に退避してから再実行
 * **`darwin-rebuild` の Homebrew step で formula / cask 名解決失敗** —
-  上流で改名 / cask 化されたものは `nix/homebrew.nix` を更新
+  上流で改名 / cask 化されたものは `nix/darwin/homebrew.nix` を更新
 * **業務 repo で `git config user.email` が個人 ID のまま** —
   `~/.gitconfig.local` または `~/.gitconfig.work` 未作成か、remote URL が
   `~/.gitconfig.local` 内の `hasconfig:remote.*.url:` 条件にマッチしていない。
@@ -169,9 +169,11 @@ pin、`setup.sh` の `npm ci` で `node_modules/` に install され、hook は
 | 設定変更を反映 (system / brew / home-manager すべて) | `nix run .#switch` |
 | 反映前に build だけ走らせて検証 | `nix run .#build` |
 | `flake.lock` の全 input を更新 | `nix run .#update` |
-| Nix store CLI を追加 / 削除 | `nix/packages.nix` を編集 → 上記 switch |
-| Homebrew brew / cask を追加 / 削除 | `nix/homebrew.nix` を編集 → 上記 switch |
-| macOS 設定変更 | `nix/system.nix` を編集 → 上記 switch |
+| Nix store CLI を追加 / 削除 | `nix/darwin/packages.nix` を編集 → 上記 switch |
+| Homebrew brew / cask を追加 / 削除 | `nix/darwin/homebrew.nix` を編集 → 上記 switch |
+| macOS 設定変更 (Dock / Finder / NSGlobalDomain 等) | `nix/darwin/defaults.nix` を編集 → 上記 switch |
+| キーボード remap / 入力ソース shortcut 変更 | `nix/darwin/keyboard.nix` を編集 → 上記 switch |
+| Nix daemon / GC / SSL CA bundle / 環境変数 | `nix/darwin/nix-daemon.nix` を編集 → 上記 switch |
 | user 層の dotfile / `programs.*` 変更 | `nix/home/programs/<tool>.nix` を編集 → 上記 switch (raw text symlink なら switch 不要、編集即反映) |
 | flake input を個別更新 | `nix flake update <input>` (例: `nixpkgs` / `nix-darwin` / `nix-homebrew` / `home-manager`) |
 | 世代一覧 | `darwin-rebuild --list-generations` |
@@ -189,7 +191,7 @@ wrapper の付加価値は次の 3 点:
 * `darwin-rebuild` は flake input から絶対 path で解決するので、
   `/run/current-system/sw/bin/...` が未整備の初回 bootstrap でも動く
 
-`nix/homebrew.nix` で Homebrew 側に残している主な理由:
+`nix/darwin/homebrew.nix` で Homebrew 側に残している主な理由:
 
 * tap-only formulae (argoproj/tap/argocd, fujiwara/tap/tfstate-lookup,
   kayac/tap/ecspresso, mutagen-io/mutagen/mutagen-compose 等)
@@ -259,7 +261,7 @@ mise の解決優先度 (上ほど優先):
 ## 新しい Mac を追加する場合
 
 hostname 規約: 仕事用は `work`、個人用は `personal` / `personal2` / ... と
-連番。`nix/hosts/<hostname>.nix` の `networking.hostName` で apply 時に
+連番。`nix/darwin/hosts/<hostname>.nix` の `networking.hostName` で apply 時に
 LocalHostName / HostName が固定されるので、IT 部門が割り当てた元の hostname
 は上書きされる。
 
@@ -273,7 +275,7 @@ hosts = {
 };
 ```
 
-### 2. `nix/hosts/<hostname>.nix` を作成 (`work.nix` を雛形に)
+### 2. `nix/darwin/hosts/<hostname>.nix` を作成 (`work.nix` を雛形に)
 
 ```nix
 { ... }:
@@ -299,18 +301,27 @@ LocalHostName` では新 host を検出できず `setup.sh` は `work` にフォ
 
 ## 管理ツールの責務分担
 
-* nix-darwin (system 層、`flake.lock` で pin):
-  * `nix/packages.nix` — Nix store 供給の CLI バイナリ (git / tmux /
+* nix-darwin (system 層、`flake.lock` で pin、`nix/darwin/` 配下に集約):
+  * `nix/darwin/packages.nix` — Nix store 供給の CLI バイナリ (git / tmux /
     neovim / fzf / ripgrep / jq / gh / kubectl 系 / apm など)
-  * `nix/homebrew.nix` — tap-only formulae / GUI cask / macOS 統合の強い formulae
-  * `nix/system.nix` — macOS システム全般。`system.defaults.*` で Dock /
-    Finder / NSGlobalDomain (KeyRepeat / 自動補完 OFF 等) / trackpad /
-    WindowManager / menuExtraClock / CustomUserPreferences (Kotoeri 等)、
-    `system.keyboard` で CapsLock → Control の HID remap、
-    `launchd.user.agents.remap-caps-lock` で再起動跨ぎの login 時再適用、
-    `system.activationScripts.postActivation` で入力ソース切替 shortcut
-    (`AppleSymbolicHotKeys` の ID 60/61) の targeted update、primary user
-    宣言、Nix gc、SSL CA bundle 設定
+  * `nix/darwin/homebrew.nix` — tap-only formulae / GUI cask / macOS 統合
+    の強い formulae
+  * `nix/darwin/defaults.nix` — `system.defaults.*` (Dock / Finder /
+    NSGlobalDomain (KeyRepeat / 自動補完 OFF 等) / trackpad / WindowManager
+    / menuExtraClock / CustomUserPreferences で Kotoeri / 言語等)
+  * `nix/darwin/keyboard.nix` — `system.keyboard` で CapsLock → Control の
+    HID remap、`launchd.user.agents.remap-caps-lock` で再起動跨ぎの login
+    時再適用、`system.activationScripts.postActivation` で入力ソース切替
+    shortcut (`AppleSymbolicHotKeys` の ID 60/61) の targeted update
+  * `nix/darwin/nix-daemon.nix` — `nix.settings` (experimental-features /
+    trusted-users / SSL CA bundle) と `nix.gc`、`environment.variables`
+    (NIX_SSL_CERT_FILE / HOMEBREW_FORBIDDEN_FORMULAE)
+  * `nix/darwin/system.nix` — `system.primaryUser` / `users.users.<user>` /
+    `programs.zsh.enable = false` / `system.stateVersion` の root residual
+  * `nix/darwin/default.nix` — 上記 6 ファイルを 1 つにまとめる imports。
+    flake.nix は `./nix/darwin` を 1 つ import するだけで揃う
+  * `nix/darwin/hosts/<hostname>.nix` — host 別 override
+    (`networking.hostName` 強制 + ホスト固有 brew package)
 * home-manager (user 層、nix-darwin module 統合):
   * `nix/home/programs/<tool>.nix` — 1 ファイル 1 ツールで分割。raw text
     symlink (`mkOutOfStoreSymlink`) または declarative module

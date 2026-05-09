@@ -13,8 +13,9 @@
 #      nix-daemon にも渡す
 #   4. nix-darwin が /etc/* を引き取る前段階として、Nix インストーラ由来の
 #      /etc/bashrc / /etc/nix/nix.conf を *.before-nix-darwin に退避
-#   5. `darwin-rebuild switch` で nix/packages.nix / nix/homebrew.nix /
-#      nix/system.nix を一括反映 (sudo 必須、experimental-features は CLI フラグで渡す)
+#   5. `darwin-rebuild switch` で nix/darwin/{defaults,keyboard,nix-daemon,
+#      system,packages,homebrew}.nix を一括反映 (sudo 必須、experimental-features
+#      は CLI フラグで渡す)
 #   6. home-manager (nix-darwin に統合) が ~/ 配下の dotfile を symlink 配置
 #      mise CLI と global config (~/.config/mise/config.toml) もこの段で配置される
 #   7. mise install で ~/.config/mise/config.toml の言語 binary を実体 install
@@ -151,7 +152,7 @@ if [ -f ./package-lock.json ] && command -v npm >/dev/null 2>&1; then
 fi
 
 # `.pre-commit-config.yaml` の secretlint hook を git hooks に登録する。
-# prek は pre-commit の Rust 実装、`nix/packages.nix` で配布済 (= ここでは
+# prek は pre-commit の Rust 実装、`nix/darwin/packages.nix` で配布済 (= ここでは
 # 既に PATH にあること前提)。`prek install` は冪等 (`.git/hooks/pre-commit`
 # を上書き) なので二度目の setup.sh でも問題ない。
 if [ -f ./.pre-commit-config.yaml ] && command -v prek >/dev/null 2>&1; then
