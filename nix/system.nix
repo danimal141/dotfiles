@@ -224,10 +224,10 @@
     # menubar clock — メニューバー右上の時計表示
     # ============================================================
     menuExtraClock = {
-      # 12 時間制 + AM/PM 表示。24 時間制にしたければ
-      # Show24Hour = true、ShowAMPM = false に切り替え。
-      Show24Hour = false;
-      ShowAMPM = true;
+      # 24 時間制で表示。24 時間制では AM/PM ラベルは無意味なので
+      # ShowAMPM は false に揃える。
+      Show24Hour = true;
+      ShowAMPM = false;
 
       # 曜日を表示、日付は非表示 (時計をコンパクトに保つ)。
       # 日付は menubar の Calendar アプリ icon 等から確認する。
