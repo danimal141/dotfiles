@@ -1,11 +1,24 @@
 { user, lib, ... }:
 
-# macOS システム設定 + Nix / nix-darwin 自体の運用 (flake / gc / 環境変数 /
-# zsh の取扱い) を宣言するモジュール。
+# macOS システム層全般を宣言するモジュール。扱う範囲:
+#   * `system.defaults.*` — Dock / Finder / NSGlobalDomain / trackpad /
+#     WindowManager / menuExtraClock。typed module 非対応の key は
+#     `CustomUserPreferences` の attrset で書く (Kotoeri / 言語設定 等)。
+#   * `system.keyboard` — HID 層の modifier remap (CapsLock → Control)。
+#   * `launchd.user.agents` — login 時に hidutil mapping を再適用する
+#     LaunchAgent。`system.keyboard` の hidutil 設定は session-scoped で
+#     再起動時に揮発するため、login のたびに同 payload で焼き直す。
+#   * `system.activationScripts.postActivation` — `AppleSymbolicHotKeys`
+#     のような共有 dict に同居する shortcut を、CustomUserPreferences で
+#     dict ごと上書きせず `defaults write -dict-add` で targeted update
+#     する用途。現状は入力ソース切替 shortcut (ID 60 / 61)。
+#   * primary user 宣言 + Nix daemon 設定 (gc / experimental features /
+#     SSL CA bundle) + 環境変数 (HOMEBREW_FORBIDDEN_FORMULAE / NIX_SSL_CERT_FILE) +
+#     `programs.zsh.enable = false` (zshrc は repo raw 配置に任せるため)。
 #
 # `system.defaults.*` の設計方針:
 #   * 「declarative に固定したい設定」をすべて宣言する。
-#     宣言した key は `darwin-rebuild switch` のたびに値が固定されるので、
+#     宣言した key は `nix run .#switch` のたびに値が固定されるので、
 #     System Settings から手動で変えても次の switch で巻き戻る。
 #   * 値の変更が頻繁な「Dock の persistent-apps」などは宣言しない
 #     (= macOS のデフォルトに任せて mutable のまま運用)。
@@ -332,7 +345,10 @@
     settings = {
       # flake / nix command を使うので必須
       experimental-features = [ "nix-command" "flakes" ];
-      # primaryUser を trusted にして sudo なしで `darwin-rebuild` を打てるようにする
+      # primaryUser を trusted にして daemon 経由のビルド (= sudo を求めない
+      # nix store 操作 / `nix build`, `nix flake update` 等) を許可する。
+      # `darwin-rebuild switch` 自体は nix-darwin の仕様変更で root 必須に
+      # なったため `trusted-users` でも sudo は省略できないことに注意。
       trusted-users = [ "@admin" user ];
 
       # 社内 VPN の SSL inspection (中間者 CA) 対策。bundle は setup.sh が
