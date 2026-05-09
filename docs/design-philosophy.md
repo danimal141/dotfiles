@@ -59,16 +59,25 @@ dotfiles/
 ├── flake.nix                      # darwinConfigurations.{work,personal,...}
 ├── flake.lock
 ├── nix/
-│   ├── system.nix                 # macOS defaults / system.keyboard (CapsLock 等) /
-│   │                               # launchd.user.agents (login 時 hidutil 再適用) /
-│   │                               # system.activationScripts.postActivation
-│   │                               # (AppleSymbolicHotKeys の targeted update) /
-│   │                               # nix gc / SSL CA
-│   ├── packages.nix               # Nix store CLI
-│   ├── homebrew.nix               # GUI cask + tap-only / Apple-integrated formulae
-│   ├── hosts/
-│   │   ├── work.nix               # networking.hostName 強制 (per host)
-│   │   └── personal.nix
+│   ├── darwin/                    # nix-darwin (system 層)
+│   │   ├── default.nix            # 配下の 6 ファイルを imports
+│   │   ├── defaults.nix           # system.defaults.* (Dock / Finder /
+│   │   │                           # NSGlobalDomain / trackpad / WindowManager
+│   │   │                           # / menuExtraClock / CustomUserPreferences)
+│   │   ├── keyboard.nix           # system.keyboard (CapsLock → Control HID
+│   │   │                           # remap) / launchd.user.agents (login 時
+│   │   │                           # hidutil 再適用) / system.activationScripts.
+│   │   │                           # postActivation (AppleSymbolicHotKeys の
+│   │   │                           # targeted update)
+│   │   ├── nix-daemon.nix         # nix.settings + nix.gc +
+│   │   │                           # environment.variables (SSL CA bundle 等)
+│   │   ├── system.nix             # primaryUser / users.users / programs.zsh
+│   │   │                           # disable / system.stateVersion (residual)
+│   │   ├── packages.nix           # Nix store CLI
+│   │   ├── homebrew.nix           # GUI cask + tap-only / Apple-integrated formulae
+│   │   └── hosts/
+│   │       ├── work.nix           # networking.hostName 強制 (per host)
+│   │       └── personal.nix
 │   └── home/
 │       ├── default.nix            # imports + home.{stateVersion,username,homeDirectory}
 │       └── programs/              # 1 ファイル 1 ツール
@@ -195,8 +204,9 @@ hosts = {
 `mkHost` がこれらを `specialArgs` 経由で全モジュール (system / home /
 hosts/<hostname>.nix) に流す。マシン追加は 1 entry 足すだけ。
 
-`networking.hostName` は `nix/hosts/<hostname>.nix` で強制 (IT 部門が払い出す
-hostname を上書き)、`scutil --get LocalHostName` を flake host の真実源にする。
+`networking.hostName` は `nix/darwin/hosts/<hostname>.nix` で強制 (IT 部門が
+払い出す hostname を上書き)、`scutil --get LocalHostName` を flake host の
+真実源にする。
 
 ## apply 時の declarative 副作用
 
@@ -227,7 +237,7 @@ nix-darwin の system activation 経路で root 権限で走る (`launchctl asus
   dict 全体は Spotlight / Mission Control / Screenshot 等が同居するため、
   `system.defaults.CustomUserPreferences` で書くと dict ごと上書き
   してしまう。それを避けるため per-key の dict-add を選択している。
-  詳細は `nix/system.nix` の該当セクション。
+  詳細は `nix/darwin/keyboard.nix` の該当セクション。
 
 ### `launchd.user.agents.<name>`
 

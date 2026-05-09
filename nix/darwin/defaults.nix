@@ -1,22 +1,10 @@
-{ user, lib, ... }:
+{ ... }:
 
-# macOS システム層全般を宣言するモジュール。扱う範囲:
-#   * `system.defaults.*` — Dock / Finder / NSGlobalDomain / trackpad /
-#     WindowManager / menuExtraClock。typed module 非対応の key は
-#     `CustomUserPreferences` の attrset で書く (Kotoeri / 言語設定 等)。
-#   * `system.keyboard` — HID 層の modifier remap (CapsLock → Control)。
-#   * `launchd.user.agents` — login 時に hidutil mapping を再適用する
-#     LaunchAgent。`system.keyboard` の hidutil 設定は session-scoped で
-#     再起動時に揮発するため、login のたびに同 payload で焼き直す。
-#   * `system.activationScripts.postActivation` — `AppleSymbolicHotKeys`
-#     のような共有 dict に同居する shortcut を、CustomUserPreferences で
-#     dict ごと上書きせず `defaults write -dict-add` で targeted update
-#     する用途。現状は入力ソース切替 shortcut (ID 60 / 61)。
-#   * primary user 宣言 + Nix daemon 設定 (gc / experimental features /
-#     SSL CA bundle) + 環境変数 (HOMEBREW_FORBIDDEN_FORMULAE / NIX_SSL_CERT_FILE) +
-#     `programs.zsh.enable = false` (zshrc は repo raw 配置に任せるため)。
+# `system.defaults.*` — `defaults write` 経路で macOS の domain (Dock /
+# Finder / NSGlobalDomain / Trackpad / WindowManager / menuExtraClock /
+# 任意 domain) を declarative に固定する。
 #
-# `system.defaults.*` の設計方針:
+# 設計方針:
 #   * 「declarative に固定したい設定」をすべて宣言する。
 #     宣言した key は `nix run .#switch` のたびに値が固定されるので、
 #     System Settings から手動で変えても次の switch で巻き戻る。
@@ -33,19 +21,6 @@
 # 必要になったら `system.defaults.CustomUserPreferences` か手動
 # `defaults write` で対応する。
 {
-  # `system.defaults` / nix-homebrew が「誰の defaults を書くか」を決めるための
-  # primary user 宣言。multi-user 環境ではないので flake から渡された user で固定。
-  system.primaryUser = user;
-
-  # nix-darwin に user 本体を宣言する。home-manager の darwin module は
-  # `users.users.<name>.home` から home directory を引くため、これ無しだと
-  # home.homeDirectory が null として merge され「is not of type absolute path」
-  # で activation が落ちる。home-manager 統合の前提条件。
-  users.users.${user} = {
-    name = user;
-    home = "/Users/${user}";
-  };
-
   system.defaults = {
     # ============================================================
     # Dock — タスクバー / 起動済み app の表示
@@ -250,128 +225,4 @@
       ShowSeconds = false;
     };
   };
-
-  # ============================================================
-  # キーボード modifier remap — HID レベルの key 入れ替え
-  # ============================================================
-  # `system.keyboard.*` は `system.defaults.*` とは別系統で、HID 入力レイヤで
-  # key code を書き換える (System Settings → Keyboard → Modifier Keys と
-  # 同じ層)。`hidutil property --set` を nix-darwin が裏で発行する。
-  #
-  # remapCapsLockToControl: 左 Caps Lock を Control に置き換える。
-  # vim / tmux / emacs / shell の C-a / C-e / C-x / C-c などを左小指で
-  # 押しやすい位置に持ってくる定番設定。Caps Lock 自体はほぼ使わないので
-  # 物理キーを Control 化することで日常的な負荷を下げる。
-  #
-  # ただし `system.keyboard.*` は `darwin-rebuild switch` 時にのみ
-  # `hidutil property --set` を発行する一方、hidutil の mapping は
-  # session-scoped で再起動するとリセットされる (Apple TN2450)。
-  # つまり「新マシンに switch → 再起動」した瞬間に default に戻ってしまう。
-  # これを防ぐため、login 時に再適用する LaunchAgent を下の
-  # `launchd.user.agents.remap-caps-lock` で declarative に追加する。
-  system.keyboard = {
-    enableKeyMapping = true;
-    remapCapsLockToControl = true;
-  };
-
-  # 上の `system.keyboard.*` の永続化補助。RunAtLoad で login 直後に
-  # `hidutil property --set` を再発行することで、再起動を跨いでも
-  # Caps Lock → Control を維持する。送信する payload は nix-darwin の
-  # keyboard.nix が switch 時に発行するものと同じ HID usage code:
-  #   Src 0x700000039 = Caps Lock
-  #   Dst 0x7000000E0 = Left Control
-  launchd.user.agents.remap-caps-lock = {
-    serviceConfig = {
-      Label = "org.danimal141.remap-caps-lock";
-      ProgramArguments = [
-        "/usr/bin/hidutil"
-        "property"
-        "--set"
-        ''{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x7000000E0}]}''
-      ];
-      RunAtLoad = true;
-    };
-  };
-
-  # ============================================================
-  # 入力ソース切り替え shortcut (System Settings → Keyboard →
-  # Keyboard Shortcuts → 入力ソース)
-  # ============================================================
-  # `com.apple.symbolichotkeys.AppleSymbolicHotKeys` は Spotlight /
-  # Mission Control / Screenshot など多数の shortcut を 1 つの dict に
-  # 持つ。`CustomUserPreferences` で書くと dict ごと上書きされて他 entry
-  # を巻き込むため、`defaults write -dict-add` で 60 / 61 のみ targeted
-  # update する activation script で宣言する。
-  #
-  # ID 60 = 前の入力ソースを選択 (⌘ Space)
-  # ID 61 = 入力メニューの次のソースを選択 (⌥⌘ Space)
-  #
-  # parameters[0] = 32 (ASCII space)
-  # parameters[1] = 49 (HID space key code)
-  # parameters[2] = modifier mask
-  #   1048576 = 0x100000 = ⌘
-  #   1572864 = 0x180000 = ⌘ + ⌥ (Cmd + Option)
-  system.activationScripts.postActivation.text = lib.mkAfter ''
-    echo "configuring input source switch shortcuts..." >&2
-    USER_UID=$(id -u -- ${user})
-    AS_USER="launchctl asuser $USER_UID sudo --user=${user} --"
-    $AS_USER /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys \
-      -dict-add 60 '{enabled=1;value={parameters=(32,49,1048576);type=standard;};}'
-    $AS_USER /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys \
-      -dict-add 61 '{enabled=1;value={parameters=(32,49,1572864);type=standard;};}'
-    # cfprefsd を再起動して running session に即反映 (login 後の再ログインを不要に)
-    $AS_USER /usr/bin/killall cfprefsd 2>/dev/null || true
-  '';
-
-  # zsh の rc は repo の `zsh/.zshrc` を home.file で `~/.zshrc` に symlink
-  # 配置する (nix/home/programs/zsh.nix)。nix-darwin が /etc/zshrc を生成
-  # すると home-manager 側の zshrc と読み込み順で競合 (PATH 重複 /
-  # completion 多重設定) しうるため、system 側 zsh module は無効化する。
-  programs.zsh.enable = false;
-
-  # HOMEBREW_FORBIDDEN_FORMULAE: language runtime (node / python / ruby) は
-  # mise が管理する。brew の依存解決が裏で node を pull すると PATH 順次第で
-  # ビルドが壊れるため物理的に禁止する。`claude` は Anthropic 公式の npm
-  # package で同様の二重 install を避けたいので含める。
-  #
-  # NIX_SSL_CERT_FILE: 社内 VPN の SSL inspection 対策 (下の
-  # `nix.settings.ssl-cert-file` と同じ bundle を user shell にも見せる)。
-  environment.variables = {
-    HOMEBREW_FORBIDDEN_FORMULAE = "node python python3 pip npm pnpm yarn claude";
-    NIX_SSL_CERT_FILE = "/etc/nix/ca-bundle.pem";
-  };
-
-  nix = {
-    settings = {
-      # flake / nix command を使うので必須
-      experimental-features = [ "nix-command" "flakes" ];
-      # primaryUser を trusted にして daemon 経由のビルド (= sudo を求めない
-      # nix store 操作 / `nix build`, `nix flake update` 等) を許可する。
-      # `darwin-rebuild switch` 自体は nix-darwin の仕様変更で root 必須に
-      # なったため `trusted-users` でも sudo は省略できないことに注意。
-      trusted-users = [ "@admin" user ];
-
-      # 社内 VPN の SSL inspection (中間者 CA) 対策。bundle は setup.sh が
-      # macOS Keychain から `/etc/nix/ca-bundle.pem` に焼き出す。社内 CA を
-      # 含むため bundle 自体はリポジトリに commit しない。bundle を更新した
-      # ときは `sudo launchctl kickstart -k system/org.nixos.nix-daemon`。
-      ssl-cert-file = "/etc/nix/ca-bundle.pem";
-    };
-
-    # Nix store の自動 GC: 30 日以上前の世代を毎週日曜 03:00 に削除。
-    # nix-darwin の世代も対象になるため、ロールバック先がある程度長く残るよう
-    # 30d は手厚めに取る。容量が逼迫したら 14d 等に短縮を検討。
-    gc = {
-      automatic = true;
-      interval = {
-        Weekday = 0;
-        Hour = 3;
-        Minute = 0;
-      };
-      options = "--delete-older-than 30d";
-    };
-  };
-
-  # nix-darwin の state 互換番号。手動 migration を伴うため上げない (現時点で 6)。
-  system.stateVersion = 6;
 }

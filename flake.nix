@@ -105,12 +105,11 @@
           system = "aarch64-darwin";
           specialArgs = { inherit user hostname gitName gitEmail inputs; };
           modules = [
-            ./nix/system.nix
-            # 並び順は責務 (Nix store -> Homebrew) の論理順序として揃えている。
-            # 評価順自体に依存はない。
-            ./nix/packages.nix
-            ./nix/homebrew.nix
-            (./nix/hosts + "/${hostname}.nix")
+            # nix/darwin/default.nix が defaults / keyboard / nix-daemon /
+            # system.nix (residual) / packages.nix / homebrew.nix を一括 imports。
+            # 機能ごとの分割理由は `nix/darwin/default.nix` の header を参照。
+            ./nix/darwin
+            (./nix/darwin/hosts + "/${hostname}.nix")
 
             nix-homebrew.darwinModules.nix-homebrew
             {
