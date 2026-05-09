@@ -1,8 +1,8 @@
 # Dotfiles
 
 `nix-darwin` + `home-manager` で macOS の system / Homebrew / dotfile を
-declarative に管理する個人用 dotfiles。`darwin-rebuild switch --flake .#<host>`
-の単一コマンドで反映する。
+declarative に管理する個人用 dotfiles。`nix run .#switch` (内部で
+`darwin-rebuild switch --flake ".#<host>"`) の単一コマンドで反映する。
 
 設計思想は [docs/design-philosophy.md](docs/design-philosophy.md) を参照。
 
@@ -201,8 +201,9 @@ wrapper の付加価値は次の 3 点:
 
 注意:
 
-* `nix flake update` (全 input 更新) は壊れた時の切り分けが困難。個別に
-  `--update-input` で進める
+* `nix run .#update` (= `nix flake update` 全 input 一括) は壊れた時の
+  切り分けが困難。問題発生時は個別 input 名指定 (`nix flake update <input>`)
+  に切り替える
 * nixpkgs 追従ラグで `darwin-rebuild` が一時的に壊れることがある。動かなく
   なったら `--rollback` で前世代に戻し、`flake.lock` を git で前状態に
   巻き戻して再 switch
@@ -217,12 +218,12 @@ ghostty / ctags / mise の config.toml / markdownlint) は **`vim ~/.zshrc`
 $ readlink ~/.zshrc
 # → /Users/<user>/Documents/dev/dotfiles/zsh/.zshrc (3-step chain で repo 到達)
 $ vim ~/.zshrc            # ← repo の zsh/.zshrc を編集している
-$ source ~/.zshrc         # 即反映 (darwin-rebuild 不要)
+$ source ~/.zshrc         # 即反映 (nix run .#switch 不要)
 ```
 
 text 生成 / `programs.<tool>.settings` で配置されているもの (codex の
 config.toml / git / starship 等) は `nix/home/programs/<tool>.nix` を編集 →
-`darwin-rebuild switch` で反映。
+`nix run .#switch` で反映。
 
 新規 dotfile を追加する場合は CLAUDE.md の「Managing Dotfiles」を参照。
 
@@ -302,8 +303,14 @@ LocalHostName` では新 host を検出できず `setup.sh` は `work` にフォ
   * `nix/packages.nix` — Nix store 供給の CLI バイナリ (git / tmux /
     neovim / fzf / ripgrep / jq / gh / kubectl 系 / apm など)
   * `nix/homebrew.nix` — tap-only formulae / GUI cask / macOS 統合の強い formulae
-  * `nix/system.nix` — macOS システム設定 (Dock / Finder / KeyRepeat /
-    trackpad) と primary user 宣言
+  * `nix/system.nix` — macOS システム全般。`system.defaults.*` で Dock /
+    Finder / NSGlobalDomain (KeyRepeat / 自動補完 OFF 等) / trackpad /
+    WindowManager / menuExtraClock / CustomUserPreferences (Kotoeri 等)、
+    `system.keyboard` で CapsLock → Control の HID remap、
+    `launchd.user.agents.remap-caps-lock` で再起動跨ぎの login 時再適用、
+    `system.activationScripts.postActivation` で入力ソース切替 shortcut
+    (`AppleSymbolicHotKeys` の ID 60/61) の targeted update、primary user
+    宣言、Nix gc、SSL CA bundle 設定
 * home-manager (user 層、nix-darwin module 統合):
   * `nix/home/programs/<tool>.nix` — 1 ファイル 1 ツールで分割。raw text
     symlink (`mkOutOfStoreSymlink`) または declarative module
@@ -338,7 +345,7 @@ Claude Code のスキル群は [skilltree](https://github.com/danimal141/skilltr
 にまとめ、[APM (Agent Package Manager)](https://github.com/microsoft/apm)
 経由で取り込む。
 
-`darwin-rebuild switch` 時に `home.activation.apmInstall` hook が `~/.apm/
+`nix run .#switch` 時に `home.activation.apmInstall` hook が `~/.apm/
 apm.yml` の sha256 を比較し、差分があるときだけ `apm install --target
 claude` を発火する (冪等)。手動で再実行する場合:
 
@@ -348,4 +355,4 @@ $ apm install --target claude
 ```
 
 依存スキルを追加・削除する場合は `apm/apm.yml` (repo 内、= `~/.apm/apm.yml`
-への symlink 元) を編集して `darwin-rebuild switch`。
+への symlink 元) を編集して `nix run .#switch`。
