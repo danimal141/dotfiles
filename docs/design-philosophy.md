@@ -6,21 +6,33 @@
 
 ## TL;DR
 
-新しい設定を追加するとき、置き場所の判断は次の 1 軸でほぼ決まる。
+新しい設定を追加するとき、置き場所の判断は **「raw text symlink で済むか、
+それとも `programs.*` を使う動機があるか」** で切る。default は out-of-store
+symlink で、以下のいずれかに当てはまるときだけ `programs.*` を選ぶ:
 
-* nixpkgs に対応 module (`programs.<tool>`) があり、設定が複雑 → home-manager の
-  `programs.*` で declarative に書く (例: starship / git。mise は
-  `programs.mise.enable` で binary だけ供給し、設定 `~/.config/mise/config.toml`
-  は下の out-of-store symlink で配置する dual 構成)
-* それ以外 (raw text の dotfile を編集体験を保ったまま運用したい) → repo の
-  `<tool>/` 配下に raw text を置き、`home.file.<path>.source` を
-  `mkOutOfStoreSymlink` で symlink 配置する (例: zshrc / tmux.conf / vimrc /
-  claude config / nvim / ctags / ghostty / markdownlint / apm / codex
-  AGENTS.md / mise/config.toml)
-* 例外: 内容を Nix で render したい (`${user}` などで host / user 別の値を
-  埋め込みたい) 場合は `home.file.<path>.text = ''...''` で in-store 生成する
-  (例: codex `config.toml` の wrapper 絶対パス)。詳細は下の「三つの配置
-  パターン」 B 節参照。
+* **Nix で評価した値を設定内容に注入したい** — `specialArgs` 経由で host /
+  user 別に流れてくる値を config 本文に埋めたい場合 (例: `programs.git` で
+  `settings.user.name = gitName;` を specialArgs から差し込む)
+* **binary 自体も home-manager の責務にしたい** — config を symlink で配置
+  しても binary が無いと意味がないツール (例: `programs.mise.enable = true`
+  で binary を `/etc/profiles/per-user/<user>/bin/` に配置。設定本体
+  `~/.config/mise/config.toml` は下の out-of-store symlink で別途配置する
+  dual 構成)
+* **typed nested settings で書きたい** — TOML / YAML の括弧地獄を避けて
+  Nix attrset の型補完で書きたい場合 (例: `programs.starship.settings` で
+  prompt format を attrset 化)
+
+上記いずれにも当てはまらないものは default の **out-of-store symlink** で
+配置する。repo の `<tool>/` 配下に raw text を置き、`home.file.<path>.source`
+を `mkOutOfStoreSymlink` で symlink する (例: zshrc / tmux.conf / vimrc /
+claude config / nvim / ctags / ghostty / markdownlint / apm / codex
+AGENTS.md / mise/config.toml)。
+
+例外として、内容を Nix で render したい (`${user}` などで host / user 別の
+値を埋め込みたい) が `programs.<tool>` module が無い場合は
+`home.file.<path>.text = ''...''` で in-store 生成する (例: codex
+`config.toml` の wrapper 絶対パス)。詳細は下の「三つの配置パターン」 B 節
+参照。
 
 両者の決定的な違いは「編集してから反映までの操作」:
 
