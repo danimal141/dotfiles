@@ -17,3 +17,6 @@ node_modules/
 
 # pre-commit cache
 .pre-commit-cache/
+
+# Local debug dumps (e.g. `defaults read` outputs)
+.tmp-*.txt
