@@ -225,6 +225,22 @@
     };
   };
 
+  # ============================================================
+  # キーボード modifier remap — HID レベルの key 入れ替え
+  # ============================================================
+  # `system.keyboard.*` は `system.defaults.*` とは別系統で、HID 入力レイヤで
+  # key code を書き換える (System Settings → Keyboard → Modifier Keys と
+  # 同じ層)。`hidutil property --set` を nix-darwin が裏で発行する。
+  #
+  # remapCapsLockToControl: 左 Caps Lock を Control に置き換える。
+  # vim / tmux / emacs / shell の C-a / C-e / C-x / C-c などを左小指で
+  # 押しやすい位置に持ってくる定番設定。Caps Lock 自体はほぼ使わないので
+  # 物理キーを Control 化することで日常的な負荷を下げる。
+  system.keyboard = {
+    enableKeyMapping = true;
+    remapCapsLockToControl = true;
+  };
+
   # zsh の rc は repo の `zsh/.zshrc` を home.file で `~/.zshrc` に symlink
   # 配置する (nix/home/programs/zsh.nix)。nix-darwin が /etc/zshrc を生成
   # すると home-manager 側の zshrc と読み込み順で競合 (PATH 重複 /
