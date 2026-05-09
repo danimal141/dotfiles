@@ -248,9 +248,35 @@
   # vim / tmux / emacs / shell の C-a / C-e / C-x / C-c などを左小指で
   # 押しやすい位置に持ってくる定番設定。Caps Lock 自体はほぼ使わないので
   # 物理キーを Control 化することで日常的な負荷を下げる。
+  #
+  # ただし `system.keyboard.*` は `darwin-rebuild switch` 時にのみ
+  # `hidutil property --set` を発行する一方、hidutil の mapping は
+  # session-scoped で再起動するとリセットされる (Apple TN2450)。
+  # つまり「新マシンに switch → 再起動」した瞬間に default に戻ってしまう。
+  # これを防ぐため、login 時に再適用する LaunchAgent を下の
+  # `launchd.user.agents.remap-caps-lock` で declarative に追加する。
   system.keyboard = {
     enableKeyMapping = true;
     remapCapsLockToControl = true;
+  };
+
+  # 上の `system.keyboard.*` の永続化補助。RunAtLoad で login 直後に
+  # `hidutil property --set` を再発行することで、再起動を跨いでも
+  # Caps Lock → Control を維持する。送信する payload は nix-darwin の
+  # keyboard.nix が switch 時に発行するものと同じ HID usage code:
+  #   Src 0x700000039 = Caps Lock
+  #   Dst 0x7000000E0 = Left Control
+  launchd.user.agents.remap-caps-lock = {
+    serviceConfig = {
+      Label = "org.danimal141.remap-caps-lock";
+      ProgramArguments = [
+        "/usr/bin/hidutil"
+        "property"
+        "--set"
+        ''{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x7000000E0}]}''
+      ];
+      RunAtLoad = true;
+    };
   };
 
   # zsh の rc は repo の `zsh/.zshrc` を home.file で `~/.zshrc` に symlink
