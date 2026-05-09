@@ -20,3 +20,7 @@ node_modules/
 
 # Local debug dumps (e.g. `defaults read` outputs)
 .tmp-*.txt
+
+# `nix build` / `nix run` の derivation output symlink
+result
+result-*

@@ -166,14 +166,28 @@ pin、`setup.sh` の `npm ci` で `node_modules/` に install され、hook は
 
 | 操作 | コマンド |
 |---|---|
-| 設定変更を反映 (system / brew / home-manager すべて) | `darwin-rebuild switch --flake ".#$(scutil --get LocalHostName)"` |
+| 設定変更を反映 (system / brew / home-manager すべて) | `nix run .#switch` |
+| 反映前に build だけ走らせて検証 | `nix run .#build` |
+| `flake.lock` の全 input を更新 | `nix run .#update` |
 | Nix store CLI を追加 / 削除 | `nix/packages.nix` を編集 → 上記 switch |
 | Homebrew brew / cask を追加 / 削除 | `nix/homebrew.nix` を編集 → 上記 switch |
 | macOS 設定変更 | `nix/system.nix` を編集 → 上記 switch |
 | user 層の dotfile / `programs.*` 変更 | `nix/home/programs/<tool>.nix` を編集 → 上記 switch (raw text symlink なら switch 不要、編集即反映) |
-| flake input を個別更新 | `nix flake lock --update-input nixpkgs` (or `nix-darwin` / `nix-homebrew` / `home-manager`) |
+| flake input を個別更新 | `nix flake update <input>` (例: `nixpkgs` / `nix-darwin` / `nix-homebrew` / `home-manager`) |
 | 世代一覧 | `darwin-rebuild --list-generations` |
 | 前世代に戻す | `darwin-rebuild --rollback` |
+
+`nix run .#<app>` は flake.nix の `apps.aarch64-darwin.*` にある shell
+wrapper で、内部的には `darwin-rebuild switch --flake ".#$(scutil --get
+LocalHostName)"` を呼ぶ (= 素の `darwin-rebuild` を直接打っても等価)。
+wrapper の付加価値は次の 3 点:
+
+* `scutil --get LocalHostName` 経由で host を自動解決 (`work` / `personal`
+  を 1 コマンドで兼ねる)
+* TTY 実行時のみ `nix-output-monitor` (nom) で進捗を整形、AI agent
+  (`CLAUDECODE` / `CODEX_SANDBOX` 等の env 検出) では生 output に切替
+* `darwin-rebuild` は flake input から絶対 path で解決するので、
+  `/run/current-system/sw/bin/...` が未整備の初回 bootstrap でも動く
 
 `nix/homebrew.nix` で Homebrew 側に残している主な理由:
 

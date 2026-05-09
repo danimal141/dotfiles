@@ -21,8 +21,16 @@ declarative に管理する dotfiles リポジトリ。`flake.nix` の
 ./setup.sh work             # work host を明示
 ./setup.sh personal         # personal host を明示
 
-# 日常的な反映 (system 設定 / Homebrew / home-manager dotfile すべて 1 発)
-darwin-rebuild switch --flake ".#$(scutil --get LocalHostName)"
+# 日常的な反映 (system 設定 / Homebrew / home-manager dotfile すべて 1 発)。
+# `nix run .#switch` の wrapper 内で sudo + nom (interactive 時のみ) +
+# hostname 自動解決をやってくれるので普段はこちらを推奨。素の
+# `darwin-rebuild switch` 直叩きでも結果は同じ。
+nix run .#switch                                                   # wrapper
+darwin-rebuild switch --flake ".#$(scutil --get LocalHostName)"    # 素叩き
+
+# build / update も同 wrapper 系列で揃える
+nix run .#build      # apply せず dry-build (評価エラーや build 失敗の事前検出)
+nix run .#update     # flake.lock 全 input を更新
 
 # mise で global tool versions を実体 install (~/.config/mise/config.toml 参照)
 mise install
