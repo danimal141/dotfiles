@@ -4,10 +4,12 @@
 # 流す系統の `environment.variables` をまとめる。CA bundle / Homebrew の
 # 禁止 formula も daemon / shell が等しく見える必要があるので近接配置。
 {
-  # HOMEBREW_FORBIDDEN_FORMULAE: language runtime (node / python / ruby) は
-  # mise が管理する。brew の依存解決が裏で node を pull すると PATH 順次第で
-  # ビルドが壊れるため物理的に禁止する。`claude` は Anthropic 公式の npm
-  # package で同様の二重 install を避けたいので含める。
+  # HOMEBREW_FORBIDDEN_FORMULAE: language runtime (node / python / ruby) と
+  # その付属 package manager (npm / pnpm / yarn / pip) は mise が管理する。
+  # brew の依存解決が裏で node を pull すると PATH 順次第でビルドが壊れる
+  # ため物理的に禁止する。yarn は corepack 経由 (mise 配下の Node) で利用
+  # する想定。`claude` は Anthropic 公式の npm package で同様の二重 install
+  # を避けたいので含める。
   #
   # NIX_SSL_CERT_FILE: 社内 VPN の SSL inspection 対策 (下の
   # `nix.settings.ssl-cert-file` と同じ bundle を user shell にも見せる)。
