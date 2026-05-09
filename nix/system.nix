@@ -48,9 +48,9 @@
 
       # icon サイズ (px)。tilesize は通常状態のサイズ、largesize は
       # magnification 時の拡大サイズ。default は tilesize=48 / largesize=64。
-      # 通常 48 / hover で 64 (macOS default 値) に拡大される設定。
-      tilesize = 48;
-      largesize = 64;
+      # 通常 64 / hover で 96 に拡大 (1.5x ratio で hover 効果を視認しやすく)。
+      tilesize = 64;
+      largesize = 96;
 
       # マウスホバーで icon を拡大表示する。視認性向上のため有効。
       magnification = true;
