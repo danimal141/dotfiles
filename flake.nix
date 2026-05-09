@@ -208,11 +208,17 @@
       apps.aarch64-darwin = {
         # `nix run .#switch` — system 設定を build + activate。
         # 日常運用の主役 (元の `darwin-rebuild switch --flake ...` 直叩きを置換)。
+        #
+        # `sudo -v` で先に credential cache を埋めてから本体を起動する。
+        # `sudo darwin-rebuild ... |& nom` の `|&` は sudo の password
+        # prompt (stderr) ごと nom に流すため、`-v` を挟まないと prompt が
+        # nom UI に呑み込まれてユーザーが入力タイミングを見失う。
         switch = mkApp "darwin-switch" "Build and activate the darwin configuration for this host" ''
           set -eo pipefail
           ${isAgentCheck}
           ${hostnameSnippet}
           echo "Switching darwin configuration: .#$HOST"
+          sudo -v
           if [ "$IS_AI_AGENT" = true ]; then
             sudo ${darwinRebuild} switch --flake ".#$HOST"
           else
