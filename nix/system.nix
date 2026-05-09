@@ -1,4 +1,4 @@
-{ user, ... }:
+{ user, lib, ... }:
 
 # macOS システム設定 + Nix / nix-darwin 自体の運用 (flake / gc / 環境変数 /
 # zsh の取扱い) を宣言するモジュール。
@@ -278,6 +278,36 @@
       RunAtLoad = true;
     };
   };
+
+  # ============================================================
+  # 入力ソース切り替え shortcut (System Settings → Keyboard →
+  # Keyboard Shortcuts → 入力ソース)
+  # ============================================================
+  # `com.apple.symbolichotkeys.AppleSymbolicHotKeys` は Spotlight /
+  # Mission Control / Screenshot など多数の shortcut を 1 つの dict に
+  # 持つ。`CustomUserPreferences` で書くと dict ごと上書きされて他 entry
+  # を巻き込むため、`defaults write -dict-add` で 60 / 61 のみ targeted
+  # update する activation script で宣言する。
+  #
+  # ID 60 = 前の入力ソースを選択 (⌘ Space)
+  # ID 61 = 入力メニューの次のソースを選択 (⌥⌘ Space)
+  #
+  # parameters[0] = 32 (ASCII space)
+  # parameters[1] = 49 (HID space key code)
+  # parameters[2] = modifier mask
+  #   1048576 = 0x100000 = ⌘
+  #   1572864 = 0x180000 = ⌘ + ⌥ (Cmd + Option)
+  system.activationScripts.postActivation.text = lib.mkAfter ''
+    echo "configuring input source switch shortcuts..." >&2
+    USER_UID=$(id -u -- ${user})
+    AS_USER="launchctl asuser $USER_UID sudo --user=${user} --"
+    $AS_USER /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys \
+      -dict-add 60 '{enabled=1;value={parameters=(32,49,1048576);type=standard;};}'
+    $AS_USER /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys \
+      -dict-add 61 '{enabled=1;value={parameters=(32,49,1572864);type=standard;};}'
+    # cfprefsd を再起動して running session に即反映 (login 後の再ログインを不要に)
+    $AS_USER /usr/bin/killall cfprefsd 2>/dev/null || true
+  '';
 
   # zsh の rc は repo の `zsh/.zshrc` を home.file で `~/.zshrc` に symlink
   # 配置する (nix/home/programs/zsh.nix)。nix-darwin が /etc/zshrc を生成
