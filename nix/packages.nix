@@ -75,6 +75,6 @@
     # APM (microsoft/apm) は本家 nixpkgs に未収録。
     # numtide が `llm-agents.nix` flake で daily auto-update を提供しているので
     # それを inputs 経由で取り込む (`flake.nix` 参照)。
-    inputs.llm-agents.packages.${pkgs.system}.apm
+    inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.apm
   ];
 }

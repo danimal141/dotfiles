@@ -19,8 +19,22 @@
 {
   programs.git = {
     enable = true;
-    userName = gitName;
-    userEmail = gitEmail;
+
+    # home-manager 26.05 で `userName` / `userEmail` / `extraConfig` は
+    # `programs.git.settings.*` に統合された。settings は `~/.gitconfig`
+    # の section を attrset として直接表現する。
+    settings = {
+      user = {
+        name = gitName;
+        email = gitEmail;
+      };
+      core = {
+        editor = "nvim";
+      };
+      diff = {
+        ignoreSubmodules = "dirty";
+      };
+    };
 
     ignores = [
       ".DS_Store"
@@ -30,15 +44,6 @@
       "**/.claude/reports/"
       ".serena/"
     ];
-
-    extraConfig = {
-      core = {
-        editor = "nvim";
-      };
-      diff = {
-        ignoreSubmodules = "dirty";
-      };
-    };
 
     includes = [
       # 条件分岐込みで全部 user 側 (~/.gitconfig.local) に逃がす。詳細は
