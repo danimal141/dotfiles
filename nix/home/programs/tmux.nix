@@ -1,4 +1,4 @@
-{ config, user, ... }:
+{ config, dotfilesPath, ... }:
 
 # tmux 設定 (~/.tmux.conf, ~/.tmux_start_dir) を repo の raw text に
 # out-of-store symlink で配置する。zsh.nix と同じ `mkOutOfStoreSymlink`
@@ -15,9 +15,6 @@
 # tmux-start 本体 (bash script) も repo の tools/tmux/bin/tmux-start に置き、
 # ~/.local/bin/tmux-start に symlink 配置する。executable bit は repo
 # 側のファイル mode (chmod +x 済み) を out-of-store symlink 経由で読む。
-let
-  dotfilesPath = "/Users/${user}/Documents/dev/dotfiles";
-in
 {
   home.file.".tmux.conf".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/tmux/.tmux.conf";

@@ -1,4 +1,4 @@
-{ config, user, ... }:
+{ config, dotfilesPath, ... }:
 
 # vim 設定 (~/.vimrc, ~/.vim/) を out-of-store symlink で配置する。
 #
@@ -8,7 +8,6 @@
 # `~/.vim/.netrwhist` などの動的領域は home.file 対象外で mutable の
 # まま残す。
 let
-  dotfilesPath = "/Users/${user}/Documents/dev/dotfiles";
   vimDotDir = "${dotfilesPath}/tools/vim/.vim";
 in
 {

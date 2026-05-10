@@ -1,4 +1,4 @@
-{ config, user, ... }:
+{ config, dotfilesPath, ... }:
 
 # Neovim 設定。Vim の `~/.vimrc` を共有する設計のため init.vim は
 # `source ~/.vimrc` を呼ぶだけの薄いラッパで、`~/.config/nvim/lua/`
@@ -9,7 +9,6 @@
 # coc-settings.json` の両方が同じ実体ファイルを指す。これにより vim と
 # nvim で CoC の language server 設定が常に一致する。
 let
-  dotfilesPath = "/Users/${user}/Documents/dev/dotfiles";
   nvimDir = "${dotfilesPath}/tools/nvim";
 in
 {
