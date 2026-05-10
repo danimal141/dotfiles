@@ -133,10 +133,10 @@ go install golang.org/x/tools/gopls@latest || true
 mise reshim || true
 
 # ---- VSCode ---------------------------------------------------------------
-echo "[setup] Setting up VSCode..."
-if [ -f ./tools/vscode/apply-settings.sh ]; then
-  ./tools/vscode/apply-settings.sh
-fi
+# settings.json / keybindings.json は home-manager (nix/home/programs/vscode.nix)
+# が darwin-rebuild の activation 経由で配置済。extensions install は
+# `tools/vscode/sync.sh --install` で別経路 (Phase 3 で activation hook 化予定)。
+echo "[setup] Installing VSCode extensions..."
 if [ -f ./tools/vscode/sync.sh ]; then
   ./tools/vscode/sync.sh --install
 fi

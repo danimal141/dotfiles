@@ -25,6 +25,7 @@
     ./programs/starship.nix
     ./programs/ghostty.nix
     ./programs/ctags.nix
+    ./programs/vscode.nix
   ];
 
   # nixpkgs unstable に対応する home-manager リリース。
