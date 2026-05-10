@@ -1,7 +1,11 @@
 #!/bin/bash
 
-# VSCode extensions sync script
-# This script manages VSCode extensions for the dotfiles repository
+# VSCode extensions sync utility (--save / --status)。
+#
+# install 経路は home-manager (nix/home/programs/vscode.nix) の
+# `home.activation.vscodeExtensions` hook が担うので、このスクリプトは
+# UI から手動で追加した extension を repo に取り込む reverse-sync と
+# diff 表示だけを残す。
 
 set -e
 
@@ -22,13 +26,13 @@ show_usage() {
     echo ""
     echo "Options:"
     echo "  --save      Save currently installed extensions to extensions.txt"
-    echo "  --install   Install extensions from extensions.txt"
     echo "  --status    Show status (compare installed vs saved)"
     echo "  --help      Show this help message"
     echo ""
+    echo "Note: install は home-manager (nix run .#switch) が冪等に実行する。"
+    echo ""
     echo "Examples:"
     echo "  $0 --save       # Save current extensions"
-    echo "  $0 --install    # Install saved extensions"
     echo "  $0 --status     # Check sync status"
 }
 
@@ -50,50 +54,6 @@ save_extensions() {
 
     local count=$(wc -l < "$EXTENSIONS_FILE")
     echo -e "${GREEN}✓ Saved $count extensions to extensions.txt${NC}"
-}
-
-# Function to install extensions
-install_extensions() {
-    if [ ! -f "$EXTENSIONS_FILE" ]; then
-        echo -e "${RED}Error: extensions.txt not found at $EXTENSIONS_FILE${NC}"
-        exit 1
-    fi
-
-    echo "Installing extensions from $EXTENSIONS_FILE..."
-
-    local total=$(wc -l < "$EXTENSIONS_FILE")
-    local current=0
-    local installed=0
-    local skipped=0
-    local failed=0
-
-    while IFS= read -r extension; do
-        ((current++))
-        echo -n "[$current/$total] Installing $extension... "
-
-        # Check if already installed
-        if code --list-extensions | grep -q "^$extension$"; then
-            echo -e "${YELLOW}[SKIPPED]${NC} (already installed)"
-            ((skipped++))
-        else
-            # Try to install
-            if code --install-extension "$extension" &> /dev/null; then
-                echo -e "${GREEN}[OK]${NC}"
-                ((installed++))
-            else
-                echo -e "${RED}[FAILED]${NC}"
-                ((failed++))
-            fi
-        fi
-    done < "$EXTENSIONS_FILE"
-
-    echo ""
-    echo "Summary:"
-    echo -e "  ${GREEN}Installed: $installed${NC}"
-    echo -e "  ${YELLOW}Skipped: $skipped${NC}"
-    if [ $failed -gt 0 ]; then
-        echo -e "  ${RED}Failed: $failed${NC}"
-    fi
 }
 
 # Function to show status
@@ -149,7 +109,7 @@ show_status() {
             echo "  Run '$0 --save' to save new extensions"
         fi
         if [ -n "$only_saved" ]; then
-            echo "  Run '$0 --install' to install missing extensions"
+            echo "  Run 'nix run .#switch' to install missing extensions"
         fi
     fi
 }
@@ -160,9 +120,6 @@ check_vscode_cli
 case "${1:-}" in
     --save)
         save_extensions
-        ;;
-    --install)
-        install_extensions
         ;;
     --status)
         show_status

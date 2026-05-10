@@ -132,15 +132,6 @@ gem install ruby-lsp --no-doc || true
 go install golang.org/x/tools/gopls@latest || true
 mise reshim || true
 
-# ---- VSCode ---------------------------------------------------------------
-echo "[setup] Setting up VSCode..."
-if [ -f ./vscode/apply-settings.sh ]; then
-  ./vscode/apply-settings.sh
-fi
-if [ -f ./vscode/sync-extensions.sh ]; then
-  ./vscode/sync-extensions.sh --install
-fi
-
 # ---- secretlint deps + pre-commit hook (prek) ------------------------------
 # secretlint 本体と rule preset (`@secretlint/secretlint-rule-preset-recommend`)
 # を `package-lock.json` から再現性高く install する。`npx -y` 隔離環境では

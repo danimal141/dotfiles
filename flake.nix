@@ -92,18 +92,24 @@
       };
 
       # ホスト attrset を `darwinConfigurations` に展開するヘルパー。
-      # specialArgs で `user` / `hostname` / `gitName` / `gitEmail` / `inputs`
-      # を全モジュールに渡す:
-      #   `user`     — `nix/system.nix` が primaryUser に使う
-      #   `hostname` — モジュール内で host 別判定したい場合の保険 (現状未使用)
+      # specialArgs で `user` / `hostname` / `gitName` / `gitEmail` /
+      # `dotfilesPath` / `inputs` を全モジュールに渡す:
+      #   `user`         — `nix/system.nix` が primaryUser に使う
+      #   `hostname`     — モジュール内で host 別判定したい場合の保険 (現状未使用)
       #   `gitName` / `gitEmail` — `nix/home/programs/git.nix` の identity に使う
-      #   `inputs`   — `nix/packages.nix` が llm-agents.packages を参照するため
+      #   `dotfilesPath` — repo の絶対 path。`nix/home/programs/*.nix` が
+      #     `mkOutOfStoreSymlink` の引数や `builtins.readFile` の引数に使う。
+      #     1 ヶ所宣言にして全 module に流すことで重複定義を避ける。
+      #   `inputs`       — `nix/packages.nix` が llm-agents.packages を参照する
       # Apple Silicon 専用想定なので system は aarch64-darwin に固定。
       # Intel Mac (x86_64-darwin) サポートが必要になったら関数引数に戻す。
       mkHost = hostname: { user, gitName, gitEmail }:
+        let
+          dotfilesPath = "/Users/${user}/Documents/dev/dotfiles";
+        in
         nix-darwin.lib.darwinSystem {
           system = "aarch64-darwin";
-          specialArgs = { inherit user hostname gitName gitEmail inputs; };
+          specialArgs = { inherit user hostname gitName gitEmail dotfilesPath inputs; };
           modules = [
             # nix/darwin/default.nix が defaults / keyboard / nix-daemon /
             # system.nix (residual) / packages.nix / homebrew.nix を一括 imports。
@@ -140,7 +146,7 @@
               # home-manager 側のモジュールにも host の specialArgs を渡す
               # (system 層と整合)。`gitName` / `gitEmail` は
               # `nix/home/programs/git.nix` が消費する。
-              home-manager.extraSpecialArgs = { inherit user gitName gitEmail; };
+              home-manager.extraSpecialArgs = { inherit user gitName gitEmail dotfilesPath; };
               # home.file で配置される ~/.zshrc 等が「既に手で書かれた状態」で
               # 衝突する初回 apply で `Existing file would be clobbered` の
               # activation 中断を避ける。`<path>.backup` にリネームして

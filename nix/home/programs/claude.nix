@@ -1,4 +1,4 @@
-{ config, user, ... }:
+{ config, dotfilesPath, ... }:
 
 # Claude Code CLI 設定 (~/.claude/) を out-of-store symlink で配置する。
 #
@@ -14,7 +14,6 @@
 # setup-mcp.sh は ~/.claude には配置せず、repo 内で `cd tools/claude &&
 # ./setup-mcp.sh` で直接呼ぶ運用。
 let
-  dotfilesPath = "/Users/${user}/Documents/dev/dotfiles";
   claudeDir = "${dotfilesPath}/tools/claude";
 in
 {

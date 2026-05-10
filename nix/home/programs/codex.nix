@@ -1,4 +1,4 @@
-{ config, user, ... }:
+{ config, user, dotfilesPath, ... }:
 
 # Codex CLI 設定 (~/.codex/) を home-manager で管理する。
 #
@@ -14,7 +14,6 @@
 #     の追加・変更は頻度が低く、`nix run .#switch` trigger を許容する。
 let
   homePath = "/Users/${user}";
-  dotfilesPath = "${homePath}/Documents/dev/dotfiles";
   codexDir = "${dotfilesPath}/tools/codex";
   wrapperHomePath = "${homePath}/.codex/wrappers/gemini-mcp.sh";
 in

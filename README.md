@@ -46,12 +46,12 @@ cd ~/Documents/dev/dotfiles
 5. `sudo -E nix run nix-darwin -- switch --flake ".#<hostname>"` を実行 —
    `nix/darwin/{defaults,keyboard,nix-daemon,system,packages,homebrew}.nix`
    (system 層 / Nix store CLI / brew / cask) / `nix/home/programs/*.nix`
-   (home-manager 経由の dotfile symlink) が一括反映
+   (home-manager 経由の dotfile symlink + VSCode settings/keybindings/extensions
+   含む) が一括反映
 6. `mise install` で `~/.config/mise/config.toml` の言語 binary を実体 install
 7. LSP server (typescript / pyright / ruby-lsp / gopls) を global install
-8. VSCode の設定 / 拡張を sync
-9. `prek install` で `.git/hooks/pre-commit` を冪等に仕込む (secretlint hook)
-10. `exec $SHELL -l` で新 shell に切り替え
+8. `prek install` で `.git/hooks/pre-commit` を冪等に仕込む (secretlint hook)
+9. `exec $SHELL -l` で新 shell に切り替え
 
 完走後は `which git` が `/etc/profiles/per-user/<user>/bin/git` または
 `/run/current-system/sw/bin/git` を返す状態になる。

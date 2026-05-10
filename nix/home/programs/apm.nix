@@ -1,4 +1,4 @@
-{ config, lib, pkgs, user, ... }:
+{ config, lib, pkgs, dotfilesPath, ... }:
 
 # APM (Agent Package Manager) 設定 (~/.apm/) を home-manager で管理する。
 #
@@ -13,7 +13,6 @@
 #     差分があり apm command が PATH にあるときだけ `apm install --target
 #     claude` を実行する。冪等で、apm 未インストール環境では skip する。
 let
-  dotfilesPath = "/Users/${user}/Documents/dev/dotfiles";
   apmDir = "${dotfilesPath}/tools/apm";
 in
 {

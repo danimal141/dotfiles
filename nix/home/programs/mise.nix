@@ -1,4 +1,4 @@
-{ config, lib, pkgs, user, ... }:
+{ config, lib, pkgs, dotfilesPath, ... }:
 
 # mise (language runtime manager) を home-manager の nixpkgs ビルドで導入。
 # binary は `/etc/profiles/per-user/<user>/bin/mise` に配置される。
@@ -11,9 +11,6 @@
 # global tool versions (~/.config/mise/config.toml) は repo の
 # tools/mise/config.toml への out-of-store symlink。`vim ~/.config/mise/config.toml`
 # で repo 内ファイルを直接編集できる。
-let
-  dotfilesPath = "/Users/${user}/Documents/dev/dotfiles";
-in
 {
   programs.mise = {
     enable = true;
