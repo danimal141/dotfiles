@@ -1,0 +1,20 @@
+shell = "zsh"
+
+# zsh-completions: 補完スクリプト群を fpath に追加するだけ。compinit が
+# 後段で拾う。`apply = ["fpath"]` を指定しないと plugin file を source
+# しようとして失敗する。
+[plugins.zsh-completions]
+github = "zsh-users/zsh-completions"
+apply = ["fpath"]
+
+# zsh-autosuggestions: 入力サジェスト (grey 文字)。highlight style は
+# zshrc 側で `ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE` を sheldon source より
+# 前に export しているのでそれを拾う。
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
+
+# zsh-syntax-highlighting: コマンドの構文ハイライト。zle widget を
+# 上書きするため、他プラグインの後に source する必要がある (公式推奨)。
+# よってこの宣言は plugins.toml の末尾に置く。
+[plugins.zsh-syntax-highlighting]
+github = "zsh-users/zsh-syntax-highlighting"

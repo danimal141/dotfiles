@@ -58,8 +58,10 @@
     #                              (basictex は cask 化したので casks 側)
     # * Node / Python 前提のツール — markdownlint-cli, marp-cli
     # * macOS-only ツール          — terminal-notifier, im-select
-    # * shell 本体と plugin       — zsh, zsh-autosuggestions, zsh-syntax-highlighting,
-    #                              zsh-completions (brew の方が起動が速い)
+    # * shell 本体                — zsh (login shell として brew 版を chsh)。
+    #                              zsh プラグイン (zsh-autosuggestions /
+    #                              zsh-syntax-highlighting / zsh-completions) は
+    #                              sheldon に移行済み (tools/sheldon/plugins.toml)
     # * DB / dev サーバー          — mysql, postgresql@17, redis, libpq, qemu
     # * Ruby ecosystem            — ruby-build (mise 経由 Ruby のビルド helper)
     # * その他 (調査要 / 大物 Python) — codex, googleworkspace-cli, ansible, azure-cli,
@@ -92,9 +94,6 @@
       "terminal-notifier"
       "yukiarrr/tap/ecsk"
       "zsh"
-      "zsh-autosuggestions"
-      "zsh-completions"
-      "zsh-syntax-highlighting"
     ];
 
     # casks: GUI アプリ。Homebrew 経由でしか配布されないものが大半なので

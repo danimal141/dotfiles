@@ -57,8 +57,26 @@ path=(
 )
 
 # -------------------------------------
+# plugins (via sheldon)
+# -------------------------------------
+# sheldon plugin manager: ~/.config/sheldon/plugins.toml に宣言した plugin を
+# 一括 source する。plugins.toml は repo の tools/sheldon/plugins.toml への
+# out-of-store symlink (home-manager 経由)。
+#
+# 順序の意図:
+#   * compinit より「前」に eval する。zsh-completions plugin が
+#     `apply = ["fpath"]` で fpath を追加するため、その後に compinit が
+#     完成済み fpath を 1 回だけ走る方が綺麗 (compinit 後に fpath を
+#     書き換えると compinit 再実行が必要になる)。
+#   * `ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE` は sheldon source より「前」に
+#     export しないと autosuggestions plugin が読み込み時にデフォルト値で
+#     fix されてしまう。
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#565f89'
+eval "$(sheldon source)"
+
+# -------------------------------------
 # completion settings
-# -------------------------------------n
+# -------------------------------------
 autoload -U compinit
 compinit -u
 zstyle ':completion:*' menu select
@@ -68,15 +86,6 @@ zstyle ':completion:*' group-name ''
 zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
 zstyle ':completion:*' use-cache yes
 zstyle ':completion:*' cache-path ~/.zsh/cache
-
-# -------------------------------------
-# plugins (via Homebrew)
-# -------------------------------------
-# autosuggestions style (must be set before sourcing)
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#565f89'
-
-source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 setopt auto_pushd
 setopt auto_cd
@@ -185,9 +194,6 @@ if command -v fzf-share >/dev/null 2>&1; then
   source "$(fzf-share)/key-bindings.zsh"
   source "$(fzf-share)/completion.zsh"
 fi
-
-# for zsh-completions
-fpath=($(brew --prefix zsh-completions) $fpath)
 
 # 言語ランタイム管理は mise。global は `~/.config/mise/config.toml`
 # (home-manager 経由で repo の mise/config.toml への symlink) を読み、

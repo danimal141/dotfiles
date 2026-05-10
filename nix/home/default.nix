@@ -13,6 +13,7 @@
 {
   imports = [
     ./programs/zsh.nix
+    ./programs/sheldon.nix
     ./programs/git.nix
     ./programs/tmux.nix
     ./programs/vim.nix
