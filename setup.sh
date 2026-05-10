@@ -132,15 +132,6 @@ gem install ruby-lsp --no-doc || true
 go install golang.org/x/tools/gopls@latest || true
 mise reshim || true
 
-# ---- VSCode ---------------------------------------------------------------
-# settings.json / keybindings.json は home-manager (nix/home/programs/vscode.nix)
-# が darwin-rebuild の activation 経由で配置済。extensions install は
-# `tools/vscode/sync.sh --install` で別経路 (Phase 3 で activation hook 化予定)。
-echo "[setup] Installing VSCode extensions..."
-if [ -f ./tools/vscode/sync.sh ]; then
-  ./tools/vscode/sync.sh --install
-fi
-
 # ---- secretlint deps + pre-commit hook (prek) ------------------------------
 # secretlint 本体と rule preset (`@secretlint/secretlint-rule-preset-recommend`)
 # を `package-lock.json` から再現性高く install する。`npx -y` 隔離環境では
