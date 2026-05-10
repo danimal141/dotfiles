@@ -1,20 +1,53 @@
 shell = "zsh"
 
-# zsh-completions: 補完スクリプト群を fpath に追加するだけ。compinit が
-# 後段で拾う。`apply = ["fpath"]` を指定しないと plugin file を source
-# しようとして失敗する。
+# プロファイル設計:
+#   "pre"  — compinit より「前」に source する plugin (fpath 追加系のみ)
+#   "post" — compinit より「後」に source する plugin (compdef / zle widget 系)
+#
+# zshrc 側で以下のように 2 段階に分けて eval する:
+#   eval "$(sheldon --profile pre source)"
+#   compinit
+#   eval "$(sheldon --profile post source)"
+#
+# `compdef` は compinit 後でないと使えないため、補完を持つ plugin
+# (zsh-git-fzf 等) を post に置く必要がある。`profiles` を未指定にすると
+# 全 profile で active になる仕様なので、pre / post に必ず明示する。
+
 [plugins.zsh-completions]
 github = "zsh-users/zsh-completions"
 apply = ["fpath"]
+profiles = ["pre"]
+
+# enhancd: cd を履歴 + fzf ベースで強化する。
+# 標準 entry は init.sh なので明示する (sheldon の auto-detection は
+# *.plugin.zsh を優先するが enhancd は init.sh 単独構成のため)。
+# `ENHANCD_FILTER` は zshrc 側で sheldon source より前に export している。
+[plugins.enhancd]
+github = "babarot/enhancd"
+use = ["init.sh"]
+profiles = ["post"]
+
+# zsh-you-should-use: 定義済み alias を bare コマンドで叩いたときに通知。
+[plugins.zsh-you-should-use]
+github = "MichaelAquilina/zsh-you-should-use"
+profiles = ["post"]
+
+# zsh-git-fzf: git の branch / commit / file 選択を fzf 化。
+# completions ファイルが compdef を呼ぶため compinit 後に source 必須 (post)。
+[plugins.zsh-git-fzf]
+github = "alexiszamanidis/zsh-git-fzf"
+profiles = ["post"]
 
 # zsh-autosuggestions: 入力サジェスト (grey 文字)。highlight style は
 # zshrc 側で `ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE` を sheldon source より
 # 前に export しているのでそれを拾う。
 [plugins.zsh-autosuggestions]
 github = "zsh-users/zsh-autosuggestions"
+profiles = ["post"]
 
 # zsh-syntax-highlighting: コマンドの構文ハイライト。zle widget を
 # 上書きするため、他プラグインの後に source する必要がある (公式推奨)。
-# よってこの宣言は plugins.toml の末尾に置く。
+# よってこの宣言は post profile 内の末尾に置く (sheldon は宣言順に source)。
 [plugins.zsh-syntax-highlighting]
 github = "zsh-users/zsh-syntax-highlighting"
+profiles = ["post"]

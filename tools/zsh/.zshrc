@@ -57,22 +57,22 @@ path=(
 )
 
 # -------------------------------------
-# plugins (via sheldon)
+# plugins (via sheldon) — pre-compinit 段
 # -------------------------------------
 # sheldon plugin manager: ~/.config/sheldon/plugins.toml に宣言した plugin を
-# 一括 source する。plugins.toml は repo の tools/sheldon/plugins.toml への
-# out-of-store symlink (home-manager 経由)。
+# 2 段階に分けて source する (詳細は plugins.toml のコメント参照)。
 #
-# 順序の意図:
-#   * compinit より「前」に eval する。zsh-completions plugin が
-#     `apply = ["fpath"]` で fpath を追加するため、その後に compinit が
-#     完成済み fpath を 1 回だけ走る方が綺麗 (compinit 後に fpath を
-#     書き換えると compinit 再実行が必要になる)。
-#   * `ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE` は sheldon source より「前」に
-#     export しないと autosuggestions plugin が読み込み時にデフォルト値で
-#     fix されてしまう。
+#   pre  — fpath を追加する plugin (zsh-completions)。compinit より「前」に
+#          eval して fpath を整える必要がある。
+#   post — compdef / zle widget を使う plugin (autosuggestions / syntax-
+#          highlighting / git-fzf 等)。compinit より「後」に eval する必要が
+#          ある (compdef は compinit 後でないと使えないため)。
+#
+# プラグイン用の環境変数は各 sheldon source の「前」に export する。plugin
+# 側が source 時にデフォルト値で fix してしまうものがあるため。
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#565f89'
-eval "$(sheldon source)"
+ENHANCD_FILTER='fzf:peco'
+eval "$(sheldon --profile pre source)"
 
 # -------------------------------------
 # completion settings
@@ -86,6 +86,12 @@ zstyle ':completion:*' group-name ''
 zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
 zstyle ':completion:*' use-cache yes
 zstyle ':completion:*' cache-path ~/.zsh/cache
+
+# -------------------------------------
+# plugins (via sheldon) — post-compinit 段
+# -------------------------------------
+# zsh-syntax-highlighting は最後に source される (plugins.toml の末尾宣言)。
+eval "$(sheldon --profile post source)"
 
 setopt auto_pushd
 setopt auto_cd
