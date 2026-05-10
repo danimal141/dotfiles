@@ -1,142 +1,117 @@
 # VSCode Settings Management
 
-This directory contains VSCode settings management files for the dotfiles repository.
+VSCode の `settings.json` / `keybindings.json` / extensions は home-manager
+(`nix/home/programs/vscode.nix`) が darwin-rebuild の activation 経由で配置・
+install する。`tools/vscode/` 配下に raw config を置き、`nix run .#switch`
+1 発で同期される。
 
-## Files
+## ファイル構成
 
-- `settings.template.json` - VSCode settings template with environment variables
-- `settings.bak.json` - Backup of current VSCode settings (auto-generated)
-- `apply-settings.sh` - Script to apply settings from template to VSCode
-- `extensions.txt` - List of VSCode extensions to install
-- `sync-extensions.sh` - Script to manage VSCode extensions
+* `tools/vscode/settings.jsonc` — VSCode user settings (jsonc, `${HOME}`
+  placeholder を含む)
+* `tools/vscode/keybindings.jsonc` — keybindings (jsonc)
+* `tools/vscode/extensions.txt` — install したい extension ID の一覧
+* `tools/vscode/sync.sh` — extension sync utility (`--save` / `--status`)
+* `nix/home/programs/vscode.nix` — 上記を読み込んで `~/Library/Application
+  Support/Code/User/` 配下に配置する home-manager module
 
-## Usage
+## 配置パターン
 
-### Apply VSCode Settings
+### settings.json
 
-To apply the VSCode settings on a new machine or after changes:
+`builtins.readFile + builtins.replaceStrings` で `tools/vscode/settings.jsonc`
+を読み込み、`${HOME}` を `/Users/${user}` に置換した上で `home.file."<path>".text`
+で in-store 生成。
 
-```bash
-cd ~/path/to/dotfiles/vscode
-./apply-settings.sh
-```
+* jsonc コメント (`// ...`) は raw string として保持される
+* `${user}` は `flake.nix` の `mkHost` の specialArgs 経由で host 別に解決
+* 編集後は **`nix run .#switch` 必須** (text= による再 eval が要る)
+* `~/Library/Application Support/Code/User/settings.json` は
+  `/nix/store/...-home-manager-files/...` への symlink になる
 
-This script will:
+### keybindings.json
 
-1. Detect your OS (macOS or Linux)
-2. Replace environment variables like `${HOME}` with actual values
-3. Copy the processed settings to the appropriate VSCode config directory
-4. Update the backup file
+`mkOutOfStoreSymlink` で `tools/vscode/keybindings.jsonc` への out-of-store
+symlink を `~/Library/Application Support/Code/User/keybindings.json` に
+配置。`${HOME}` 等の host 別解決が要らないため。
 
-### Environment Variables
+* 編集即反映: `vim ~/Library/Application\ Support/Code/User/keybindings.json`
+  で repo 内ファイルを直接編集できる。VSCode は file 変更を検知して reload
+  (Cmd+R で明示 reload も可)
+* `nix run .#switch` 不要
 
-The template uses the following environment variables:
+### extensions
 
-- `${HOME}` - Your home directory (e.g., `/Users/username` or `/home/username`)
+`home.activation.vscodeExtensions` hook が:
 
-This ensures that paths like the Kubernetes extension tools work correctly regardless of username or OS.
+1. `tools/vscode/extensions.txt` を 1 行ずつ走査
+2. `code --list-extensions` の出力と比較
+3. 未 install のものだけ `code --install-extension <id> --force` を発火
 
-### Adding New Settings
+冪等で、毎回 `nix run .#switch` を打っても全件 install 済の状態では何も
+しない。`code` コマンドが PATH に居ない環境 (= VSCode 未 install) では
+skip して switch 全体は止めない。
 
-1. Edit `settings.template.json` to add new settings
-2. Use `${HOME}` for any paths that reference your home directory
-3. Run `./apply-settings.sh` to apply the changes
-4. Commit both the template and the updated script if needed
+社内 VPN の SSL inspection (中間者 CA) 対策で、hook 内で
+`NODE_EXTRA_CA_CERTS=/etc/nix/ca-bundle.pem` を export する。bundle が無い
+個人 Mac では未設定のまま (Node 既定の CA で動作)。
 
-### Platform Support
+## 運用
 
-- **macOS**: Settings are applied to `~/Library/Application Support/Code/User/settings.json`
-- **Linux**: Settings are applied to `~/.config/Code/User/settings.json`
+### 初回セットアップ (新 Mac)
 
-## Extensions Management
+`setup.sh` 完走後、`darwin-rebuild` の activation 経由で settings /
+keybindings / extensions すべてが自動配置される。手動で `apply-settings.sh`
+等を呼ぶ必要はない。
 
-VSCode extensions can be synced across machines using the `sync-extensions.sh` script.
-
-### Save Current Extensions
-
-To save your currently installed extensions:
-
-```bash
-cd ~/path/to/dotfiles/vscode
-./sync-extensions.sh --save
-```
-
-This will save all installed extensions to `extensions.txt`.
-
-### Install Extensions
-
-To install extensions on a new machine or sync with the saved list:
-
-```bash
-cd ~/path/to/dotfiles/vscode
-./sync-extensions.sh --install
-```
-
-This will:
-- Install all extensions listed in `extensions.txt`
-- Skip extensions that are already installed
-- Show a summary of installed/skipped/failed extensions
-
-### Check Sync Status
-
-To see the current sync status:
+### settings.json を編集する
 
 ```bash
-cd ~/path/to/dotfiles/vscode
-./sync-extensions.sh --status
+$EDITOR tools/vscode/settings.jsonc
+nix run .#switch
 ```
 
-This will show:
-- Extensions installed but not in the saved list
-- Extensions in the saved list but not installed
-- Total counts and sync status
+### keybindings.json を編集する
 
-### Automatic Setup
-
-When running the main `setup.sh` script, both VSCode settings and extensions will be automatically configured:
-
-1. Settings are applied from `settings.template.json`
-2. Extensions are installed from `extensions.txt`
-
-### Managing Extensions
-
-1. Install new extensions through VSCode normally
-2. Run `./sync-extensions.sh --save` to update the extensions list
-3. Commit the updated `extensions.txt` to your dotfiles repository
-
-## Key Bindings
-
-This dotfiles setup includes custom key bindings defined in `keybindings.template.jsonc`. The following shortcuts are configured to improve development workflow:
-
-### Custom Shortcuts
-
-#### Panel Management
-- **Cmd+Shift+M**: Toggle maximized panel when terminal is focused
-  - Useful for maximizing terminal view during development
-
-#### Navigation
-- **Cmd+Shift+W**: Focus on Workspace Explorer
-  - Quick access to file navigation
-- **Cmd+Shift+C**: Collapse all folders in Explorer
-  - Clean up file tree view instantly
-
-
-### Customizing Key Bindings
-
-To add or modify key bindings:
-
-1. Edit `keybindings.template.jsonc` in the `vscode/` directory
-2. Use VSCode's built-in keyboard shortcuts editor (Cmd+K Cmd+S) for reference
-3. Apply changes using `./apply-settings.sh`
-4. The template uses JSONC format, so comments are supported
-
-### Example Custom Key Binding
-
-```jsonc
-{
-  "key": "cmd+k cmd+t",
-  "command": "workbench.action.selectTheme"
-}
+```bash
+$EDITOR tools/vscode/keybindings.jsonc
+# VSCode は自動 reload (もしくは Cmd+R で明示 reload)
 ```
 
-This would bind Cmd+K Cmd+T to the theme selector.
+`tools/vscode/keybindings.jsonc` を直接編集してもいいし、`~/Library/Application
+Support/Code/User/keybindings.json` を VSCode 内から編集しても repo 内ファイル
+が書き換わる (out-of-store symlink なので)。
+
+### 新しい extension を追加する
+
+```bash
+# VSCode UI で extension を install (Cmd+Shift+X)
+cd tools/vscode && ./sync.sh --save   # 実状態を extensions.txt に書き戻し
+git diff extensions.txt               # 追加内容を確認して commit
+```
+
+次回 `nix run .#switch` で他 Mac でも自動 install される。
+
+### sync 状態の確認
+
+```bash
+cd tools/vscode && ./sync.sh --status
+```
+
+VSCode に install されているが `extensions.txt` に無いもの / `extensions.txt`
+にあるが install されていないもの / 同期済の一覧を表示。
+
+### Custom Shortcuts (現 keybindings.jsonc の中身)
+
+* **Cmd+Shift+M** (terminal focus 時): panel maximize toggle
+* **Cmd+Shift+W**: Workspace Explorer focus
+* **Cmd+Shift+C**: Explorer の全フォルダを collapse
+
+新規 keybinding を追加する場合は VSCode の Keyboard Shortcuts editor
+(Cmd+K Cmd+S) で構文を確認しながら `tools/vscode/keybindings.jsonc` に追記
+する。jsonc なのでコメントが書ける。
+
+## Platform 対応
+
+macOS のみ対応。Linux 用の `~/.config/Code/User/` 経路は home-manager
+module 側で扱っていない (このリポジトリ全体が macOS only 想定)。

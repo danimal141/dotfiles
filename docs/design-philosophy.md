@@ -94,7 +94,8 @@ dotfiles/
 │           ├── markdownlint.nix   # ~/.markdownlint.jsonc symlink
 │           ├── starship.nix       # programs.starship.settings
 │           ├── ghostty.nix        # ~/Library/Application Support/com.mitchellh.ghostty/config
-│           └── ctags.nix          # ~/.ctags.d/exclude.ctags
+│           ├── ctags.nix          # ~/.ctags.d/exclude.ctags
+│           └── vscode.nix         # ~/Library/Application Support/Code/User/{settings,keybindings}.json + extensions hook
 ├── tools/                         # ツール毎の raw text dotfile (`nix/home/programs/*.nix` が consume)
 │   ├── zsh/.zshrc
 │   ├── tmux/{.tmux.conf, .tmux_start_dir, bin/tmux-start}
@@ -106,9 +107,9 @@ dotfiles/
 │   ├── mise/config.toml
 │   ├── markdownlint/.markdownlint.jsonc
 │   ├── ghostty/config
-│   └── ctags/exclude.ctags
+│   ├── ctags/exclude.ctags
+│   └── vscode/{settings.jsonc, keybindings.jsonc, extensions.txt, sync.sh}
 ├── setup.sh                       # 初回 bootstrap
-├── vscode/                        # VSCode は repo 直下に独立 (Nix 管理外)
 └── docs/                          # 設計ドキュメント
 ```
 
