@@ -10,7 +10,7 @@ vim/.vim/sessions/*
 .claude/settings.local.json
 
 # VSCode settings backup
-vscode/settings.bak.json
+tools/vscode/settings.bak.json
 
 # Node modules (pre-commit + secretlint)
 node_modules/

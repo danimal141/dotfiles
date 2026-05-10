@@ -134,11 +134,11 @@ mise reshim || true
 
 # ---- VSCode ---------------------------------------------------------------
 echo "[setup] Setting up VSCode..."
-if [ -f ./vscode/apply-settings.sh ]; then
-  ./vscode/apply-settings.sh
+if [ -f ./tools/vscode/apply-settings.sh ]; then
+  ./tools/vscode/apply-settings.sh
 fi
-if [ -f ./vscode/sync-extensions.sh ]; then
-  ./vscode/sync-extensions.sh --install
+if [ -f ./tools/vscode/sync.sh ]; then
+  ./tools/vscode/sync.sh --install
 fi
 
 # ---- secretlint deps + pre-commit hook (prek) ------------------------------

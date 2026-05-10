@@ -19,9 +19,9 @@ mkdir -p "$VSCODE_CONFIG_DIR"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Template file paths
-SETTINGS_TEMPLATE="$SCRIPT_DIR/settings.template.jsonc"
+SETTINGS_TEMPLATE="$SCRIPT_DIR/settings.jsonc"
 SETTINGS_TARGET="$VSCODE_CONFIG_DIR/settings.json"
-KEYBINDINGS_TEMPLATE="$SCRIPT_DIR/keybindings.template.jsonc"
+KEYBINDINGS_TEMPLATE="$SCRIPT_DIR/keybindings.jsonc"
 KEYBINDINGS_TARGET="$VSCODE_CONFIG_DIR/keybindings.json"
 
 # Check if settings template exists
