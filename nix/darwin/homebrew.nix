@@ -60,7 +60,7 @@
     # * macOS-only ツール          — terminal-notifier, im-select
     # * shell 本体と plugin       — zsh, zsh-autosuggestions, zsh-syntax-highlighting,
     #                              zsh-completions (brew の方が起動が速い)
-    # * DB / dev サーバー          — mysql, redis, libpq, qemu
+    # * DB / dev サーバー          — mysql, postgresql@17, redis, libpq, qemu
     # * Ruby ecosystem            — ruby-build (mise 経由 Ruby のビルド helper)
     # * その他 (調査要 / 大物 Python) — codex, googleworkspace-cli, ansible, azure-cli,
     #                              readline (build dep として他 brew が引いている可能性)
@@ -84,6 +84,7 @@
       "mas"
       "mutagen-io/mutagen/mutagen-compose"
       "mysql"
+      "postgresql@17"
       "qemu"
       "readline"
       "redis"
@@ -102,11 +103,9 @@
       "1password-cli"
       "avidemux"
       "basictex"
-      "brave-browser"
       "chromium"
       "claude-code"
       "clipy"
-      "cursor"
       "dash"
       "docker-desktop"
       "firefox"
