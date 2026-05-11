@@ -33,6 +33,18 @@
     neovim
     vim
 
+    # language servers — nvim-lspconfig (tools/nvim/lua/plugins/lsp.lua) が
+    # attach する LSP server binary。coc.nvim 時代は coc-* 拡張が npm
+    # package 内に server を抱えていたが、nvim-lspconfig 採用に伴い PATH
+    # 上で解決する必要があるため Nix store で集中管理する。rust-analyzer
+    # は rustup の component に任せる (rustup component add rust-analyzer)、
+    # clangd は LLVM toolchain (Homebrew) 由来のものを使う。
+    gopls                                  # Go
+    python3Packages.jedi-language-server   # Python
+    solargraph                             # Ruby
+    terraform-ls                           # Terraform / HCL
+    typescript-language-server             # TypeScript / JavaScript
+
     # multiplexer
     tmux
 
