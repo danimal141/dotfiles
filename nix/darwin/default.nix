@@ -5,8 +5,9 @@
 # 展開される。
 #
 # 分割方針:
-#   * `defaults.nix` — `system.defaults.*` (Dock / Finder / NSGlobalDomain /
-#     trackpad / WindowManager / menuExtraClock / CustomUserPreferences)
+#   * `macos-defaults.nix` — `system.defaults.*` (Dock / Finder /
+#     NSGlobalDomain / trackpad / WindowManager / menuExtraClock /
+#     CustomUserPreferences)
 #   * `keyboard.nix` — `system.keyboard` の HID remap、login 時に再適用する
 #     LaunchAgent、`AppleSymbolicHotKeys` の targeted update
 #   * `nix-daemon.nix` — `nix.settings` / `nix.gc` / Nix daemon が見える
@@ -22,7 +23,7 @@
 # パターンを維持)。
 {
   imports = [
-    ./defaults.nix
+    ./macos-defaults.nix
     ./keyboard.nix
     ./nix-daemon.nix
     ./system.nix

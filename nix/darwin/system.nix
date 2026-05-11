@@ -12,7 +12,7 @@
 #   * `system.stateVersion` — nix-darwin の state 互換番号
 #
 # 「macOS defaults / keyboard / Nix daemon settings」のような大きい topic は
-# それぞれ defaults.nix / keyboard.nix / nix-daemon.nix に分かれている。
+# それぞれ macos-defaults.nix / keyboard.nix / nix-daemon.nix に分かれている。
 # このファイルはそこに収まらない system 層 root の小物の receptacle。
 {
   # `system.defaults` / nix-homebrew が「誰の defaults を書くか」を決めるための
