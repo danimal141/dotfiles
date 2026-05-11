@@ -79,29 +79,42 @@ return {
             end
           end,
         },
-        -- Ruby は project の Gemfile.lock を見て切替える:
-        --   * lock に ruby-lsp が含まれる → bundle exec ruby-lsp (project 精度)
-        --   * 含まれない / Gemfile.lock 無し → solargraph (global fallback)
-        -- 両方を同時に attach させると補完/format/diagnostics が衝突するので
-        -- root_dir で排他的に enable する。ruby-lsp は composed bundle 機構の
-        -- 都合で project の bundle 経由 (bundle exec) 起動が必須なため、Nix
-        -- global の ruby-lsp バイナリは使わない。
+        -- Ruby は ruby-lsp を優先しつつ、composed bundle が組めない project
+        -- (= Gemfile はあるが Gemfile.lock に ruby-lsp 含まれていない) では
+        -- solargraph に fallback する。両方を同時に attach させると補完 /
+        -- format / diagnostics が衝突するので root_dir で排他選択する。
+        --
+        --   Gemfile 無し                                    → ruby-lsp standalone
+        --   Gemfile + Gemfile.lock に ruby-lsp 含まれる     → ruby-lsp
+        --   Gemfile あり + ruby-lsp 入りでない (or lock 無) → solargraph
+        --
+        -- ruby-lsp は mise global ruby の gem として配備する想定
+        -- (gem install ruby-lsp)。global gem の bin が PATH に来るので
+        -- cmd は { "ruby-lsp" } 直叩きで OK。
+        ruby_lsp = {
+          cmd = { "ruby-lsp" },
+          root_dir = function(bufnr, on_dir)
+            local gemfile = vim.fs.root(bufnr, { "Gemfile" })
+            if not gemfile then
+              -- Gemfile 無し → ファイルの親 dir を root として standalone 起動
+              local file = vim.api.nvim_buf_get_name(bufnr)
+              on_dir(vim.fs.dirname(file))
+              return
+            end
+            if project_uses_ruby_lsp(gemfile) then
+              on_dir(gemfile)
+            end
+            -- Gemfile あるが ruby-lsp 入りでない → 起動しない (solargraph 担当)
+          end,
+        },
         solargraph = {
           cmd = { "solargraph", "stdio" },
           root_dir = function(bufnr, on_dir)
-            local root = vim.fs.root(bufnr, { "Gemfile.lock", "Gemfile", ".git" })
-            if not root then return end
-            if project_uses_ruby_lsp(root) then return end
-            on_dir(root)
-          end,
-        },
-        ruby_lsp = {
-          cmd = { "bundle", "exec", "ruby-lsp" },
-          root_dir = function(bufnr, on_dir)
-            local root = vim.fs.root(bufnr, { "Gemfile.lock" })
-            if not root then return end
-            if not project_uses_ruby_lsp(root) then return end
-            on_dir(root)
+            local gemfile = vim.fs.root(bufnr, { "Gemfile" })
+            -- Gemfile 無し or ruby-lsp 入り project は ruby-lsp が担当する
+            if not gemfile then return end
+            if project_uses_ruby_lsp(gemfile) then return end
+            on_dir(gemfile)
           end,
         },
         jedi_language_server = { cmd = { "jedi-language-server" } },
