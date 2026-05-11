@@ -1,7 +1,12 @@
 return {
   {
     "neovim/nvim-lspconfig",
-    event = { "BufReadPre", "BufNewFile" },
+    -- nvim 0.11+ の vim.lsp.enable() で autostart hook を取り付ける必要が
+    -- あるため、最初の buffer 読み込みより前に config を走らせる。
+    -- BufReadPre lazy load では hook 登録と filetype 検出のタイミングが
+    -- 競合して初回 attach に間に合わないため eager load にする (lspconfig
+    -- 自体は軽量なので起動時間への影響は無視できる)。
+    lazy = false,
     dependencies = { "hrsh7th/cmp-nvim-lsp" },
     config = function()
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
