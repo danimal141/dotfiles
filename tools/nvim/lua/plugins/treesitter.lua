@@ -4,7 +4,7 @@ return {
     branch = "master",
     build = ":TSUpdate",
     event = { "BufReadPost", "BufNewFile" },
-    cmd = { "TSUpdate", "TSInstall", "TSInstallInfo", "TSUpdateSync" },
+    cmd = { "TSUpdate", "TSInstall", "TSInstallInfo", "TSInstallSync", "TSUpdateSync" },
     opts = {
       ensure_installed = {
         "bash", "c", "cpp", "css", "dockerfile", "go", "gomod", "gosum",

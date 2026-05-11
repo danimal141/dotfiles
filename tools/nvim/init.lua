@@ -1,11 +1,14 @@
 -- Neovim entry point. lazy.nvim bootstrap + module loading.
 
--- 社内 VPN の SSL inspection 環境で git の TLS verify を通すため、
--- nix-daemon.nix が配置する /etc/nix/ca-bundle.pem を子プロセス git の
--- CA bundle として継承させる (lazy.nvim bootstrap clone と plugin install
--- の両方が git を呼ぶ)。
+-- 社内 VPN の SSL inspection 環境で外部通信の TLS verify を通すため、
+-- nix-daemon.nix が配置する /etc/nix/ca-bundle.pem を子プロセスに継承
+-- させる。git は GIT_SSL_CAINFO、curl は CURL_CA_BUNDLE を見る
+-- (nvim-treesitter は curl で parser tar.gz を取りに行く)。SSL_CERT_FILE
+-- は OpenSSL を直接使う Python / Ruby などのフォールバック用。
 if (vim.uv or vim.loop).fs_stat("/etc/nix/ca-bundle.pem") then
   vim.env.GIT_SSL_CAINFO = "/etc/nix/ca-bundle.pem"
+  vim.env.CURL_CA_BUNDLE = "/etc/nix/ca-bundle.pem"
+  vim.env.SSL_CERT_FILE = "/etc/nix/ca-bundle.pem"
 end
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"

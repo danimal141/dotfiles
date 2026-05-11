@@ -4,7 +4,6 @@ return {
     event = { "BufReadPre", "BufNewFile" },
     dependencies = { "hrsh7th/cmp-nvim-lsp" },
     config = function()
-      local lspconfig = require("lspconfig")
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
       local on_attach = function(_, bufnr)
@@ -32,8 +31,16 @@ return {
         severity_sort = true,
       })
 
+      vim.lsp.config("*", {
+        capabilities = capabilities,
+        on_attach = on_attach,
+      })
+
+      -- 各 server に cmd を明示することで PATH 上に binary が無い時の
+      -- enable をスキップする (filetype マッチ時の spawn 失敗エラー回避)。
       local servers = {
         gopls = {
+          cmd = { "gopls" },
           settings = {
             gopls = {
               usePlaceholders = true,
@@ -42,14 +49,27 @@ return {
             },
           },
         },
-        rust_analyzer = {},
-        ts_ls = {},
-        solargraph = {},
-        jedi_language_server = {},
-        terraformls = {},
-        clangd = {},
-        bashls = {},
+        rust_analyzer = { cmd = { "rust-analyzer" } },
+        ts_ls = {
+          cmd = { "typescript-language-server", "--stdio" },
+          single_file_support = false,
+          root_dir = function(bufnr, on_dir)
+            if vim.fs.root(bufnr, { "deno.json", "deno.jsonc" }) then
+              return
+            end
+            local root = vim.fs.root(bufnr, { "package.json", "tsconfig.json", "jsconfig.json", ".git" })
+            if root then
+              on_dir(root)
+            end
+          end,
+        },
+        solargraph = { cmd = { "solargraph", "stdio" } },
+        jedi_language_server = { cmd = { "jedi-language-server" } },
+        terraformls = { cmd = { "terraform-ls", "serve" } },
+        clangd = { cmd = { "clangd" } },
+        bashls = { cmd = { "bash-language-server", "start" } },
         yamlls = {
+          cmd = { "yaml-language-server", "--stdio" },
           settings = {
             yaml = {
               format = { enable = true, singleQuote = true },
@@ -57,17 +77,21 @@ return {
             },
           },
         },
-        jsonls = {},
-        cssls = {},
-        html = {},
-        dockerls = {},
+        jsonls = { cmd = { "vscode-json-language-server", "--stdio" } },
+        cssls = { cmd = { "vscode-css-language-server", "--stdio" } },
+        html = { cmd = { "vscode-html-language-server", "--stdio" } },
+        dockerls = { cmd = { "docker-langserver", "--stdio" } },
         graphql = {
+          cmd = { "graphql-lsp", "server", "-m", "stream" },
           filetypes = { "graphql", "typescriptreact", "javascriptreact", "typescript", "javascript" },
         },
         denols = {
-          root_dir = lspconfig.util.root_pattern("deno.json", "deno.jsonc"),
+          cmd = { "deno", "lsp" },
+          root_markers = { "deno.json", "deno.jsonc" },
+          single_file_support = false,
         },
         lua_ls = {
+          cmd = { "lua-language-server" },
           settings = {
             Lua = {
               workspace = { checkThirdParty = false },
@@ -78,22 +102,14 @@ return {
         },
       }
 
-      -- ts_ls と denols は同一 buffer に attach すると衝突するため、deno project
-      -- (deno.json があるディレクトリ) では ts_ls を起動しない
-      servers.ts_ls.root_dir = function(fname)
-        local util = lspconfig.util
-        if util.root_pattern("deno.json", "deno.jsonc")(fname) then
-          return nil
+      local enabled = {}
+      for name, cfg in pairs(servers) do
+        if vim.fn.executable(cfg.cmd[1]) == 1 then
+          vim.lsp.config(name, cfg)
+          table.insert(enabled, name)
         end
-        return util.root_pattern("package.json", "tsconfig.json", "jsconfig.json", ".git")(fname)
       end
-      servers.ts_ls.single_file_support = false
-
-      for server, cfg in pairs(servers) do
-        cfg.capabilities = capabilities
-        cfg.on_attach = on_attach
-        lspconfig[server].setup(cfg)
-      end
+      vim.lsp.enable(enabled)
     end,
   },
 }

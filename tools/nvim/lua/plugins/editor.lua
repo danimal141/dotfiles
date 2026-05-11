@@ -22,4 +22,39 @@ return {
       },
     },
   },
+  {
+    "nvim-tree/nvim-tree.lua",
+    cmd = { "NvimTreeToggle", "NvimTreeFindFile", "NvimTreeOpen", "NvimTreeClose" },
+    keys = {
+      { "<leader>n", "<cmd>NvimTreeToggle<CR>", desc = "NvimTree toggle" },
+    },
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    opts = {
+      view = { width = 30 },
+      renderer = { add_trailing = false },
+      filters = { dotfiles = false },
+    },
+  },
+  {
+    "lewis6991/gitsigns.nvim",
+    event = "BufReadPre",
+    opts = {},
+  },
+  {
+    "windwp/nvim-autopairs",
+    event = "InsertEnter",
+    opts = {},
+  },
+  {
+    "windwp/nvim-ts-autotag",
+    event = "InsertEnter",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    opts = {},
+  },
+  {
+    "kylechui/nvim-surround",
+    version = "*",
+    event = "VeryLazy",
+    opts = {},
+  },
 }
