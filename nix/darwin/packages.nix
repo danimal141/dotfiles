@@ -41,7 +41,7 @@
     # clangd は LLVM toolchain (Homebrew) 由来のものを使う。
     gopls                                  # Go
     python3Packages.jedi-language-server   # Python
-    solargraph                             # Ruby
+    solargraph                             # Ruby (ruby-lsp は composed bundle 前提で global 配備と相性が悪い)
     terraform-ls                           # Terraform / HCL
     typescript-language-server             # TypeScript / JavaScript
 

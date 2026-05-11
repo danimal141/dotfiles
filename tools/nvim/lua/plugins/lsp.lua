@@ -41,6 +41,17 @@ return {
         on_attach = on_attach,
       })
 
+      -- Gemfile.lock を眺めて `gem "ruby-lsp"` が依存に入っているか判定。
+      -- Gemfile.lock の spec 行は "    ruby-lsp (1.2.3)" のような形式。
+      local function project_uses_ruby_lsp(root)
+        local lockfile = root .. "/Gemfile.lock"
+        local f = io.open(lockfile, "r")
+        if not f then return false end
+        local content = f:read("*a")
+        f:close()
+        return content:find("\n%s+ruby%-lsp%s") ~= nil
+      end
+
       -- 各 server に cmd を明示することで PATH 上に binary が無い時の
       -- enable をスキップする (filetype マッチ時の spawn 失敗エラー回避)。
       local servers = {
@@ -68,7 +79,31 @@ return {
             end
           end,
         },
-        solargraph = { cmd = { "solargraph", "stdio" } },
+        -- Ruby は project の Gemfile.lock を見て切替える:
+        --   * lock に ruby-lsp が含まれる → bundle exec ruby-lsp (project 精度)
+        --   * 含まれない / Gemfile.lock 無し → solargraph (global fallback)
+        -- 両方を同時に attach させると補完/format/diagnostics が衝突するので
+        -- root_dir で排他的に enable する。ruby-lsp は composed bundle 機構の
+        -- 都合で project の bundle 経由 (bundle exec) 起動が必須なため、Nix
+        -- global の ruby-lsp バイナリは使わない。
+        solargraph = {
+          cmd = { "solargraph", "stdio" },
+          root_dir = function(bufnr, on_dir)
+            local root = vim.fs.root(bufnr, { "Gemfile.lock", "Gemfile", ".git" })
+            if not root then return end
+            if project_uses_ruby_lsp(root) then return end
+            on_dir(root)
+          end,
+        },
+        ruby_lsp = {
+          cmd = { "bundle", "exec", "ruby-lsp" },
+          root_dir = function(bufnr, on_dir)
+            local root = vim.fs.root(bufnr, { "Gemfile.lock" })
+            if not root then return end
+            if not project_uses_ruby_lsp(root) then return end
+            on_dir(root)
+          end,
+        },
         jedi_language_server = { cmd = { "jedi-language-server" } },
         terraformls = { cmd = { "terraform-ls", "serve" } },
         clangd = { cmd = { "clangd" } },
