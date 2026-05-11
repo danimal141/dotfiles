@@ -61,7 +61,7 @@ dotfiles/
 ├── nix/
 │   ├── darwin/                    # nix-darwin (system 層)
 │   │   ├── default.nix            # 配下の 6 ファイルを imports
-│   │   ├── defaults.nix           # system.defaults.* (Dock / Finder /
+│   │   ├── macos-defaults.nix     # system.defaults.* (Dock / Finder /
 │   │   │                           # NSGlobalDomain / trackpad / WindowManager
 │   │   │                           # / menuExtraClock / CustomUserPreferences)
 │   │   ├── keyboard.nix           # system.keyboard (CapsLock → Control HID

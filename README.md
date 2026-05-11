@@ -171,7 +171,7 @@ pin、`setup.sh` の `npm ci` で `node_modules/` に install され、hook は
 | `flake.lock` の全 input を更新 | `nix run .#update` |
 | Nix store CLI を追加 / 削除 | `nix/darwin/packages.nix` を編集 → 上記 switch |
 | Homebrew brew / cask を追加 / 削除 | `nix/darwin/homebrew.nix` を編集 → 上記 switch |
-| macOS 設定変更 (Dock / Finder / NSGlobalDomain 等) | `nix/darwin/defaults.nix` を編集 → 上記 switch |
+| macOS 設定変更 (Dock / Finder / NSGlobalDomain 等) | `nix/darwin/macos-defaults.nix` を編集 → 上記 switch |
 | キーボード remap / 入力ソース shortcut 変更 | `nix/darwin/keyboard.nix` を編集 → 上記 switch |
 | Nix daemon / GC / SSL CA bundle / 環境変数 | `nix/darwin/nix-daemon.nix` を編集 → 上記 switch |
 | user 層の dotfile / `programs.*` 変更 | `nix/home/programs/<tool>.nix` を編集 → 上記 switch (raw text symlink なら switch 不要、編集即反映) |
@@ -306,7 +306,7 @@ LocalHostName` では新 host を検出できず `setup.sh` は `work` にフォ
     neovim / fzf / ripgrep / jq / gh / kubectl 系 / apm など)
   * `nix/darwin/homebrew.nix` — tap-only formulae / GUI cask / macOS 統合
     の強い formulae
-  * `nix/darwin/defaults.nix` — `system.defaults.*` (Dock / Finder /
+  * `nix/darwin/macos-defaults.nix` — `system.defaults.*` (Dock / Finder /
     NSGlobalDomain (KeyRepeat / 自動補完 OFF 等) / trackpad / WindowManager
     / menuExtraClock / CustomUserPreferences で Kotoeri / 言語等)
   * `nix/darwin/keyboard.nix` — `system.keyboard` で CapsLock → Control の
