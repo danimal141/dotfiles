@@ -31,8 +31,16 @@ return {
     dependencies = { "nvim-tree/nvim-web-devicons" },
     opts = {
       view = { width = 30 },
-      renderer = { add_trailing = false },
-      filters = { dotfiles = false },
+      renderer = {
+        add_trailing = false,
+        -- symlink 先 path も表示してリンク先がわかるようにする (default true)
+        symlink_destination = true,
+      },
+      -- 隠しファイル / gitignore 対象も表示する。dotfiles repo では
+      -- ~/.config 配下を symlink 化していて、symlink が gitignore 対象に
+      -- なっていると nvim-tree のデフォルト (git_ignored = true) で非表示に
+      -- なってしまうため両方 off にする。
+      filters = { dotfiles = false, git_ignored = false },
     },
   },
   {
