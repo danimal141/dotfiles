@@ -337,6 +337,7 @@ LocalHostName` では新 host を検出できず `setup.sh` は `work` にフォ
   * `~/.codex/{sessions,log.json}` (codex 動的領域)
   * `~/.apm/{apm_modules,config.json,.claude,.github}` (APM 動的領域)
   * `~/.vim/{plugged,sessions,.netrwhist}` (vim-plug 動的領域)
+  * `~/.local/share/nvim/{lazy,site/parser}/` (lazy.nvim と nvim-treesitter 動的領域)
   * `~/.codex/.env`, `~/.gitconfig.local`, `~/.gitconfig.work` (secrets / org 名、user 手書き)
 
 PATH 解決順 (`tools/zsh/.zshrc`):
