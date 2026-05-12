@@ -85,7 +85,7 @@ dotfiles/
 │           ├── git.nix            # programs.git + ignores + includeIf
 │           ├── tmux.nix           # ~/.tmux.conf, ~/.tmux_start_dir, ~/.local/bin/tmux-start
 │           ├── vim.nix            # ~/.vimrc + サブディレクトリ symlink (plugged/ 除く)
-│           ├── nvim.nix           # ~/.config/nvim/* (vim と coc-settings 共有)
+│           ├── nvim.nix           # ~/.config/nvim 全体を tools/nvim/ に symlink (lazy.nvim + nvim-lspconfig 構成)
 │           ├── claude.nix         # ~/.claude/* (動的領域除く)
 │           ├── codex.nix          # ~/.codex/* (config.toml は text 生成 / wrapper は symlink /
 │           │                        # AGENTS.md は tools/claude/CLAUDE.md への out-of-store symlink)
@@ -100,7 +100,7 @@ dotfiles/
 │   ├── zsh/.zshrc
 │   ├── tmux/{.tmux.conf, .tmux_start_dir, bin/tmux-start}
 │   ├── vim/{.vimrc, .vim/{coc-settings.json, filetype.vim, autoload, colors, ftdetect, ftplugin}}
-│   ├── nvim/{init.vim, lua/telescope-config.lua}
+│   ├── nvim/{init.lua, lazy-lock.json, lua/{options,mappings,autocmds}.lua, lua/plugins/*.lua, after/ftplugin/*.lua}
 │   ├── claude/{CLAUDE.md, settings.json, mcp-servers.yaml, hooks/, rules/, skills/.gitignore, .env.example, setup-mcp.sh}
 │   ├── codex/{wrappers/gemini-mcp.sh, .env.example}
 │   ├── apm/{apm.yml, apm.lock.yaml, .gitignore}
@@ -154,9 +154,10 @@ repo の絶対 path を user 変数 (`/Users/${user}/Documents/dev/dotfiles`) �
 ## 動的領域の扱い
 
 ツールが自走で書き換える領域 (Claude Code の `~/.claude/projects/`, codex の
-`~/.codex/sessions/`, vim-plug の `~/.vim/plugged/`, apm の `~/.apm/apm_modules/`)
-は **home.file 対象外**として ~/ 配下に普通の mutable directory として残す。
-home-manager は配置に介入しない。
+`~/.codex/sessions/`, vim-plug の `~/.vim/plugged/`, lazy.nvim の
+`~/.local/share/nvim/lazy/`, nvim-treesitter の `~/.local/share/nvim/site/parser/`,
+apm の `~/.apm/apm_modules/`) は **home.file 対象外**として ~/ 配下に
+普通の mutable directory として残す。home-manager は配置に介入しない。
 
 これにより:
 
