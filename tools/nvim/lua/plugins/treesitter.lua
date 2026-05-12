@@ -1,31 +1,76 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter",
-    branch = "master",
+    -- main branch は完全書き直し版で nvim 0.10+ の vim.treesitter API に
+    -- 直接乗る。lazy-loading 非対応 (lazy = false 必須)、setup() は optional、
+    -- highlight / indent / fold は user が autocmd で start を呼ぶ。
+    branch = "main",
+    lazy = false,
     build = ":TSUpdate",
-    event = { "BufReadPost", "BufNewFile" },
-    cmd = { "TSUpdate", "TSInstall", "TSInstallInfo", "TSInstallSync", "TSUpdateSync" },
-    opts = {
-      -- nvim 0.12 + nvim-treesitter master branch の markdown / markdown_inline
-      -- parser に互換性 bug ("attempt to call method 'range' (a nil value)")
-      -- があり、highlight だけ disable しても aerial/indent などが parser を
-      -- 起動して同じ crash を引く。長期的には nvim-treesitter main branch
-      -- への移行が必要だが、暫定として ensure_installed から markdown を外し
-      -- parser そのものを置かないことで全経路を塞ぐ。markdown highlight は
-      -- vim builtin syntax にフォールバックする (実用上の劣化は限定的)。
-      ensure_installed = {
-        "bash", "c", "cpp", "css", "dockerfile", "go", "gomod", "gosum",
-        "graphql", "hcl", "html", "javascript", "json", "jsonc", "kotlin",
-        "lua", "luadoc", "python", "ruby",
-        "rust", "scss", "terraform", "toml", "tsx", "typescript", "vim",
-        "vimdoc", "yaml",
-      },
-      auto_install = false,
-      highlight = { enable = true },
-      indent = { enable = true },
-    },
-    config = function(_, opts)
-      require("nvim-treesitter.configs").setup(opts)
+    config = function()
+      -- parser install dir のデフォルトでよいので setup() は呼ばない。
+
+      -- filetype → treesitter parser 名のマッピング。同じ filetype で
+      -- 複数 parser がある場合 (javascriptreact → javascript) はここで吸収。
+      local ft_to_lang = {
+        bash = "bash",
+        sh = "bash",
+        c = "c",
+        cpp = "cpp",
+        css = "css",
+        dockerfile = "dockerfile",
+        go = "go",
+        gomod = "gomod",
+        gosum = "gosum",
+        graphql = "graphql",
+        hcl = "hcl",
+        html = "html",
+        javascript = "javascript",
+        javascriptreact = "javascript",
+        json = "json",
+        jsonc = "json",
+        kotlin = "kotlin",
+        lua = "lua",
+        python = "python",
+        ruby = "ruby",
+        rust = "rust",
+        scss = "scss",
+        terraform = "terraform",
+        toml = "toml",
+        tsx = "tsx",
+        typescript = "typescript",
+        typescriptreact = "tsx",
+        vim = "vim",
+        help = "vimdoc",
+        yaml = "yaml",
+      }
+
+      -- 未 install の parser を要求。`install` は async でジョブを返すので、
+      -- bootstrap 時は wait() を付けて同期化 (新 parser が無いまま buffer
+      -- 開いて highlight 失敗するのを防ぐ)。install 済みなら no-op に近い。
+      local parsers = {}
+      local seen = {}
+      for _, lang in pairs(ft_to_lang) do
+        if not seen[lang] then
+          table.insert(parsers, lang)
+          seen[lang] = true
+        end
+      end
+      require("nvim-treesitter").install(parsers):wait(300000)
+
+      -- filetype 一致時に treesitter highlight を起動する。markdown は
+      -- 意図的に pattern から外して vim builtin syntax を使う (master 由来の
+      -- range() bug 回避は main branch で不要になる想定だが、念のため markdown
+      -- だけ後で個別検証することにして当面 builtin に任せる)。
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = vim.tbl_keys(ft_to_lang),
+        callback = function(args)
+          local lang = ft_to_lang[vim.bo[args.buf].filetype]
+          if lang then
+            pcall(vim.treesitter.start, args.buf, lang)
+          end
+        end,
+      })
     end,
   },
 }
