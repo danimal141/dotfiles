@@ -7,10 +7,9 @@ return {
     end,
     init = function()
       vim.g.mkdp_auto_close = 1
-      -- mac の OS デフォルトブラウザを起動する。空文字列だと自動 open
-      -- されないので注意 (旧 .vimrc は空文字列で運用していたが、
-      -- nvim では明示的に "open" コマンドを渡す)。
-      vim.g.mkdp_browser = "open"
+      -- 空文字列が docs 上の "use system default browser" 挙動
+      -- (mac: open, linux: xdg-open, win: start)。
+      vim.g.mkdp_browser = ""
     end,
   },
   {
