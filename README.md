@@ -1,103 +1,131 @@
 # Dotfiles
 
-`nix-darwin` + `home-manager` で macOS の system / Homebrew / dotfile を
-declarative に管理する個人用 dotfiles。`nix run .#switch` (内部で
-`darwin-rebuild switch --flake ".#<host>"`) の単一コマンドで反映する。
+English | [日本語](README-ja.md)
 
-設計思想は [docs/design-philosophy.md](docs/design-philosophy.md) を参照。
+Personal dotfiles that manage macOS system settings, Homebrew, and dotfiles
+declaratively with `nix-darwin` + `home-manager`. Everything is applied with a
+single command: `nix run .#switch` (which internally invokes
+`darwin-rebuild switch --flake ".#<host>"`).
+
+See [docs/design-philosophy.md](docs/design-philosophy.md) for the design
+rationale.
 
 ## Requirements
 
-* macOS (Apple Silicon, Sonoma 以降)
-* [Nix + nix-darwin](https://github.com/nix-darwin/nix-darwin) — Homebrew /
-  macOS 設定 / Nix store CLI / home-manager dotfile を一括 declarative 管理
+* macOS (Apple Silicon, Sonoma or later)
+* [Nix + nix-darwin](https://github.com/nix-darwin/nix-darwin) — declaratively
+  manages Homebrew, macOS settings, Nix store CLIs, and home-manager dotfiles
+  all together
 
 ## Get started
 
-### 1. リポジトリを clone
+### 1. Clone the repository
 
-clone 先は任意 (本リポジトリの module は repo の絶対 path を `/Users/<user>/
-Documents/dev/dotfiles` に hardcode しているので、別 path に置く場合は
-`nix/home/programs/*.nix` の `dotfilesPath` を書き換える):
+The clone location is arbitrary, but the modules in this repo hardcode the
+absolute path `/Users/<user>/Documents/dev/dotfiles`. If you place it
+elsewhere, update `dotfilesPath` in `nix/home/programs/*.nix`:
 
 ```shell
 git clone git@github.com:danimal141/dotfiles.git ~/Documents/dev/dotfiles
 cd ~/Documents/dev/dotfiles
 ```
 
-### 2. `setup.sh` を実行
+### 2. Run `setup.sh`
 
 ```shell
-./setup.sh             # LocalHostName から flake host を自動判定
-./setup.sh work        # 仕事用 Mac として明示
-./setup.sh personal    # 個人用 Mac として明示
+./setup.sh             # auto-detect flake host from LocalHostName
+./setup.sh work        # explicitly target the work Mac
+./setup.sh personal    # explicitly target the personal Mac
 ```
 
-`setup.sh` がやること:
+What `setup.sh` does:
 
-1. Xcode CLT インストール (Apple Silicon 専用、Rosetta は入れない)
-2. Nix 公式 upstream installer 実行 (既に入っていれば skip)
-3. macOS Keychain から CA bundle を `/etc/nix/ca-bundle.pem` に焼き、`launchctl
-   setenv` で nix-daemon に渡す (社内 VPN の SSL inspection 対策、個人 Mac
-   でも害はない)
-4. Nix 公式 installer が書いた `/etc/bashrc` `/etc/nix/nix.conf` を
-   `*.before-nix-darwin` に退避 (nix-darwin の activation が「unrecognized
-   content」を理由に abort するのを回避)
-5. `sudo -E nix run nix-darwin -- switch --flake ".#<hostname>"` を実行 —
+1. Install Xcode CLT (Apple Silicon only — Rosetta is not installed)
+2. Run the official Nix upstream installer (skipped if already installed)
+3. Bake a CA bundle from the macOS Keychain into `/etc/nix/ca-bundle.pem` and
+   hand it to the nix-daemon via `launchctl setenv` (workaround for corporate
+   VPN SSL inspection; harmless on personal Macs)
+4. Move `/etc/bashrc` and `/etc/nix/nix.conf` (written by the Nix installer) to
+   `*.before-nix-darwin` so that nix-darwin's activation does not abort due to
+   "unrecognized content"
+5. Run `sudo -E nix run nix-darwin -- switch --flake ".#<hostname>"` —
    `nix/darwin/{macos-defaults,keyboard,nix-daemon,system,packages,homebrew}.nix`
-   (system 層 / Nix store CLI / brew / cask) / `nix/home/programs/*.nix`
-   (home-manager 経由の dotfile symlink + VSCode settings/keybindings/extensions
-   含む) が一括反映
-6. `mise install` で `~/.config/mise/config.toml` の言語 binary を実体 install
-7. LSP server (typescript / pyright / ruby-lsp / gopls) を global install
-8. `prek install` で `.git/hooks/pre-commit` を冪等に仕込む (secretlint hook)
-9. `exec $SHELL -l` で新 shell に切り替え
+   (system layer / Nix store CLIs / brew / cask) and `nix/home/programs/*.nix`
+   (dotfile symlinks via home-manager, including VSCode settings / keybindings
+   / extensions) are applied in one go
+6. Run `mise install` to install the actual binaries declared in
+   `~/.config/mise/config.toml`
+7. Globally install LSP servers (typescript / pyright / ruby-lsp / gopls)
+8. Run `prek install` to idempotently install `.git/hooks/pre-commit`
+   (secretlint hook)
+9. `exec $SHELL -l` to switch to a fresh login shell
 
-完走後は `which git` が `/etc/profiles/per-user/<user>/bin/git` または
-`/run/current-system/sw/bin/git` を返す状態になる。
+After completion, `which git` resolves to
+`/etc/profiles/per-user/<user>/bin/git` or
+`/run/current-system/sw/bin/git`.
 
-### 3. シークレット注入
+### 3. Inject secrets
 
-repo に secrets を tracked しない方針。注入経路は 2 つ:
+The repo is public — secrets are not tracked. Three injection paths:
 
-#### codex (`GEMINI_API_KEY`)
+#### codex
 
-`~/.codex/.env` を user 手動配置:
+User-placed `~/.codex/.env`:
 
 ```shell
 cp tools/codex/.env.example ~/.codex/.env
 chmod 600 ~/.codex/.env
-$EDITOR ~/.codex/.env       # GEMINI_API_KEY=... を埋める
+$EDITOR ~/.codex/.env       # fill in values for each key in .env.example
 ```
 
-`tools/codex/wrappers/gemini-mcp.sh` (= `~/.codex/wrappers/gemini-mcp.sh` への
-symlink) が起動時に `.env` を source して `mcp-gemini-google-search` の
-env として inject する。
+`tools/codex/wrappers/gemini-mcp.sh` (symlinked to
+`~/.codex/wrappers/gemini-mcp.sh`) sources `.env` at startup and injects
+the env into the MCP server child processes. See
+`tools/codex/.env.example` for the env vars actually used.
 
-#### work GitHub org の git identity (任意)
+#### Claude Code MCP server env (optional)
 
-業務用の identity 上書きは **2 つの user 手書きファイル**で実現する。
-所属組織名や業務メールが public repo に出ないよう、条件分岐 (どの remote
-URL で identity を切り替えるか) と上書き値 (name / email) の両方を user
-側に逃がす設計。
-
-repo の `programs.git.includes` は `~/.gitconfig.local` を unconditional
-に include するだけ (中身は何も知らない)。実際の条件分岐は
-`~/.gitconfig.local` 内の `[includeIf "..."]` で user が記述し、その
-include 先の `~/.gitconfig.work` に identity を書く、という二段構成。
-
-| ファイル | 役割 | 中身 |
-|---|---|---|
-| `~/.gitconfig.local` | dispatcher: どの remote URL pattern で work identity に切り替えるかを宣言 | `[includeIf "hasconfig:remote.*.url:git@github.com:<your-org>/**"]` ブロック |
-| `~/.gitconfig.work` | overrides: 切り替え後に適用する name / email | `[user] name = ... / email = ...` |
-
-両者とも repo / git どちらでも追跡しない (= 個人 Mac には作らない、
-work Mac でだけ存在する手書きファイル)。
-
-##### work Mac でのセットアップ
+When you run `tools/claude/setup-mcp.sh` as
+`cd tools/claude && ./setup-mcp.sh`, the script sources `.env` in the
+same directory and injects the values as the `env:` of each server in
+`tools/claude/mcp-servers.yaml`. Skip this step entirely when no
+registered server requires env vars. When some do:
 
 ```shell
-# 1. dispatcher を作成 (org pattern を 1 行に書く)
+cp tools/claude/.env.example tools/claude/.env
+chmod 600 tools/claude/.env
+$EDITOR tools/claude/.env   # fill in values for each key in .env.example
+cd tools/claude && ./setup-mcp.sh
+```
+
+`tools/claude/.env` is excluded by the repo's `.gitignore`; only
+`.env.example` is tracked.
+
+#### Work GitHub org git identity (optional)
+
+Work identity overrides use **two user-handwritten files**. The design keeps
+both the conditional logic (which remote URL pattern flips the identity) and
+the override values (name / email) on the user side, so neither the
+organization name nor the work email appears in this public repo.
+
+The repo's `programs.git.includes` simply includes `~/.gitconfig.local`
+unconditionally (without knowing its contents). The actual conditional logic
+is written by the user inside `~/.gitconfig.local` as
+`[includeIf "..."]` blocks, and the included `~/.gitconfig.work` holds the
+identity — a two-layer split.
+
+| File | Role | Content |
+|---|---|---|
+| `~/.gitconfig.local` | dispatcher: declares which remote URL pattern flips to work identity | `[includeIf "hasconfig:remote.*.url:git@github.com:<your-org>/**"]` blocks |
+| `~/.gitconfig.work` | overrides: the name / email applied after switch | `[user] name = ... / email = ...` |
+
+Neither file is tracked by the repo or by git (= absent on personal Macs,
+present only on work Macs as handwritten files).
+
+##### Work Mac setup
+
+```shell
+# 1. Create the dispatcher (write the org pattern in one line)
 $ cat > ~/.gitconfig.local <<'EOF'
 [includeIf "hasconfig:remote.*.url:git@github.com:<your-org>/**"]
     path = ~/.gitconfig.work
@@ -106,7 +134,7 @@ $ cat > ~/.gitconfig.local <<'EOF'
 EOF
 $ chmod 600 ~/.gitconfig.local
 
-# 2. overrides を作成 (work identity の値)
+# 2. Create the overrides (work identity values)
 $ cat > ~/.gitconfig.work <<'EOF'
 [user]
     name  = Your Work Name
@@ -115,255 +143,273 @@ EOF
 $ chmod 600 ~/.gitconfig.work
 ```
 
-`<your-org>` を実際の GitHub org 名に置換、`Your Work Name` /
-`you@example.com` を業務 ID に置換する。
+Replace `<your-org>` with the actual GitHub org name and
+`Your Work Name` / `you@example.com` with the work identity.
 
-##### 動作確認
+##### Verification
 
 ```shell
-cd <work org の repo の clone>
-git config user.email   # → 業務アドレス (.gitconfig.local + .gitconfig.work 配置済みなら)
-cd <この dotfiles repo>
-git config user.email   # → 個人アドレス (flake.nix で宣言)
+cd <clone of a work-org repo>
+git config user.email   # → work email (if .gitconfig.local + .gitconfig.work are in place)
+cd <this dotfiles repo>
+git config user.email   # → personal email (declared in flake.nix)
 ```
 
 ### 4. pre-commit + secretlint
 
-API key の誤コミット防止に secretlint が pre-commit hook に組み込まれている。
-`prek` (pre-commit の Rust 実装、drop-in 互換) を `nix/darwin/packages.nix` で配布、
-`setup.sh` の最後で `prek install` が自動実行される。手動再 install:
+To prevent accidental API key commits, secretlint is wired into the
+pre-commit hook. `prek` (a Rust implementation of pre-commit, drop-in
+compatible) is shipped via `nix/darwin/packages.nix`, and `setup.sh`
+auto-runs `prek install` at the end. Manual reinstall:
 
 ```shell
-prek install              # .git/hooks/pre-commit 設置
-prek run --all-files      # 既存ファイルを 1 度走査 (任意)
+prek install              # install .git/hooks/pre-commit
+prek run --all-files      # run once across all existing files (optional)
 ```
 
-secretlint 本体と rule preset は `package.json` / `package-lock.json` で
-pin、`setup.sh` の `npm ci` で `node_modules/` に install され、hook は
-`npx secretlint` でこれを参照する。
+secretlint itself and the rule preset are pinned in `package.json` /
+`package-lock.json`; `setup.sh`'s `npm ci` installs them into
+`node_modules/`, and the hook invokes `npx secretlint` to reference them.
 
-### 困ったとき
+### Troubleshooting
 
-* **Nix の SSL エラー (`self-signed certificate in certificate chain`)** —
-  `setup.sh` の手順 3 が走っているか (`/etc/nix/ca-bundle.pem` が 100KB
-  以上ある) を確認。社内 IT が新しい CA を Keychain に push した直後は
-  bundle 再生成 (`sudo bash -c "security find-certificate -a -p
+* **Nix SSL error (`self-signed certificate in certificate chain`)** —
+  Verify that `setup.sh` step 3 has run (`/etc/nix/ca-bundle.pem` is at
+  least 100 KB). If corporate IT has just pushed a new CA to the Keychain,
+  regenerate the bundle (`sudo bash -c "security find-certificate -a -p
   /Library/Keychains/System.keychain >> /etc/nix/ca-bundle.pem ..." && sudo
   launchctl kickstart -k system/org.nixos.nix-daemon`)
-* **`darwin-rebuild` が「unrecognized content in /etc/...」で止まる** —
-  該当ファイルを `.before-nix-darwin` に退避してから再実行
-* **`darwin-rebuild` の Homebrew step で formula / cask 名解決失敗** —
-  上流で改名 / cask 化されたものは `nix/darwin/homebrew.nix` を更新
-* **業務 repo で `git config user.email` が個人 ID のまま** —
-  `~/.gitconfig.local` または `~/.gitconfig.work` 未作成か、remote URL が
-  `~/.gitconfig.local` 内の `hasconfig:remote.*.url:` 条件にマッチしていない。
-  `git remote -v` で URL を確認し、`.gitconfig.local` の pattern に該当 org
-  が入っているか、`.gitconfig.work` が存在するかをチェック
+* **`darwin-rebuild` aborts with "unrecognized content in /etc/..."** —
+  Move the offending file to `.before-nix-darwin` and rerun
+* **Homebrew formula / cask name resolution fails during `darwin-rebuild`'s
+  Homebrew step** — Update `nix/darwin/homebrew.nix` if upstream has
+  renamed or cask-ified something
+* **In a work repo, `git config user.email` still shows the personal
+  identity** — `~/.gitconfig.local` or `~/.gitconfig.work` is missing, or
+  the remote URL does not match the `hasconfig:remote.*.url:` condition in
+  `~/.gitconfig.local`. Check the URL with `git remote -v` and verify the
+  org pattern in `.gitconfig.local` and the existence of `.gitconfig.work`
 
-## 日常運用
+## Day-to-day operations
 
-### nix-darwin (system / Homebrew / dotfile すべて 1 発)
+### nix-darwin (system / Homebrew / dotfile all in one)
 
-| 操作 | コマンド |
+| Action | Command |
 |---|---|
-| 設定変更を反映 (system / brew / home-manager すべて) | `nix run .#switch` |
-| 反映前に build だけ走らせて検証 | `nix run .#build` |
-| `flake.lock` の全 input を更新 | `nix run .#update` |
-| Nix store CLI を追加 / 削除 | `nix/darwin/packages.nix` を編集 → 上記 switch |
-| Homebrew brew / cask を追加 / 削除 | `nix/darwin/homebrew.nix` を編集 → 上記 switch |
-| macOS 設定変更 (Dock / Finder / NSGlobalDomain 等) | `nix/darwin/macos-defaults.nix` を編集 → 上記 switch |
-| キーボード remap / 入力ソース shortcut 変更 | `nix/darwin/keyboard.nix` を編集 → 上記 switch |
-| Nix daemon / GC / SSL CA bundle / 環境変数 | `nix/darwin/nix-daemon.nix` を編集 → 上記 switch |
-| user 層の dotfile / `programs.*` 変更 | `nix/home/programs/<tool>.nix` を編集 → 上記 switch (raw text symlink なら switch 不要、編集即反映) |
-| flake input を個別更新 | `nix flake update <input>` (例: `nixpkgs` / `nix-darwin` / `nix-homebrew` / `home-manager`) |
-| 世代一覧 | `darwin-rebuild --list-generations` |
-| 前世代に戻す | `darwin-rebuild --rollback` |
+| Apply config changes (system / brew / home-manager) | `nix run .#switch` |
+| Build only (verify before applying) | `nix run .#build` |
+| Update every input in `flake.lock` | `nix run .#update` |
+| Add / remove a Nix store CLI | Edit `nix/darwin/packages.nix` → switch above |
+| Add / remove Homebrew brew / cask | Edit `nix/darwin/homebrew.nix` → switch above |
+| Tweak macOS settings (Dock / Finder / NSGlobalDomain etc.) | Edit `nix/darwin/macos-defaults.nix` → switch above |
+| Change keyboard remap / input source shortcut | Edit `nix/darwin/keyboard.nix` → switch above |
+| Tweak Nix daemon / GC / SSL CA bundle / env vars | Edit `nix/darwin/nix-daemon.nix` → switch above |
+| Edit a user-layer dotfile or `programs.*` | Edit `nix/home/programs/<tool>.nix` → switch above (raw text symlinks reflect immediately without switching) |
+| Update a single flake input | `nix flake update <input>` (e.g., `nixpkgs` / `nix-darwin` / `nix-homebrew` / `home-manager`) |
+| List generations | `darwin-rebuild --list-generations` |
+| Roll back to previous generation | `darwin-rebuild --rollback` |
 
-`nix run .#<app>` は flake.nix の `apps.aarch64-darwin.*` にある shell
-wrapper で、内部的には `darwin-rebuild switch --flake ".#$(scutil --get
-LocalHostName)"` を呼ぶ (= 素の `darwin-rebuild` を直接打っても等価)。
-wrapper の付加価値は次の 3 点:
+`nix run .#<app>` is a shell wrapper defined under
+`apps.aarch64-darwin.*` in `flake.nix`. Internally it invokes
+`darwin-rebuild switch --flake ".#$(scutil --get LocalHostName)"` (so a raw
+`darwin-rebuild` invocation is equivalent). The wrapper adds three things:
 
-* `scutil --get LocalHostName` 経由で host を自動解決 (`work` / `personal`
-  を 1 コマンドで兼ねる)
-* TTY 実行時のみ `nix-output-monitor` (nom) で進捗を整形、AI agent
-  (`CLAUDECODE` / `CODEX_SANDBOX` 等の env 検出) では生 output に切替
-* `darwin-rebuild` は flake input から絶対 path で解決するので、
-  `/run/current-system/sw/bin/...` が未整備の初回 bootstrap でも動く
+* Auto-resolves the host via `scutil --get LocalHostName` (= one command
+  covers `work` / `personal`)
+* When run from a TTY, formats progress with `nix-output-monitor` (nom);
+  falls back to raw output when an AI agent env (`CLAUDECODE` /
+  `CODEX_SANDBOX` / etc.) is detected
+* Resolves `darwin-rebuild` via an absolute path from the flake input, so
+  it works during initial bootstrap when `/run/current-system/sw/bin/...`
+  is not yet populated
 
-`nix/darwin/homebrew.nix` で Homebrew 側に残している主な理由:
+Main reasons for keeping things on the Homebrew side in
+`nix/darwin/homebrew.nix`:
 
-* tap-only formulae (argoproj/tap/argocd, fujiwara/tap/tfstate-lookup,
-  kayac/tap/ecspresso, mutagen-io/mutagen/mutagen-compose 等)
-* Apple / macOS 統合が brew の方が確実 (basictex, ffmpeg, imagemagick, llvm, mas)
-* Node / Python ランタイム前提の CLI (markdownlint-cli, marp-cli, repomix, pipx)
-* macOS-only ツール (terminal-notifier, im-select)
-* shell 本体と plugin (zsh / zsh-autosuggestions / zsh-syntax-highlighting /
-  zsh-completions) — brew の方が startup が速い
+* Tap-only formulae (argoproj/tap/argocd, fujiwara/tap/tfstate-lookup,
+  kayac/tap/ecspresso, mutagen-io/mutagen/mutagen-compose, etc.)
+* Apple / macOS integration is more reliable via brew (basictex, ffmpeg,
+  imagemagick, llvm, mas)
+* CLIs that assume a Node / Python runtime (markdownlint-cli, marp-cli,
+  repomix, pipx)
+* macOS-only tools (terminal-notifier, im-select)
+* Shell and plugins (zsh / zsh-autosuggestions / zsh-syntax-highlighting /
+  zsh-completions) — startup is faster via brew
 
-注意:
+Caveats:
 
-* `nix run .#update` (= `nix flake update` 全 input 一括) は壊れた時の
-  切り分けが困難。問題発生時は個別 input 名指定 (`nix flake update <input>`)
-  に切り替える
-* nixpkgs 追従ラグで `darwin-rebuild` が一時的に壊れることがある。動かなく
-  なったら `--rollback` で前世代に戻し、`flake.lock` を git で前状態に
-  巻き戻して再 switch
+* `nix run .#update` (= `nix flake update`, updates every input) makes
+  bisection hard when something breaks. When that happens, switch to a
+  named single-input update (`nix flake update <input>`)
+* nixpkgs lag can temporarily break `darwin-rebuild`. If it stops working,
+  use `--rollback` to revert to the previous generation, then `git`-revert
+  `flake.lock` and switch again
 
-### Dotfile を編集 / 追加する
+### Editing / adding dotfiles
 
-raw text symlink で配置されている dotfile (zsh / tmux / nvim / claude /
-ghostty / ctags / mise の config.toml / markdownlint) は **`nvim ~/.zshrc`
-で repo 内ファイルを直接編集** することになる:
+Dotfiles placed via raw text symlinks (zsh / tmux / nvim / claude /
+ghostty / ctags / mise config.toml / markdownlint) are **edited by opening
+the repo file directly** (`nvim ~/.zshrc`):
 
 ```shell
 $ readlink ~/.zshrc
-# → /Users/<user>/Documents/dev/dotfiles/tools/zsh/.zshrc (3-step chain で repo 到達)
-$ nvim ~/.zshrc           # ← repo の tools/zsh/.zshrc を編集している
-$ source ~/.zshrc         # 即反映 (nix run .#switch 不要)
+# → /Users/<user>/Documents/dev/dotfiles/tools/zsh/.zshrc (reaches the repo via a 3-step chain)
+$ nvim ~/.zshrc           # ← you are editing repo's tools/zsh/.zshrc
+$ source ~/.zshrc         # reflects immediately (no nix run .#switch needed)
 ```
 
-text 生成 / `programs.<tool>.settings` で配置されているもの (codex の
-config.toml / git / starship 等) は `nix/home/programs/<tool>.nix` を編集 →
-`nix run .#switch` で反映。
+Files generated via `text =` or `programs.<tool>.settings` (codex
+config.toml / git / starship etc.) require editing
+`nix/home/programs/<tool>.nix` and running `nix run .#switch`.
 
-新規 dotfile を追加する場合は CLAUDE.md の「Managing Dotfiles」を参照。
+For adding new dotfiles, see "Managing Dotfiles" in CLAUDE.md.
 
 ### mise (language runtime)
 
-global の宣言ソースは `~/.config/mise/config.toml` (= home-manager で repo
-の `tools/mise/config.toml` に out-of-store symlink される)。プロジェクト
-個別の宣言は `<project>/mise.toml` または `<project>/.tool-versions`
-(asdf 互換) で上書き可能。
+The global declaration source is `~/.config/mise/config.toml` (= an
+out-of-store symlink to the repo's `tools/mise/config.toml` via
+home-manager). Per-project overrides go in `<project>/mise.toml` or
+`<project>/.tool-versions` (asdf-compatible).
 
-mise の解決優先度 (上ほど優先):
+Resolution priority (higher wins):
 
 1. `<project>/mise.toml` | `<project>/.mise.toml`
 2. `<project>/.tool-versions`
-3. `~/.config/mise/config.toml` (= home-manager 経由 global)
+3. `~/.config/mise/config.toml` (= global via home-manager)
 
-| 操作 | コマンド |
+| Action | Command |
 |---|---|
-| 宣言済みランタイムをまとめて install | `mise install` |
-| プロジェクトに個別バージョンを fix | `mise use ruby@3.4 --pin` |
-| global バージョン更新 | `tools/mise/config.toml` を直接編集 (= `nvim ~/.config/mise/config.toml`) |
-| LSP 等のシム再生成 | `mise reshim` |
-| 利用可能バージョン一覧 | `mise ls-remote ruby` |
+| Install every declared runtime | `mise install` |
+| Pin a per-project version | `mise use ruby@3.4 --pin` |
+| Update a global version | Edit `tools/mise/config.toml` directly (= `nvim ~/.config/mise/config.toml`) |
+| Regenerate shims for LSP etc. | `mise reshim` |
+| List available versions | `mise ls-remote ruby` |
 
-注意:
+Caveats:
 
-* `mise use -g <pkg>` は repo の `tools/mise/config.toml` を直接書き換えるので、
-  そのまま `git diff` で変更が見える。気が向いたら commit すれば全 Mac で
-  共有される
-* mise は activate 時に PATH 先頭にシムを差し込むので、`zshrc` の
-  `mise activate zsh` は path-helper や Nix 側ランタイムの **後ろ** に置く
+* `mise use -g <pkg>` directly modifies the repo's
+  `tools/mise/config.toml`, so the change is visible in `git diff`. Commit
+  it when you feel like it, and the change propagates across all Macs
+* mise activate injects its shims at the head of `PATH`, so place
+  `mise activate zsh` in `zshrc` **after** `path-helper` and the Nix-side
+  runtimes
 
-## 新しい Mac を追加する場合
+## Adding a new Mac
 
-hostname 規約: 仕事用は `work`、個人用は `personal` / `personal2` / ... と
-連番。`nix/darwin/hosts/<hostname>.nix` の `networking.hostName` で apply 時に
-LocalHostName / HostName が固定されるので、IT 部門が割り当てた元の hostname
-は上書きされる。
+Hostname convention: `work` for the work machine, `personal` /
+`personal2` / ... for personal machines. The `networking.hostName` in
+`nix/darwin/hosts/<hostname>.nix` is enforced during apply, so the
+original hostname assigned by corporate IT gets overwritten.
 
-### 1. `flake.nix` の `hosts` attrset に entry 追加
+### 1. Add an entry to the `hosts` attrset in `flake.nix`
 
 ```nix
 hosts = {
   "work"      = { user = "hideaki.ishii"; gitName = "danimal141"; gitEmail = "..."; };
   "personal"  = { user = "danimal141";    gitName = "danimal141"; gitEmail = "..."; };
-  "personal2" = { user = "danimal141";    gitName = "danimal141"; gitEmail = "..."; };  # ← 追加
+  "personal2" = { user = "danimal141";    gitName = "danimal141"; gitEmail = "..."; };  # ← added
 };
 ```
 
-### 2. `nix/darwin/hosts/<hostname>.nix` を作成 (`work.nix` を雛形に)
+### 2. Create `nix/darwin/hosts/<hostname>.nix` (use `work.nix` as a template)
 
 ```nix
 { ... }:
 {
   networking.hostName = "personal2";
-  # この host 専用の brew/cask があればここに
+  # host-specific brew / cask, if any, goes here
 }
 ```
 
-### 3. 変更を commit & push
+### 3. Commit & push the change
 
-### 4. 新 Mac でセットアップ実行
+### 4. Run setup on the new Mac
 
 ```shell
-./setup.sh personal2     # ← 第 1 引数で flake host を必ず明示
+./setup.sh personal2     # ← always pass the flake host as the first arg
 ```
 
-初回は IT 部門が割り当てた元の hostname のままなので `scutil --get
-LocalHostName` では新 host を検出できず `setup.sh` は `work` にフォール
-バックする。**個人 Mac で引数を忘れると `work` 構成で switch される**ので
-第 1 引数で必ず明示する。`darwin-rebuild` 完走後は LocalHostName が
-`<hostname>` に書き換わるので、二度目以降は `./setup.sh` 引数なしで動作する。
+On a fresh Mac, the LocalHostName is still whatever corporate IT assigned,
+so `scutil --get LocalHostName` does not return the new host name and
+`setup.sh` falls back to `work`. **On a personal Mac, forgetting the
+argument causes a `work` switch**, so always pass the first arg
+explicitly. After `darwin-rebuild` completes, the LocalHostName is
+rewritten to `<hostname>`, so subsequent runs of `./setup.sh` (no
+argument) work fine.
 
-## 管理ツールの責務分担
+## Tool responsibilities
 
-* nix-darwin (system 層、`flake.lock` で pin、`nix/darwin/` 配下に集約):
-  * `nix/darwin/packages.nix` — Nix store 供給の CLI バイナリ (git / tmux /
-    neovim / fzf / ripgrep / jq / gh / kubectl 系 / apm など)
-  * `nix/darwin/homebrew.nix` — tap-only formulae / GUI cask / macOS 統合
-    の強い formulae
+* nix-darwin (system layer, pinned via `flake.lock`, consolidated under
+  `nix/darwin/`):
+  * `nix/darwin/packages.nix` — CLI binaries from the Nix store (git /
+    tmux / neovim / fzf / ripgrep / jq / gh / kubectl family / apm etc.)
+  * `nix/darwin/homebrew.nix` — Tap-only formulae / GUI casks / formulae
+    with strong macOS integration
   * `nix/darwin/macos-defaults.nix` — `system.defaults.*` (Dock / Finder /
-    NSGlobalDomain (KeyRepeat / 自動補完 OFF 等) / trackpad / WindowManager
-    / menuExtraClock / CustomUserPreferences で Kotoeri / 言語等)
-  * `nix/darwin/keyboard.nix` — `system.keyboard` で CapsLock → Control の
-    HID remap、`launchd.user.agents.remap-caps-lock` で再起動跨ぎの login
-    時再適用、`system.activationScripts.postActivation` で入力ソース切替
-    shortcut (`AppleSymbolicHotKeys` の ID 60/61) の targeted update
+    NSGlobalDomain (KeyRepeat / autocomplete off etc.) / trackpad /
+    WindowManager / menuExtraClock / CustomUserPreferences for Kotoeri /
+    language etc.)
+  * `nix/darwin/keyboard.nix` — `system.keyboard` for the CapsLock →
+    Control HID remap, `launchd.user.agents.remap-caps-lock` for
+    reapplying at login across reboots,
+    `system.activationScripts.postActivation` for targeted updates of the
+    input source switch shortcut (`AppleSymbolicHotKeys` IDs 60/61)
   * `nix/darwin/nix-daemon.nix` — `nix.settings` (experimental-features /
-    trusted-users / SSL CA bundle) と `nix.gc`、`environment.variables`
-    (NIX_SSL_CERT_FILE / HOMEBREW_FORBIDDEN_FORMULAE)
-  * `nix/darwin/system.nix` — `system.primaryUser` / `users.users.<user>` /
-    `programs.zsh.enable = false` / `system.stateVersion` の root residual
-  * `nix/darwin/default.nix` — 上記 6 ファイルを 1 つにまとめる imports。
-    flake.nix は `./nix/darwin` を 1 つ import するだけで揃う
-  * `nix/darwin/hosts/<hostname>.nix` — host 別 override
-    (`networking.hostName` 強制 + ホスト固有 brew package)
-* home-manager (user 層、nix-darwin module 統合):
-  * `nix/home/programs/<tool>.nix` — 1 ファイル 1 ツールで分割。raw text
-    symlink (`mkOutOfStoreSymlink`) または declarative module
-    (`programs.<tool>.settings`) のいずれかで `~/` 配下を配置
-  * バイナリは `/etc/profiles/per-user/$USER/bin/` に展開される
-* mise (言語ランタイム):
-  * 宣言ソースは `~/.config/mise/config.toml` (= home-manager 経由 = repo の
-    `tools/mise/config.toml`)。`mise install` が読んで実体を `~/.local/share/mise/
-    installs/` に展開
-* repo 管理外 (動的領域 / secrets):
-  * `~/.claude/{projects,todos,shell-snapshots,statsig,ide}/` (Claude Code
-    動的領域)
-  * `~/.codex/{sessions,log.json}` (codex 動的領域)
-  * `~/.apm/{apm_modules,config.json,.claude,.github}` (APM 動的領域)
-  * `~/.local/share/nvim/{lazy,site/parser}/` (lazy.nvim と nvim-treesitter 動的領域)
-  * `~/.codex/.env`, `~/.gitconfig.local`, `~/.gitconfig.work` (secrets / org 名、user 手書き)
+    trusted-users / SSL CA bundle), `nix.gc`,
+    `environment.variables` (NIX_SSL_CERT_FILE /
+    HOMEBREW_FORBIDDEN_FORMULAE)
+  * `nix/darwin/system.nix` — `system.primaryUser` / `users.users.<user>`
+    / `programs.zsh.enable = false` / `system.stateVersion` residuals
+  * `nix/darwin/default.nix` — bundles the six files above via imports.
+    `flake.nix` imports `./nix/darwin` once and gets everything
+  * `nix/darwin/hosts/<hostname>.nix` — per-host overrides
+    (`networking.hostName` enforcement + host-specific brew packages)
+* home-manager (user layer, integrated as a nix-darwin module):
+  * `nix/home/programs/<tool>.nix` — one file per tool. Places files under
+    `~/` either as a raw text symlink (`mkOutOfStoreSymlink`) or via a
+    declarative module (`programs.<tool>.settings`)
+  * Binaries land under `/etc/profiles/per-user/$USER/bin/`
+* mise (language runtimes):
+  * Declaration source is `~/.config/mise/config.toml` (= the repo's
+    `tools/mise/config.toml` via home-manager). `mise install` reads it
+    and materializes binaries under `~/.local/share/mise/installs/`
+* Out of repo control (dynamic areas / secrets):
+  * `~/.claude/{projects,todos,shell-snapshots,statsig,ide}/` (Claude
+    Code dynamic area)
+  * `~/.codex/{sessions,log.json}` (codex dynamic area)
+  * `~/.apm/{apm_modules,config.json,.claude,.github}` (APM dynamic area)
+  * `~/.local/share/nvim/{lazy,site/parser}/` (lazy.nvim and
+    nvim-treesitter dynamic areas)
+  * `~/.codex/.env`, `~/.gitconfig.local`, `~/.gitconfig.work` (secrets /
+    org name; user-handwritten)
 
-PATH 解決順 (`tools/zsh/.zshrc`):
+PATH resolution order (`tools/zsh/.zshrc`):
 
-1. `/etc/profiles/per-user/$USER/{bin,sbin}` — home-manager のユーザプロファイル
-2. `/run/current-system/sw/{bin,sbin}` — nix-darwin の system プロファイル
-3. `/opt/homebrew/{bin,sbin}` — Homebrew (Nix 移行外の formulae / cask)
+1. `/etc/profiles/per-user/$USER/{bin,sbin}` — home-manager user profile
+2. `/run/current-system/sw/{bin,sbin}` — nix-darwin system profile
+3. `/opt/homebrew/{bin,sbin}` — Homebrew (formulae / casks outside the
+   Nix migration)
 4. `$HOME/bin`, `$HOME/.local/bin`
-5. mise activate がこの後で言語ランタイム shim を PATH 先頭に差し込む
+5. mise activate then injects language runtime shims at the head of PATH
 
-home-manager の user プロファイルを system プロファイルより前に置くのは、
-同名バイナリで home-manager 側 (= flake.lock pin) を勝たせるため。
+The home-manager user profile sits before the system profile so that
+when both have a binary with the same name, the home-manager side
+(= pinned by `flake.lock`) wins.
 
 ## Claude Code skills via APM
 
-Claude Code のスキル群は [skilltree](https://github.com/danimal141/skilltree)
-にまとめ、[APM (Agent Package Manager)](https://github.com/microsoft/apm)
-経由で取り込む。
+Claude Code skills live in
+[skilltree](https://github.com/danimal141/skilltree), pulled in via
+[APM (Agent Package Manager)](https://github.com/microsoft/apm).
 
-`nix run .#switch` 時に `home.activation.apmInstall` hook が `~/.apm/
-apm.yml` の sha256 を比較し、差分があるときだけ `apm install --target
-claude` を発火する (冪等)。手動で再実行する場合:
+During `nix run .#switch`, the `home.activation.apmInstall` hook compares
+the sha256 of `~/.apm/apm.yml` and fires `apm install --target claude`
+only when the file changed (idempotent). To rerun manually:
 
 ```shell
 cd ~/.apm
 apm install --target claude
 ```
 
-依存スキルを追加・削除する場合は `tools/apm/apm.yml` (repo 内、= `~/.apm/apm.yml`
-への symlink 元) を編集して `nix run .#switch`。
+To add or remove a skill, edit `tools/apm/apm.yml` (in-repo source for the
+symlink at `~/.apm/apm.yml`) and run `nix run .#switch`.

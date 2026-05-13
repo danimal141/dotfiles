@@ -1,80 +1,89 @@
-# VSCode Neovim 連携メモ
+# VSCode Neovim Integration Notes
 
-VSCode の Neovim extension (`asvetliakov.vscode-neovim`、`tools/vscode/
-extensions.txt` で managed) を使うときの現状と注意点。
+English | [日本語](vscode-neovim-use-ja.md)
 
-## 仕組み
+Current state and caveats for using VSCode's Neovim extension
+(`asvetliakov.vscode-neovim`, managed via
+`tools/vscode/extensions.txt`).
 
-VSCode Neovim extension は VSCode 内で `nvim --embed` を起動し、normal
-mode / visual mode / vim motion の処理を nvim に委譲する。insert mode と
-syntax highlight / LSP は VSCode 側で扱うのが通常の運用。
+## How it works
 
-* VSCode 担当: syntax highlight、LSP、補完、debug、insert mode
-* Neovim 担当: normal/visual mode、motion、ユーザー keymap
+The VSCode Neovim extension launches `nvim --embed` inside VSCode and
+delegates normal mode / visual mode / vim motion to nvim. Insert mode,
+syntax highlighting, and LSP normally stay on the VSCode side.
 
-VSCode 経由で nvim が起動した場合、`vim.g.vscode` flag が事前に set
-されるので、init.lua 側で分岐すれば VSCode 用に軽量化できる。
+* VSCode owns: syntax highlight, LSP, completion, debugging, insert
+  mode
+* Neovim owns: normal/visual mode, motion, user keymaps
 
-## 現状の挙動
+When nvim is launched via VSCode, the `vim.g.vscode` flag is set
+beforehand, so branching in `init.lua` lets you trim things down for
+VSCode.
 
-現在の `tools/nvim/init.lua` には `vim.g.vscode` 分岐が入っていない。
-そのため VSCode 起動の nvim でも以下が走る:
+## Current behavior
 
-* lazy.nvim bootstrap (初回 clone あり)
-* `tools/nvim/lua/plugins/*` の全 spec を評価
-* `lazy = false` の plugin (solarized-osaka, nvim-treesitter, nvim-lspconfig)
-  は eager load
+The current `tools/nvim/init.lua` does not branch on `vim.g.vscode`.
+As a result, the VSCode-launched nvim still runs:
 
-実用上は VSCode の Neovim extension は問題なく動く (vim motion は機能)
-が、以下のオーバーヘッドがある:
+* lazy.nvim bootstrap (with the initial clone on first run)
+* Evaluation of every spec under `tools/nvim/lua/plugins/*`
+* Eager load of `lazy = false` plugins (solarized-osaka,
+  nvim-treesitter, nvim-lspconfig)
 
-* nvim 起動が plugin 数分だけ遅い
-* nvim-lspconfig が attach を試みる (VSCode の LSP と二重に走る可能性)
-* nvim-cmp の補完 popup が VSCode の suggest と被ることはない (VSCode
-  Neovim extension が insert mode を VSCode 側に渡すため、nvim-cmp の
-  trigger 自体が走らない)
+In practice, the VSCode Neovim extension works fine (vim motion is
+functional), but the following overhead exists:
 
-LSP 二重起動が気になる場合は `:LspStop` で nvim 側を手動停止、もしくは
-project に対応する LSP server バイナリを mise / brew から外す。
+* nvim startup is slower by the number of plugins
+* nvim-lspconfig attempts to attach (potentially running alongside
+  VSCode's LSP)
+* nvim-cmp's completion popup does not collide with VSCode's
+  suggestions (the VSCode Neovim extension hands insert mode back to
+  VSCode, so nvim-cmp's trigger never fires)
 
-## standalone nvim との比較
+If the duplicated LSP bothers you, stop nvim's side manually with
+`:LspStop`, or remove the matching LSP server binary from mise / brew
+for the project.
 
-| 機能 | standalone nvim | VSCode + Neovim extension |
+## Comparison with standalone nvim
+
+| Feature | standalone nvim | VSCode + Neovim extension |
 |---|---|---|
 | Syntax highlight | nvim-treesitter / vim builtin | VSCode native |
-| LSP | nvim-lspconfig + nvim-cmp | VSCode の LSP extension |
-| 補完 | nvim-cmp | VSCode IntelliSense |
+| LSP | nvim-lspconfig + nvim-cmp | VSCode's LSP extensions |
+| Completion | nvim-cmp | VSCode IntelliSense |
 | File explorer | nvim-tree (`:nt`) | VSCode Explorer |
 | Git | gitsigns.nvim | VSCode Git + GitLens |
-| vim motion | あり | あり |
-| user keymap | `tools/nvim/lua/mappings.lua` で定義 | 同上 |
+| vim motion | yes | yes |
+| user keymap | defined in `tools/nvim/lua/mappings.lua` | same |
 
-## 検証
+## Verification
 
-VSCode 内で nvim extension が動いているか:
-
-```vim
-:echo exists('g:vscode')   ⇒ 1 (VSCode 経由) または 0 (standalone)
-```
-
-standalone nvim で LSP が attach しているか (詳細は対象 buffer を開いた
-状態で):
+Whether the nvim extension is running inside VSCode:
 
 ```vim
-:checkhealth vim.lsp       ⇒ Active Clients セクションを確認
+:echo exists('g:vscode')   ⇒ 1 (via VSCode) or 0 (standalone)
 ```
 
-## 既知の改善候補
+Whether LSP is attached in standalone nvim (with the target buffer
+open):
 
-* `init.lua` 冒頭で `if vim.g.vscode then return end` 分岐を入れて
-  VSCode 起動時に plugin 全 skip。これで起動が体感速くなる。
-  ただし vim motion 用に必要な user keymap / options だけは残したいので、
-  `lua/options.lua` と `lua/mappings.lua` だけは load する設計が望ましい。
-* VSCode side で `vscode-neovim.neovimInitVimPaths` を設定して、VSCode
-  専用の minimal init を別ファイルに分けるアプローチも選択肢。
+```vim
+:checkhealth vim.lsp       ⇒ check the Active Clients section
+```
 
-## 関連
+## Known improvement candidates
+
+* Add `if vim.g.vscode then return end` at the top of `init.lua` to
+  skip every plugin during VSCode launches. This noticeably speeds up
+  startup. However, vim motion still needs user keymaps and options,
+  so a design that loads only `lua/options.lua` and
+  `lua/mappings.lua` is preferred.
+* Another option is to set `vscode-neovim.neovimInitVimPaths` on the
+  VSCode side and keep a separate minimal init file for VSCode.
+
+## See also
 
 * [VSCode Neovim Extension](https://github.com/vscode-neovim/vscode-neovim)
-* [`docs/vscode-use.md`](./vscode-use.md) — VSCode 全般の運用
-* [`docs/design-philosophy.md`](./design-philosophy.md) — dotfiles の設計思想
+* [`docs/vscode-use.md`](./vscode-use.md) — VSCode operations overall
+* [`docs/design-philosophy.md`](./design-philosophy.md) — dotfiles
+  design philosophy
