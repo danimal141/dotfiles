@@ -14,6 +14,13 @@ return {
     opts = {
       defaults = {
         file_ignore_patterns = { "node_modules", ".git" },
+        -- telescope 0.1.8 の previewer は nvim-treesitter master 時代の
+        -- `require("nvim-treesitter.parsers").ft_to_lang` を呼ぶが、main branch
+        -- 移行で同 API が消えて nil 呼び出しでクラッシュする。preview の
+        -- treesitter highlight を切って vim builtin syntax にフォールバック
+        -- させる (preview の見た目は維持される)。telescope 側で upstream fix
+        -- が入ったら除去予定。
+        preview = { treesitter = false },
       },
       pickers = {
         find_files = {
