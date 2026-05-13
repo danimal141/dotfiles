@@ -235,8 +235,7 @@ apm は nix-darwin の `environment.systemPackages` 経由で居るので
 ### system `system.activationScripts.postActivation`
 
 nix-darwin の system activation 経路で root 権限で走る (`launchctl asuser`
-
-* `sudo --user=...` で対象ユーザに切り替えながら個別コマンドを発行する形)。
+と `sudo --user=...` で対象ユーザに切り替えながら個別コマンドを発行する形)。
 
 * 入力ソース切替 shortcut (`AppleSymbolicHotKeys` の ID 60 / 61) を
   `defaults write -dict-add` で targeted update。`AppleSymbolicHotKeys`

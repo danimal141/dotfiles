@@ -115,7 +115,7 @@ and those already in sync.
 
 ### Custom Shortcuts (current contents of keybindings.jsonc)
 
-* **Cmd+Shift+M** (when terminal is focused): toggle panel maximize
+* **Cmd+Shift+L** (when terminal is focused): toggle panel maximize
 * **Cmd+Shift+W**: focus Workspace Explorer
 * **Cmd+Shift+C**: collapse all folders in Explorer
 

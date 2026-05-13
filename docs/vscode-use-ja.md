@@ -105,7 +105,7 @@ VSCode に install されているが `extensions.txt` に無いもの / `extens
 
 ### Custom Shortcuts (現 keybindings.jsonc の中身)
 
-* **Cmd+Shift+M** (terminal focus 時): panel maximize toggle
+* **Cmd+Shift+L** (terminal focus 時): panel maximize toggle
 * **Cmd+Shift+W**: Workspace Explorer focus
 * **Cmd+Shift+C**: Explorer の全フォルダを collapse
 
