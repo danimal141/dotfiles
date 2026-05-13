@@ -97,7 +97,6 @@ raw symlink でなく declarative module (`programs.<tool>.settings`) で書く�
   (`tools/{zsh,tmux,nvim,claude,codex,apm,mise,markdownlint,ghostty,ctags,vscode}/`)
 * `setup.sh` — 初回 bootstrap (Xcode CLT → Nix → CA bundle → /etc 退避 →
   darwin-rebuild → mise install → LSP global → prek)
-* `tmux-migrate-options.py` — tmux deprecated option 移行 utility
 
 主要 dotfile の `~/` 配置先:
 
