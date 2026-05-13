@@ -68,33 +68,33 @@ After completion, `which git` resolves to
 
 The repo is public — secrets are not tracked. Three injection paths:
 
-#### codex (`GEMINI_API_KEY`)
+#### codex
 
 User-placed `~/.codex/.env`:
 
 ```shell
 cp tools/codex/.env.example ~/.codex/.env
 chmod 600 ~/.codex/.env
-$EDITOR ~/.codex/.env       # fill in GEMINI_API_KEY=...
+$EDITOR ~/.codex/.env       # fill in values for each key in .env.example
 ```
 
 `tools/codex/wrappers/gemini-mcp.sh` (symlinked to
-`~/.codex/wrappers/gemini-mcp.sh`) sources `.env` at startup and injects the
-env into the `mcp-gemini-google-search` child process.
+`~/.codex/wrappers/gemini-mcp.sh`) sources `.env` at startup and injects
+the env into the MCP server child processes. See
+`tools/codex/.env.example` for the env vars actually used.
 
 #### Claude Code MCP server env (optional)
 
 When you run `tools/claude/setup-mcp.sh` as
 `cd tools/claude && ./setup-mcp.sh`, the script sources `.env` in the
 same directory and injects the values as the `env:` of each server in
-`tools/claude/mcp-servers.yaml`. Right now the registered servers
-(context7 / terraform) both have `env: {}`, so the path can be safely
-skipped — but when you add a server that requires env vars:
+`tools/claude/mcp-servers.yaml`. Skip this step entirely when no
+registered server requires env vars. When some do:
 
 ```shell
 cp tools/claude/.env.example tools/claude/.env
 chmod 600 tools/claude/.env
-$EDITOR tools/claude/.env   # fill in GITHUB_PERSONAL_ACCESS_TOKEN=... etc.
+$EDITOR tools/claude/.env   # fill in values for each key in .env.example
 cd tools/claude && ./setup-mcp.sh
 ```
 

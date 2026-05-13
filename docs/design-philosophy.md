@@ -188,26 +188,24 @@ This ensures:
 The repo is intended to be public, so secrets are never tracked. Three
 injection paths exist:
 
-* **wrapper script + `~/.codex/.env`** (codex's `GEMINI_API_KEY`):
-  user places `~/.codex/.env` manually (no gitignore needed = lives
-  outside the repo); the wrapper
+* **wrapper script + `~/.codex/.env`** (env values for codex-side MCP
+  servers): user places `~/.codex/.env` manually (no gitignore needed
+  = lives outside the repo); the wrapper
   (`tools/codex/wrappers/gemini-mcp.sh`) sources it at startup and
   injects env into the child process. `tools/codex/.env.example` is
-  tracked as the template.
-* **MCP server registration + `tools/claude/.env`** (the current
-  `.env.example` contains `GITHUB_PERSONAL_ACCESS_TOKEN` /
-  `GEMINI_API_KEY`):
+  tracked as the template; refer to it for the env vars in use.
+* **MCP server registration + `tools/claude/.env`** (env values for
+  Claude Code MCP servers):
   `tools/claude/setup-mcp.sh` sources the in-repo
-  `tools/claude/.env` and passes it as env to `claude mcp add`. Note
-  that it reads **the in-repo `tools/claude/.env`**, not
-  `~/.claude/.env` (because the script expects to be run as
+  `tools/claude/.env` and injects the values as the `env:` of each
+  server in `tools/claude/mcp-servers.yaml`. Note that it reads
+  **the in-repo `tools/claude/.env`**, not `~/.claude/.env` (because
+  the script expects to be run as
   `cd tools/claude && ./setup-mcp.sh` and reads `${SCRIPT_DIR}/.env`).
   `tools/claude/.env` is in `.gitignore`;
-  `tools/claude/.env.example` is tracked as the template. Note that
-  the current `tools/claude/mcp-servers.yaml` only registers
-  context7 / terraform with `env: {}`, so the env injection is
-  dormant for now (this path is reserved for the day a new server
-  requires env vars).
+  `tools/claude/.env.example` is tracked as the template. For the
+  list of env vars actually used, look at
+  `tools/claude/.env.example` directly.
 * **Handwritten dispatcher + overrides** (work git identity):
   the repo's `programs.git.includes` only unconditionally includes
   `~/.gitconfig.local` (user-handwritten, outside the repo). Both the
@@ -243,9 +241,9 @@ one more entry.
 
 ## Declarative side-effects at apply time
 
-`darwin-rebuild` (= `nix run .#switch`) triggers four kinds of
-side-effects via the activation path. Each has a distinct
-responsibility and firing moment:
+`darwin-rebuild` (= `nix run .#switch`) triggers side-effects via the
+activation path, split across the routes below by responsibility and
+firing moment:
 
 ### home-manager `home.activation.<name>`
 

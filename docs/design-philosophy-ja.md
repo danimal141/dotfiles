@@ -170,22 +170,20 @@ apm の `~/.apm/apm_modules/`) は **home.file 対象外**として ~/ 配下に
 repo は public 想定で運用しているため secrets を tracked file に置かない。
 注入経路は 3 種類:
 
-* **wrapper script + `~/.codex/.env`** (codex の `GEMINI_API_KEY`):
+* **wrapper script + `~/.codex/.env`** (codex 側 MCP server の env):
   `~/.codex/.env` (gitignore 不要 = repo 外配置) を user が手動配置し、
   wrapper (`tools/codex/wrappers/gemini-mcp.sh`) が起動時に source して child
   process に env として inject する。`tools/codex/.env.example` を template
-  として tracked。
-* **MCP server 登録 + `tools/claude/.env`** (現状 `.env.example` は
-  `GITHUB_PERSONAL_ACCESS_TOKEN` / `GEMINI_API_KEY` を含む):
+  として tracked、どの env が必要かはそちらを直接参照。
+* **MCP server 登録 + `tools/claude/.env`** (Claude Code 側 MCP server の
+  env):
   `tools/claude/setup-mcp.sh` が repo 内の `tools/claude/.env` を source して
-  `claude mcp add` の env として渡す。`~/.claude/.env` ではなく **repo 内の
-  `tools/claude/.env`** を読む点に注意 (= setup-mcp.sh が
-  `cd tools/claude && ./setup-mcp.sh` で実行されることを前提に
-  `${SCRIPT_DIR}/.env` を見ている)。`tools/claude/.env` は gitignore で除外、
-  `tools/claude/.env.example` を template として tracked。なお現在の
-  `tools/claude/mcp-servers.yaml` は context7 / terraform を `env: {}` で
-  載せているだけなので env 注入は dormant (新規 server 追加時にこの経路を
-  使う想定)。
+  `tools/claude/mcp-servers.yaml` の各 server の `env:` 値として inject する。
+  `~/.claude/.env` ではなく **repo 内の `tools/claude/.env`** を読む点に注意
+  (= setup-mcp.sh が `cd tools/claude && ./setup-mcp.sh` で実行されることを
+  前提に `${SCRIPT_DIR}/.env` を見ている)。`tools/claude/.env` は gitignore で
+  除外、`tools/claude/.env.example` を template として tracked。template に
+  どの env 変数が含まれるかは `tools/claude/.env.example` を直接参照。
 * **手書き dispatcher + overrides** (work git identity):
   repo の `programs.git.includes` は `~/.gitconfig.local` (user 手書き、
   repo 外) を unconditional に include するだけで、条件分岐 (どの remote
@@ -219,7 +217,7 @@ hosts/<hostname>.nix) に流す。マシン追加は 1 entry 足すだけ。
 ## apply 時の declarative 副作用
 
 `darwin-rebuild` (= `nix run .#switch`) の activation 経路で実行する
-副作用が現状 4 つ。それぞれ責務と発火タイミングが違う:
+副作用は、責務と発火タイミングに応じて以下の経路に分かれる:
 
 ### home-manager `home.activation.<name>`
 
