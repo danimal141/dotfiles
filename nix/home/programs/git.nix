@@ -10,7 +10,7 @@
 # tracked しない) を unconditional に include する経路で実現する。条件分岐
 # (どの remote URL pattern で identity を切り替えるか) と上書き値そのもの
 # (~/.gitconfig.work) の双方を user 側に逃がして、所属組織名や業務メール
-# を public repo に出さない設計。詳細は README.md の「業務 git identity
+# を public repo に出さない設計。詳細は README-ja.md の「業務 git identity
 # 上書き」セクション参照。
 #
 # global gitignore は `programs.git.ignores` で ~/.config/git/ignore に
@@ -47,7 +47,7 @@
 
     includes = [
       # 条件分岐込みで全部 user 側 (~/.gitconfig.local) に逃がす。詳細は
-      # README.md「業務 git identity 上書き」セクション参照。
+      # README-ja.md「業務 git identity 上書き」セクション参照。
       { path = "~/.gitconfig.local"; }
     ];
   };

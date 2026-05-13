@@ -1,117 +1,129 @@
 # VSCode Settings Management
 
-VSCode の `settings.json` / `keybindings.json` / extensions は home-manager
-(`nix/home/programs/vscode.nix`) が darwin-rebuild の activation 経由で配置・
-install する。`tools/vscode/` 配下に raw config を置き、`nix run .#switch`
-1 発で同期される。
+English | [日本語](vscode-use-ja.md)
 
-## ファイル構成
+VSCode's `settings.json` / `keybindings.json` / extensions are placed
+and installed by home-manager (`nix/home/programs/vscode.nix`) via the
+`darwin-rebuild` activation path. Drop the raw config under
+`tools/vscode/` and a single `nix run .#switch` keeps everything in
+sync.
 
-* `tools/vscode/settings.jsonc` — VSCode user settings (jsonc, `${HOME}`
-  placeholder を含む)
+## File layout
+
+* `tools/vscode/settings.jsonc` — VSCode user settings (jsonc, contains
+  `${HOME}` placeholders)
 * `tools/vscode/keybindings.jsonc` — keybindings (jsonc)
-* `tools/vscode/extensions.txt` — install したい extension ID の一覧
-* `tools/vscode/sync.sh` — extension sync utility (`--save` / `--status`)
-* `nix/home/programs/vscode.nix` — 上記を読み込んで `~/Library/Application
-  Support/Code/User/` 配下に配置する home-manager module
+* `tools/vscode/extensions.txt` — list of extension IDs to install
+* `tools/vscode/sync.sh` — extension sync utility (`--save` /
+  `--status`)
+* `nix/home/programs/vscode.nix` — the home-manager module that reads
+  the above and places files under
+  `~/Library/Application Support/Code/User/`
 
-## 配置パターン
+## Placement patterns
 
 ### settings.json
 
-`builtins.readFile + builtins.replaceStrings` で `tools/vscode/settings.jsonc`
-を読み込み、`${HOME}` を `/Users/${user}` に置換した上で `home.file."<path>".text`
-で in-store 生成。
+Read `tools/vscode/settings.jsonc` via
+`builtins.readFile + builtins.replaceStrings`, replace `${HOME}` with
+`/Users/${user}`, and generate it in-store via
+`home.file."<path>".text`.
 
-* jsonc コメント (`// ...`) は raw string として保持される
-* `${user}` は `flake.nix` の `mkHost` の specialArgs 経由で host 別に解決
-* 編集後は **`nix run .#switch` 必須** (text= による再 eval が要る)
-* `~/Library/Application Support/Code/User/settings.json` は
-  `/nix/store/...-home-manager-files/...` への symlink になる
+* jsonc comments (`// ...`) are preserved as raw strings
+* `${user}` is resolved per host via `mkHost`'s specialArgs in
+  `flake.nix`
+* After editing, **`nix run .#switch` is required** (re-eval of `text =`
+  is needed)
+* `~/Library/Application Support/Code/User/settings.json` becomes a
+  symlink to `/nix/store/...-home-manager-files/...`
 
 ### keybindings.json
 
-`mkOutOfStoreSymlink` で `tools/vscode/keybindings.jsonc` への out-of-store
-symlink を `~/Library/Application Support/Code/User/keybindings.json` に
-配置。`${HOME}` 等の host 別解決が要らないため。
+`mkOutOfStoreSymlink` puts an out-of-store symlink to
+`tools/vscode/keybindings.jsonc` at
+`~/Library/Application Support/Code/User/keybindings.json`. No
+per-host resolution like `${HOME}` is needed for keybindings.
 
-* 編集即反映: `nvim ~/Library/Application\ Support/Code/User/keybindings.json`
-  で repo 内ファイルを直接編集できる。VSCode は file 変更を検知して reload
-  (Cmd+R で明示 reload も可)
-* `nix run .#switch` 不要
+* Reflects immediately:
+  `nvim ~/Library/Application\ Support/Code/User/keybindings.json`
+  lets you edit the repo file directly. VSCode detects the change and
+  reloads (Cmd+R for explicit reload)
+* No `nix run .#switch` needed
 
 ### extensions
 
-`home.activation.vscodeExtensions` hook が:
+The `home.activation.vscodeExtensions` hook does:
 
-1. `tools/vscode/extensions.txt` を 1 行ずつ走査
-2. `code --list-extensions` の出力と比較
-3. 未 install のものだけ `code --install-extension <id> --force` を発火
+1. Walk through `tools/vscode/extensions.txt` line by line
+2. Compare against the output of `code --list-extensions`
+3. Fire `code --install-extension <id> --force` only for the missing
+   ones
 
-冪等で、毎回 `nix run .#switch` を打っても全件 install 済の状態では何も
-しない。`code` コマンドが PATH に居ない環境 (= VSCode 未 install) では
-skip して switch 全体は止めない。
+Idempotent — running `nix run .#switch` does nothing when everything is
+already installed. When `code` is missing from PATH (= VSCode not
+installed), the hook is skipped and the overall switch is not blocked.
 
-社内 VPN の SSL inspection (中間者 CA) 対策で、hook 内で
-`NODE_EXTRA_CA_CERTS=/etc/nix/ca-bundle.pem` を export する。bundle が無い
-個人 Mac では未設定のまま (Node 既定の CA で動作)。
+For corporate VPN SSL inspection (MITM CA), the hook exports
+`NODE_EXTRA_CA_CERTS=/etc/nix/ca-bundle.pem`. On a personal Mac without
+the bundle, it stays unset (Node's default CA is used).
 
-## 運用
+## Operations
 
-### 初回セットアップ (新 Mac)
+### Initial setup (new Mac)
 
-`setup.sh` 完走後、`darwin-rebuild` の activation 経由で settings /
-keybindings / extensions すべてが自動配置される。手動で `apply-settings.sh`
-等を呼ぶ必要はない。
+After `setup.sh` completes, settings / keybindings / extensions are all
+placed automatically via the `darwin-rebuild` activation path. No need
+to invoke `apply-settings.sh` or similar by hand.
 
-### settings.json を編集する
+### Editing settings.json
 
 ```bash
 $EDITOR tools/vscode/settings.jsonc
 nix run .#switch
 ```
 
-### keybindings.json を編集する
+### Editing keybindings.json
 
 ```bash
 $EDITOR tools/vscode/keybindings.jsonc
-# VSCode は自動 reload (もしくは Cmd+R で明示 reload)
+# VSCode auto-reloads (or Cmd+R for explicit reload)
 ```
 
-`tools/vscode/keybindings.jsonc` を直接編集してもいいし、`~/Library/Application
-Support/Code/User/keybindings.json` を VSCode 内から編集しても repo 内ファイル
-が書き換わる (out-of-store symlink なので)。
+You can edit `tools/vscode/keybindings.jsonc` directly, or edit
+`~/Library/Application Support/Code/User/keybindings.json` from inside
+VSCode — both modify the in-repo file (it is an out-of-store symlink).
 
-### 新しい extension を追加する
+### Adding a new extension
 
 ```bash
-# VSCode UI で extension を install (Cmd+Shift+X)
-cd tools/vscode && ./sync.sh --save   # 実状態を extensions.txt に書き戻し
-git diff extensions.txt               # 追加内容を確認して commit
+# Install the extension via the VSCode UI (Cmd+Shift+X)
+cd tools/vscode && ./sync.sh --save   # write the actual state back into extensions.txt
+git diff extensions.txt               # review the change and commit
 ```
 
-次回 `nix run .#switch` で他 Mac でも自動 install される。
+Other Macs pick the new extension up on the next `nix run .#switch`.
 
-### sync 状態の確認
+### Checking sync status
 
 ```bash
 cd tools/vscode && ./sync.sh --status
 ```
 
-VSCode に install されているが `extensions.txt` に無いもの / `extensions.txt`
-にあるが install されていないもの / 同期済の一覧を表示。
+Lists extensions installed in VSCode but missing from
+`extensions.txt`, those listed in `extensions.txt` but not installed,
+and those already in sync.
 
-### Custom Shortcuts (現 keybindings.jsonc の中身)
+### Custom Shortcuts (current contents of keybindings.jsonc)
 
-* **Cmd+Shift+M** (terminal focus 時): panel maximize toggle
-* **Cmd+Shift+W**: Workspace Explorer focus
-* **Cmd+Shift+C**: Explorer の全フォルダを collapse
+* **Cmd+Shift+M** (when terminal is focused): toggle panel maximize
+* **Cmd+Shift+W**: focus Workspace Explorer
+* **Cmd+Shift+C**: collapse all folders in Explorer
 
-新規 keybinding を追加する場合は VSCode の Keyboard Shortcuts editor
-(Cmd+K Cmd+S) で構文を確認しながら `tools/vscode/keybindings.jsonc` に追記
-する。jsonc なのでコメントが書ける。
+To add a new keybinding, use the VSCode Keyboard Shortcuts editor
+(Cmd+K Cmd+S) to check the syntax and append it to
+`tools/vscode/keybindings.jsonc`. It is jsonc, so comments are fine.
 
-## Platform 対応
+## Platform support
 
-macOS のみ対応。Linux 用の `~/.config/Code/User/` 経路は home-manager
-module 側で扱っていない (このリポジトリ全体が macOS only 想定)。
+macOS only. The Linux path `~/.config/Code/User/` is not handled by
+the home-manager module (the whole repo is macOS-only).
