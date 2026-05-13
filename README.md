@@ -44,7 +44,7 @@ cd ~/Documents/dev/dotfiles
    `*.before-nix-darwin` に退避 (nix-darwin の activation が「unrecognized
    content」を理由に abort するのを回避)
 5. `sudo -E nix run nix-darwin -- switch --flake ".#<hostname>"` を実行 —
-   `nix/darwin/{defaults,keyboard,nix-daemon,system,packages,homebrew}.nix`
+   `nix/darwin/{macos-defaults,keyboard,nix-daemon,system,packages,homebrew}.nix`
    (system 層 / Nix store CLI / brew / cask) / `nix/home/programs/*.nix`
    (home-manager 経由の dotfile symlink + VSCode settings/keybindings/extensions
    含む) が一括反映

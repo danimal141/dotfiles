@@ -1,7 +1,7 @@
 # tmux-start で開くディレクトリ一覧 (default、全 PC 共通)。
 #
 # nix/home/programs/tmux.nix が `~/.tmux_start_dir` をこのファイルへの
-# out-of-store symlink として配置するため、`vim ~/.tmux_start_dir` で
+# out-of-store symlink として配置するため、`nvim ~/.tmux_start_dir` で
 # 開いて編集すれば即反映される。
 #
 # フォーマット:
