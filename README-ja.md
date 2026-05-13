@@ -60,7 +60,7 @@ cd ~/Documents/dev/dotfiles
 
 ### 3. シークレット注入
 
-repo に secrets を tracked しない方針。注入経路は 2 つ:
+repo に secrets を tracked しない方針。注入経路は 3 つ:
 
 #### codex (`GEMINI_API_KEY`)
 
@@ -75,6 +75,25 @@ $EDITOR ~/.codex/.env       # GEMINI_API_KEY=... を埋める
 `tools/codex/wrappers/gemini-mcp.sh` (= `~/.codex/wrappers/gemini-mcp.sh` への
 symlink) が起動時に `.env` を source して `mcp-gemini-google-search` の
 env として inject する。
+
+#### Claude Code MCP server env (任意)
+
+`tools/claude/setup-mcp.sh` を `cd tools/claude && ./setup-mcp.sh` で
+実行する際、同 dir 内の `.env` を source して
+`tools/claude/mcp-servers.yaml` の各 server の `env:` 値として inject する。
+現状 `mcp-servers.yaml` の server (context7 / terraform) はどちらも
+`env: {}` なので実害なく skip 可能だが、将来 env 必須の MCP server を
+追加するときは:
+
+```shell
+cp tools/claude/.env.example tools/claude/.env
+chmod 600 tools/claude/.env
+$EDITOR tools/claude/.env   # GITHUB_PERSONAL_ACCESS_TOKEN=... 等を埋める
+cd tools/claude && ./setup-mcp.sh
+```
+
+`tools/claude/.env` は repo の `.gitignore` で除外、`.env.example` のみ
+tracked。
 
 #### work GitHub org の git identity (任意)
 

@@ -194,16 +194,20 @@ injection paths exist:
   (`tools/codex/wrappers/gemini-mcp.sh`) sources it at startup and
   injects env into the child process. `tools/codex/.env.example` is
   tracked as the template.
-* **MCP server registration + `tools/claude/.env`**
-  (`GITHUB_PERSONAL_ACCESS_TOKEN` / `GEMINI_API_KEY` /
-  `BRAVE_API_KEY`):
+* **MCP server registration + `tools/claude/.env`** (the current
+  `.env.example` contains `GITHUB_PERSONAL_ACCESS_TOKEN` /
+  `GEMINI_API_KEY`):
   `tools/claude/setup-mcp.sh` sources the in-repo
   `tools/claude/.env` and passes it as env to `claude mcp add`. Note
   that it reads **the in-repo `tools/claude/.env`**, not
   `~/.claude/.env` (because the script expects to be run as
   `cd tools/claude && ./setup-mcp.sh` and reads `${SCRIPT_DIR}/.env`).
   `tools/claude/.env` is in `.gitignore`;
-  `tools/claude/.env.example` is tracked as the template.
+  `tools/claude/.env.example` is tracked as the template. Note that
+  the current `tools/claude/mcp-servers.yaml` only registers
+  context7 / terraform with `env: {}`, so the env injection is
+  dormant for now (this path is reserved for the day a new server
+  requires env vars).
 * **Handwritten dispatcher + overrides** (work git identity):
   the repo's `programs.git.includes` only unconditionally includes
   `~/.gitconfig.local` (user-handwritten, outside the repo). Both the
