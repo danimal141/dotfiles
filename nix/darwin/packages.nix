@@ -28,17 +28,15 @@
     tree
     yq-go           # Go 実装の yq (Python 版より速い)
 
-    # editors — vim / nvim は plugin が外部 git clone なので、本体だけ Nix で
-    # 配ればよい。プラグイン管理は vim-plug が ~/.vim/plugged 以下で完結する。
+    # editor — plugin は外部 git clone (lazy.nvim 経由) で
+    # ~/.local/share/nvim/lazy 以下に展開されるので、本体だけ Nix で配ればよい。
     neovim
-    vim
 
     # language servers — nvim-lspconfig (tools/nvim/lua/plugins/lsp.lua) が
-    # attach する LSP server binary。coc.nvim 時代は coc-* 拡張が npm
-    # package 内に server を抱えていたが、nvim-lspconfig 採用に伴い PATH
-    # 上で解決する必要があるため Nix store で集中管理する。rust-analyzer
-    # は rustup の component に任せる (rustup component add rust-analyzer)、
-    # clangd は LLVM toolchain (Homebrew) 由来のものを使う。
+    # attach する LSP server binary を PATH 上で解決する必要があるため
+    # Nix store で集中管理する。rust-analyzer は rustup の component に任せる
+    # (rustup component add rust-analyzer)、clangd は LLVM toolchain
+    # (Homebrew) 由来のものを使う。
     gopls                                  # Go
     python3Packages.jedi-language-server   # Python
     solargraph                             # Ruby (ruby-lsp は composed bundle 前提で global 配備と相性が悪い)

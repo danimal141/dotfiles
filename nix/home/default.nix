@@ -5,7 +5,7 @@
 # 方針:
 #   * `home.file` で raw text dotfile (zshrc 等) を `mkOutOfStoreSymlink` で
 #     `~/` に symlink 配置する。中身は repo 内のままなので編集体験は維持される
-#     (vim で開いて即 source できる)。
+#     (エディタで開いて即 source できる)。
 #   * Nix module の `programs.*` で型付けして書く方が綺麗なツール (starship,
 #     mise 等) は home-manager で declarative に書く。
 #   * 1 ファイル 1 ツールで `./programs/<tool>.nix` に分割。新規ツールは
@@ -16,7 +16,6 @@
     ./programs/sheldon.nix
     ./programs/git.nix
     ./programs/tmux.nix
-    ./programs/vim.nix
     ./programs/nvim.nix
     ./programs/claude.nix
     ./programs/codex.nix

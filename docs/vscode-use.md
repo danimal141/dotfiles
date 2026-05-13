@@ -35,7 +35,7 @@ install する。`tools/vscode/` 配下に raw config を置き、`nix run .#swi
 symlink を `~/Library/Application Support/Code/User/keybindings.json` に
 配置。`${HOME}` 等の host 別解決が要らないため。
 
-* 編集即反映: `vim ~/Library/Application\ Support/Code/User/keybindings.json`
+* 編集即反映: `nvim ~/Library/Application\ Support/Code/User/keybindings.json`
   で repo 内ファイルを直接編集できる。VSCode は file 変更を検知して reload
   (Cmd+R で明示 reload も可)
 * `nix run .#switch` 不要
