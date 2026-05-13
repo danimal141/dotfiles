@@ -212,14 +212,14 @@ wrapper の付加価値は次の 3 点:
 
 ### Dotfile を編集 / 追加する
 
-raw text symlink で配置されている dotfile (zsh / tmux / vim / nvim / claude /
-ghostty / ctags / mise の config.toml / markdownlint) は **`vim ~/.zshrc`
+raw text symlink で配置されている dotfile (zsh / tmux / nvim / claude /
+ghostty / ctags / mise の config.toml / markdownlint) は **`nvim ~/.zshrc`
 で repo 内ファイルを直接編集** することになる:
 
 ```shell
 $ readlink ~/.zshrc
 # → /Users/<user>/Documents/dev/dotfiles/tools/zsh/.zshrc (3-step chain で repo 到達)
-$ vim ~/.zshrc            # ← repo の tools/zsh/.zshrc を編集している
+$ nvim ~/.zshrc           # ← repo の tools/zsh/.zshrc を編集している
 $ source ~/.zshrc         # 即反映 (nix run .#switch 不要)
 ```
 
@@ -246,7 +246,7 @@ mise の解決優先度 (上ほど優先):
 |---|---|
 | 宣言済みランタイムをまとめて install | `mise install` |
 | プロジェクトに個別バージョンを fix | `mise use ruby@3.4 --pin` |
-| global バージョン更新 | `tools/mise/config.toml` を直接編集 (= `vim ~/.config/mise/config.toml`) |
+| global バージョン更新 | `tools/mise/config.toml` を直接編集 (= `nvim ~/.config/mise/config.toml`) |
 | LSP 等のシム再生成 | `mise reshim` |
 | 利用可能バージョン一覧 | `mise ls-remote ruby` |
 
@@ -336,7 +336,6 @@ LocalHostName` では新 host を検出できず `setup.sh` は `work` にフォ
     動的領域)
   * `~/.codex/{sessions,log.json}` (codex 動的領域)
   * `~/.apm/{apm_modules,config.json,.claude,.github}` (APM 動的領域)
-  * `~/.vim/{plugged,sessions,.netrwhist}` (vim-plug 動的領域)
   * `~/.local/share/nvim/{lazy,site/parser}/` (lazy.nvim と nvim-treesitter 動的領域)
   * `~/.codex/.env`, `~/.gitconfig.local`, `~/.gitconfig.work` (secrets / org 名、user 手書き)
 
