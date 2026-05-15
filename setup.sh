@@ -80,7 +80,7 @@ if [ ! -s "$CA_BUNDLE" ]; then
   "
 fi
 echo "[setup] Pointing nix-daemon at $CA_BUNDLE"
-sudo launchctl setenv NIX_SSL_CERT_FILE "$CA_BUNDLE"
+sudo launchctl setenv NIX_SSL_CERT_FILE "$CA_BUNDLE" || true
 sudo launchctl kickstart -k system/org.nixos.nix-daemon || true
 # 同 shell の nix CLI も同じ bundle を見るようにしておく
 export NIX_SSL_CERT_FILE="$CA_BUNDLE"
