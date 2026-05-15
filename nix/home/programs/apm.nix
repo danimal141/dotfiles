@@ -23,7 +23,7 @@ in
   home.file.".apm/.gitignore".source =
     config.lib.file.mkOutOfStoreSymlink "${apmDir}/.gitignore";
 
-  home.activation.apmInstall = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.apmInstall = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
     # home-manager の activation hook はデフォルト PATH に nix-darwin の
     # system profile (/run/current-system/sw/bin) を含まない。apm は
     # nix-darwin の environment.systemPackages 経由でそこに居るため、
@@ -31,6 +31,12 @@ in
     export PATH="/run/current-system/sw/bin:$PATH"
 
     HASH_FILE="$HOME/.apm/.apm.yml.hash"
+    # apm.yml は linkGeneration 後に symlink 配置されるが、初回など
+    # ファイルが存在しない場合は skip する。
+    if [ ! -f "$HOME/.apm/apm.yml" ]; then
+      echo "[apmInstall] skip (apm.yml not found)"
+      return 0
+    fi
     NEW_HASH=$(${pkgs.coreutils}/bin/sha256sum "$HOME/.apm/apm.yml" | ${pkgs.gawk}/bin/awk '{print $1}')
     OLD_HASH=$(${pkgs.coreutils}/bin/cat "$HASH_FILE" 2>/dev/null || echo "")
     APM_BIN=$(command -v apm || true)
