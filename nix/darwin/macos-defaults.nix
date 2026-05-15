@@ -75,6 +75,10 @@
       # 安全のため表示。
       AppleShowAllExtensions = true;
 
+      # ドットファイル (隠しファイル) を Finder で常に表示する。default は隠す。
+      # .zshrc / .config / .ssh 等を Finder から直接確認・移動するため有効化。
+      AppleShowAllFiles = true;
+
       # 新規 Finder window のデフォルト表示形式: column view。値:
       #   "icnv" = Icon / "Nlsv" = List / "clmv" = Column / "Flwv" = Gallery
       # column view は path 階層が一目で見えて作業しやすい。

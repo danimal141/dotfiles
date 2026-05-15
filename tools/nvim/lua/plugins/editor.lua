@@ -5,6 +5,7 @@ return {
     cmd = "Telescope",
     keys = {
       { "<C-p>", function() require("telescope.builtin").find_files() end, desc = "Telescope find files" },
+      { "<C-f>", function() require("telescope.builtin").live_grep() end, desc = "Telescope live grep" },
       { "<leader>ff", function() require("telescope.builtin").find_files() end, desc = "Telescope find files" },
       { "<leader>fg", function() require("telescope.builtin").live_grep() end, desc = "Telescope live grep" },
       { "<leader>fb", function() require("telescope.builtin").buffers() end, desc = "Telescope buffers" },
