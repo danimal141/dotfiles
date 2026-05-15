@@ -1,15 +1,22 @@
 return {
   {
-    "iamcco/markdown-preview.nvim",
+    "toppair/peek.nvim",
     ft = "markdown",
-    build = function()
-      vim.fn["mkdp#util#install"]()
-    end,
-    init = function()
-      vim.g.mkdp_auto_close = 1
-      -- 空文字列が docs 上の "use system default browser" 挙動
-      -- (mac: open, linux: xdg-open, win: start)。
-      vim.g.mkdp_browser = ""
+    -- deno は mise global で入っている前提 (denols でも使用)。
+    -- 社内 VPN の SSL inspection 下では deno.land への HTTPS 取得が
+    -- UnknownIssuer になるため、init.lua と同じ /etc/nix/ca-bundle.pem を
+    -- DENO_CERT に渡して build を通す。
+    build = "DENO_CERT=/etc/nix/ca-bundle.pem deno task --quiet build:fast",
+    config = function()
+      require("peek").setup({
+        auto_load = true,
+        close_on_bdelete = true,
+        syntax = true,
+        theme = "dark",
+        app = "webview",
+      })
+      vim.api.nvim_create_user_command("PeekOpen", require("peek").open, {})
+      vim.api.nvim_create_user_command("PeekClose", require("peek").close, {})
     end,
   },
   {

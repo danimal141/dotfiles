@@ -4,11 +4,14 @@
 -- nix-daemon.nix が配置する /etc/nix/ca-bundle.pem を子プロセスに継承
 -- させる。git は GIT_SSL_CAINFO、curl は CURL_CA_BUNDLE を見る
 -- (nvim-treesitter は curl で parser tar.gz を取りに行く)。SSL_CERT_FILE
--- は OpenSSL を直接使う Python / Ruby などのフォールバック用。
+-- は OpenSSL を直接使う Python / Ruby などのフォールバック用。DENO_CERT
+-- は deno が独自に見るので別途必要 (peek.nvim の build / runtime の
+-- deno.land fetch を通すため)。
 if (vim.uv or vim.loop).fs_stat("/etc/nix/ca-bundle.pem") then
   vim.env.GIT_SSL_CAINFO = "/etc/nix/ca-bundle.pem"
   vim.env.CURL_CA_BUNDLE = "/etc/nix/ca-bundle.pem"
   vim.env.SSL_CERT_FILE = "/etc/nix/ca-bundle.pem"
+  vim.env.DENO_CERT = "/etc/nix/ca-bundle.pem"
 end
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
