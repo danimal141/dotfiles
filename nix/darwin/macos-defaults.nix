@@ -181,11 +181,11 @@
         JIMPrefConvertWithPunctuationKey = 0;
       };
 
-      # Finder のデフォルト並び順を作成日順に設定。
-      # FXArrangeGroupViewBy: 「整理」の基準 key ("Date Created" = 作成日)。
+      # Finder のデフォルト並び順を追加日順に設定。
+      # FXArrangeGroupViewBy: 「整理」の基準 key ("Date Added" = 追加日)。
       # nix-darwin の typed finder option にないため CustomUserPreferences で設定。
       "com.apple.finder" = {
-        FXArrangeGroupViewBy = "Date Created";
+        FXArrangeGroupViewBy = "Date Added";
       };
     };
 
