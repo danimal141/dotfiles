@@ -31,7 +31,6 @@ create_session() {
   tmux send-keys -t "$session_name:editor" "nvim" Enter
 
   tmux new-window -t "$session_name" -n "terminal" -c "$dir"
-  tmux split-window -t "$session_name:terminal" -h -c "$dir"
 
   tmux new-window -t "$session_name" -n "server" -c "$dir"
 
