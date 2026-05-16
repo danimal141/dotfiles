@@ -62,6 +62,109 @@ the repo, so opening `nvim ~/.zshrc` puts you directly into the repo.
 Edit → shell reload (`source ~/.zshrc`) reflects immediately — a tight
 iteration cycle that does not go through `nix run .#switch`.
 
+## Architecture diagrams
+
+### End-to-end apply path
+
+Bird's-eye view of how `nix run .#switch` cascades side-effects into the
+system and user layers. The values declared under the `hosts` attrset
+flow into every module via `specialArgs`, and `darwin-rebuild` applies
+nix-darwin (system layer) and home-manager (user layer) in a single
+transaction.
+
+```mermaid
+flowchart TB
+    classDef cmd fill:#e3f2fd,stroke:#1976d2,color:#000
+    classDef layer fill:#fff3e0,stroke:#f57c00,color:#000
+    classDef out fill:#fce4ec,stroke:#c2185b,color:#000
+    classDef src fill:#e8f5e9,stroke:#388e3c,color:#000
+
+    User([user]) -->|nix run .#switch| Wrapper["apps.switch wrapper<br/>(flake.nix)"]:::cmd
+    Wrapper -->|"darwin-rebuild switch<br/>--flake .#$LocalHostName"| DR["darwin-rebuild"]:::cmd
+
+    Flake["flake.nix<br/>hosts.{work,personal} =<br/>{ user, gitName, gitEmail }"]:::src
+    Flake -->|"mkHost → specialArgs<br/>(dotfilesPath, etc.)"| Mods["injected into<br/>every module"]
+    DR --> Mods
+
+    Mods --> Sys["nix-darwin<br/>(system layer)"]:::layer
+    Mods --> Home["home-manager<br/>(user layer)"]:::layer
+
+    Sys --> SysOut["system.defaults / keyboard /<br/>nix-daemon / Homebrew /<br/>environment.systemPackages"]:::out
+    Home --> HomeOut["dotfiles under ~/<br/>(A: symlink / B: text / C: programs.*)"]:::out
+
+    SysOut -.->|activationScripts.postActivation| ActSys["AppleSymbolicHotKeys<br/>targeted update"]:::out
+    HomeOut -.->|home.activation| ActHome["apmInstall / miseTrust"]:::out
+```
+
+### Three placement patterns and reflection paths
+
+User-layer dotfiles reach `~/` via three routes. Only A reflects an
+edit immediately without going through `nix run .#switch` — that is the
+primary motivation for choosing out-of-store symlink as the default.
+B / C go through the Nix store, so an edit requires re-evaluation,
+rebaking the store, and swapping the `~/` symlink — i.e.,
+`nix run .#switch` is required.
+
+```mermaid
+flowchart LR
+    classDef src fill:#e8f5e9,stroke:#388e3c,color:#000
+    classDef store fill:#e3f2fd,stroke:#1976d2,color:#000
+    classDef home fill:#fce4ec,stroke:#c2185b,color:#000
+
+    subgraph A["A. out-of-store symlink"]
+        direction LR
+        ARepo["tools/zsh/.zshrc<br/>(raw text in repo)"]:::src
+        AHome["~/.zshrc<br/>symlink → repo"]:::home
+        ARepo -.->|"edit → instant reflect"| AHome
+    end
+
+    subgraph B["B. text generation"]
+        direction LR
+        BNix["home.file.text = ''...''<br/>(e.g. codex config.toml)"]:::src
+        BStore["/nix/store/...-config.toml"]:::store
+        BHome["~/.codex/config.toml<br/>symlink → store"]:::home
+        BNix -->|"nix run .#switch"| BStore -.-> BHome
+    end
+
+    subgraph C["C. programs.* module"]
+        direction LR
+        CNix["programs.git.settings = { ... }"]:::src
+        CStore["/nix/store/...-gitconfig"]:::store
+        CHome["~/.config/git/config<br/>symlink → store"]:::home
+        CNix -->|"nix run .#switch"| CStore -.-> CHome
+    end
+```
+
+### Activation firing order at apply time
+
+Firing order and scope of the hooks that run during
+`darwin-rebuild`'s activation phase. Note that `launchd.user.agents` is
+not an activation hook — apply only drops a plist under
+`~/Library/LaunchAgents/`, and the actual command fires at the next
+login (an asynchronous path).
+
+```mermaid
+flowchart TB
+    classDef phase fill:#fff3e0,stroke:#f57c00,color:#000
+    classDef hook fill:#e8f5e9,stroke:#388e3c,color:#000
+    classDef agent fill:#fce4ec,stroke:#c2185b,color:#000
+
+    DR["darwin-rebuild switch"]:::phase
+    Eval["evaluation phase<br/>(Nix evaluates all modules)"]:::phase
+    Build["build phase<br/>(bake into /nix/store/)"]:::phase
+    Act["activation phase"]:::phase
+
+    DR --> Eval --> Build --> Act
+
+    Act --> Sys["system.activationScripts<br/>(root privileges)"]:::hook
+    Act --> Home["home.activation<br/>(user privileges, after writeBoundary)"]:::hook
+    Act --> LA["launchd.user.agents<br/>(plist placement only)"]:::agent
+
+    Sys --> SysHook["postActivation:<br/>AppleSymbolicHotKeys dict-add"]
+    Home --> HomeHook["apmInstall (fires on sha256 diff)<br/>miseTrust (trust config.toml)"]
+    LA -.->|"fires at next login"| LAHook["remap-caps-lock:<br/>reapply CapsLock→Control via hidutil"]
+```
+
 ## Directory layout
 
 ```
@@ -241,9 +344,40 @@ one more entry.
 
 ## Declarative side-effects at apply time
 
-`darwin-rebuild` (= `nix run .#switch`) triggers side-effects via the
-activation path, split across the routes below by responsibility and
-firing moment:
+### What "activation" means
+
+`darwin-rebuild` (= `nix run .#switch`) runs in three phases:
+**evaluation → build → activation**. Activation is the final phase that
+"applies the pure Nix evaluation / build output to the actually running
+system". The last diagram in the Architecture-diagrams section
+(activation firing order) decomposes exactly these three phases.
+
+* Evaluation phase — Nix evaluates all modules from `flake.nix` and
+  produces a derivation tree. Pure functions only, no side-effects
+* Build phase — derivations are realized and the artifacts (config
+  files / binaries / scripts) are baked into `/nix/store/...`. This runs
+  in Nix's sandbox, so `~/` and macOS defaults remain untouched
+* Activation phase — the `/run/current-system` symlink is swapped to the
+  new store path and the attached activation scripts fire in order.
+  Only here do user-visible changes happen (`~/.zshrc` symlink swap /
+  `defaults write` / `brew bundle` etc.)
+
+Why is this a separate phase? Nix builds are pure functions that run
+inside a sandbox, so external mutations like `defaults write` /
+`brew bundle` / swapping symlinks under `~/` cannot be invoked from
+build. Activation scripts exist precisely to separate "produce the
+artifact (build)" from "mutate the outside world (activation)", with
+the latter firing as root / user in a controlled order.
+
+In other words, **build complete ≠ reflected**: until activation finishes,
+`~/.zshrc` and macOS defaults remain stale. The out-of-store symlink
+pattern (placement A) is the only one where, once the symlink is
+swapped to a repo raw-text target, subsequent edits land directly via
+filesystem write without needing another activation — that is what
+makes pattern A's iteration cycle short.
+
+The side-effects driven via activation are split across the routes
+below by responsibility and firing moment:
 
 ### home-manager `home.activation.<name>`
 

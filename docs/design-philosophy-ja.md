@@ -54,6 +54,105 @@ shell wrapper で、内部的には `darwin-rebuild switch --flake ".#$(scutil
 編集 → shell reload (`source ~/.zshrc`) で即反映、`nix run .#switch`
 を介さない短い iteration cycle が成立する。
 
+## アーキテクチャ図解
+
+### apply 経路全体
+
+`nix run .#switch` から system / user 両層へ副作用が降りるまでの俯瞰図。
+`hosts` attrset で宣言した値が `specialArgs` で全モジュールに流れ、
+`darwin-rebuild` が nix-darwin (system 層) と home-manager (user 層) を
+1 トランザクションで適用する。
+
+```mermaid
+flowchart TB
+    classDef cmd fill:#e3f2fd,stroke:#1976d2,color:#000
+    classDef layer fill:#fff3e0,stroke:#f57c00,color:#000
+    classDef out fill:#fce4ec,stroke:#c2185b,color:#000
+    classDef src fill:#e8f5e9,stroke:#388e3c,color:#000
+
+    User([ユーザ]) -->|nix run .#switch| Wrapper["apps.switch wrapper<br/>(flake.nix)"]:::cmd
+    Wrapper -->|"darwin-rebuild switch<br/>--flake .#$LocalHostName"| DR["darwin-rebuild"]:::cmd
+
+    Flake["flake.nix<br/>hosts.{work,personal} =<br/>{ user, gitName, gitEmail }"]:::src
+    Flake -->|"mkHost → specialArgs<br/>(dotfilesPath ほか)"| Mods["全モジュールに注入"]
+    DR --> Mods
+
+    Mods --> Sys["nix-darwin<br/>(system 層)"]:::layer
+    Mods --> Home["home-manager<br/>(user 層)"]:::layer
+
+    Sys --> SysOut["system.defaults / keyboard /<br/>nix-daemon / Homebrew /<br/>environment.systemPackages"]:::out
+    Home --> HomeOut["~/ 配下の dotfile<br/>(A: symlink / B: text / C: programs.*)"]:::out
+
+    SysOut -.->|activationScripts.postActivation| ActSys["AppleSymbolicHotKeys<br/>targeted update"]:::out
+    HomeOut -.->|home.activation| ActHome["apmInstall / miseTrust"]:::out
+```
+
+### 三つの配置パターンと反映経路
+
+user 層 dotfile が `~/` 配下に届く経路は 3 つ。A だけ `nix run .#switch`
+を介さず repo 編集が即反映される (out-of-store symlink を default に選ぶ
+最大の動機)。B / C は Nix store 経由なので評価 → store 焼き直し →
+`~/` symlink 張り替えに `nix run .#switch` が必要。
+
+```mermaid
+flowchart LR
+    classDef src fill:#e8f5e9,stroke:#388e3c,color:#000
+    classDef store fill:#e3f2fd,stroke:#1976d2,color:#000
+    classDef home fill:#fce4ec,stroke:#c2185b,color:#000
+
+    subgraph A["A. out-of-store symlink"]
+        direction LR
+        ARepo["tools/zsh/.zshrc<br/>(repo 内 raw text)"]:::src
+        AHome["~/.zshrc<br/>symlink → repo"]:::home
+        ARepo -.->|"編集 → 即反映"| AHome
+    end
+
+    subgraph B["B. text 生成"]
+        direction LR
+        BNix["home.file.text = ''...''<br/>(例: codex config.toml)"]:::src
+        BStore["/nix/store/...-config.toml"]:::store
+        BHome["~/.codex/config.toml<br/>symlink → store"]:::home
+        BNix -->|"nix run .#switch"| BStore -.-> BHome
+    end
+
+    subgraph C["C. programs.* module"]
+        direction LR
+        CNix["programs.git.settings = { ... }"]:::src
+        CStore["/nix/store/...-gitconfig"]:::store
+        CHome["~/.config/git/config<br/>symlink → store"]:::home
+        CNix -->|"nix run .#switch"| CStore -.-> CHome
+    end
+```
+
+### apply 時の activation 発火順
+
+`darwin-rebuild` の activation phase で走る hook の発火順とスコープ。
+LaunchAgent (`launchd.user.agents`) は activation hook ではなく、apply 時に
+`~/Library/LaunchAgents/` 配下に plist を配置するだけで、実際の発火は
+次回 login 時という非同期経路である点に注意。
+
+```mermaid
+flowchart TB
+    classDef phase fill:#fff3e0,stroke:#f57c00,color:#000
+    classDef hook fill:#e8f5e9,stroke:#388e3c,color:#000
+    classDef agent fill:#fce4ec,stroke:#c2185b,color:#000
+
+    DR["darwin-rebuild switch"]:::phase
+    Eval["評価フェーズ<br/>(Nix で全モジュール評価)"]:::phase
+    Build["build フェーズ<br/>(/nix/store/ への焼き込み)"]:::phase
+    Act["activation フェーズ"]:::phase
+
+    DR --> Eval --> Build --> Act
+
+    Act --> Sys["system.activationScripts<br/>(root 権限)"]:::hook
+    Act --> Home["home.activation<br/>(user 権限, writeBoundary 後)"]:::hook
+    Act --> LA["launchd.user.agents<br/>(plist 配置のみ)"]:::agent
+
+    Sys --> SysHook["postActivation:<br/>AppleSymbolicHotKeys dict-add"]
+    Home --> HomeHook["apmInstall (sha256 差分で発火)<br/>miseTrust (config.toml を trust)"]
+    LA -.->|"次回 login 時に発火"| LAHook["remap-caps-lock:<br/>hidutil で CapsLock→Control 再適用"]
+```
+
 ## ディレクトリ構造
 
 ```
@@ -216,8 +315,37 @@ hosts/<hostname>.nix) に流す。マシン追加は 1 entry 足すだけ。
 
 ## apply 時の declarative 副作用
 
-`darwin-rebuild` (= `nix run .#switch`) の activation 経路で実行する
-副作用は、責務と発火タイミングに応じて以下の経路に分かれる:
+### activation とは何か
+
+`darwin-rebuild` (= `nix run .#switch`) は **評価 → build → activation**
+の 3 フェーズで動く。activation は最後の「Nix の純粋な評価 / build 結果
+を実際に走っている system に適用する」フェーズ。アーキテクチャ図解の最後
+の diagram (activation 発火順) はこの 3 フェーズを分解したもの。
+
+* 評価フェーズ — `flake.nix` から全モジュールを Nix が評価して derivation
+  tree を生成。純粋関数なので副作用なし
+* build フェーズ — derivation を realize して `/nix/store/...` に成果物
+  (config file / binary / script) を焼き込む。Nix sandbox 内なので `~/`
+  や macOS defaults は一切触らない
+* activation フェーズ — `/run/current-system` の symlink を新 store path
+  に張り替え、付随する activation script を順に発火する。ここで初めて
+  user に見える変化 (`~/.zshrc` の symlink 張り替え / `defaults write` /
+  `brew bundle` 等) が起きる
+
+なぜ別フェーズに切られているか: Nix の build は純粋関数として sandbox 内
+で動くため、`defaults write` / `brew bundle` / `~/` への symlink 張り替え
+のような外界改変は build から呼べない。そこで「成果物を作る (build)」と
+「外界を書き換える (activation)」を分離し、後者を root / user 権限で順序
+付けて発火する経路として activation script という仕組みが用意されている。
+
+つまり **build 完了 ≠ 反映完了**で、activation が走り切るまで `~/.zshrc`
+も macOS defaults も古いまま、という構造になる。out-of-store symlink
+(配置パターン A) だけは symlink の指す先が repo の raw text なので、
+symlink 張り替え後は `~/.zshrc` の中身を repo 側で編集するだけで反映され、
+以降の編集に activation を介さなくて良いのが他パターンとの差別化点。
+
+activation 経路で実行する副作用は、責務と発火タイミングに応じて以下の経路
+に分かれる:
 
 ### home-manager `home.activation.<name>`
 
