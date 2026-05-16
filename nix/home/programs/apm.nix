@@ -11,7 +11,14 @@
 #     対象外として ~/.apm/ 直下に普通に書ける mutable directory として残す。
 #   * activation hook は apm.yml の hash を ~/.apm/.apm.yml.hash に保存し、
 #     差分があり apm command が PATH にあるときだけ `apm install --target
-#     claude` を実行する。冪等で、apm 未インストール環境では skip する。
+#     claude --global` を実行する。`--global` で skill を user scope
+#     (~/.claude/skills/) に展開する (これがないと cwd 下の
+#     ~/.apm/.claude/skills/ に project scope で入ってしまう)。冪等で、
+#     apm 未インストール環境では skip する。
+#   * apm の GitHub clone は GITHUB_APM_PAT / GITHUB_TOKEN を要求するため、
+#     `gh` が PATH にあれば `gh auth token` の出力を GITHUB_APM_PAT に
+#     export してから install を呼ぶ。secret を repo / zshrc に書かない経路。
+#     `gh auth login` の事前実行が前提。
 let
   apmDir = "${dotfilesPath}/tools/apm";
 in
@@ -40,10 +47,26 @@ in
     NEW_HASH=$(${pkgs.coreutils}/bin/sha256sum "$HOME/.apm/apm.yml" | ${pkgs.gawk}/bin/awk '{print $1}')
     OLD_HASH=$(${pkgs.coreutils}/bin/cat "$HASH_FILE" 2>/dev/null || echo "")
     APM_BIN=$(command -v apm || true)
+    GH_BIN=$(command -v gh || true)
     if [ "$NEW_HASH" != "$OLD_HASH" ] && [ -n "$APM_BIN" ]; then
-      echo "[apmInstall] running apm install --target claude (apm=$APM_BIN)"
-      (cd "$HOME/.apm" && $DRY_RUN_CMD "$APM_BIN" install --target claude)
-      echo "$NEW_HASH" > "$HASH_FILE"
+      # gh が PATH にあれば `gh auth token` から動的に token を取得して
+      # GITHUB_APM_PAT に流す。apm 自身は env var しか見ないため、
+      # `gh auth login` だけでは clone 認証が通らない問題を埋める経路。
+      if [ -n "$GH_BIN" ]; then
+        GH_TOKEN_VAL=$("$GH_BIN" auth token 2>/dev/null || true)
+        if [ -n "$GH_TOKEN_VAL" ]; then
+          export GITHUB_APM_PAT="$GH_TOKEN_VAL"
+        fi
+      fi
+      echo "[apmInstall] running apm install --target claude --global (apm=$APM_BIN)"
+      # 成功時のみ hash を記録する。失敗時 (GitHub clone 認証失敗 / network
+      # 障害 等) に hash を書くと、以降「hash 一致 → installed」と誤判定して
+      # 失敗を隠してしまうため、exit code を必ず check する。
+      if (cd "$HOME/.apm" && $DRY_RUN_CMD "$APM_BIN" install --target claude --global); then
+        echo "$NEW_HASH" > "$HASH_FILE"
+      else
+        echo "[apmInstall] FAILED (hash not recorded; will retry next switch)" >&2
+      fi
     else
       echo "[apmInstall] skip (hash unchanged or apm missing; apm=$APM_BIN)"
     fi
