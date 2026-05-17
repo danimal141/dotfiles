@@ -1,6 +1,6 @@
 lockfile_version: '1'
-generated_at: '2026-05-03T01:17:28.096135+00:00'
-apm_version: 0.11.0
+generated_at: '2026-05-17T05:52:42.920836+00:00'
+apm_version: 0.12.4
 dependencies:
 - repo_url: danimal141/skilltree
   host: github.com
@@ -92,23 +92,3 @@ dependencies:
   deployed_files:
   - .claude/skills/resignation-report
   content_hash: sha256:9145f775f1bcbc897fa3c091704cc0a033b83f6acb4981fda68b4985df397b51
-- repo_url: danimal141/skilltree
-  host: github.com
-  resolved_commit: d2bb72f25a0662a1561e648795e34ecf4f607a7e
-  resolved_ref: v0.3.0
-  virtual_path: skills/setup-dotfiles
-  is_virtual: true
-  package_type: claude_skill
-  deployed_files:
-  - .claude/skills/setup-dotfiles
-  content_hash: sha256:6dbd233cd9b9c5a09557d6b4cad2c09d54dae5c67e11d721e2cd19b4f19e6161
-- repo_url: danimal141/skilltree
-  host: github.com
-  resolved_commit: d2bb72f25a0662a1561e648795e34ecf4f607a7e
-  resolved_ref: v0.3.0
-  virtual_path: skills/setup-markdownlint
-  is_virtual: true
-  package_type: claude_skill
-  deployed_files:
-  - .claude/skills/setup-markdownlint
-  content_hash: sha256:fc7775767b5e231dec4da4828602277a7d403ea9e1bd47a185be7c10084a908b
