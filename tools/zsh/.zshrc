@@ -164,6 +164,26 @@ alias l1="ls -1"
 alias tree="tree -NC"
 
 # -------------------------------------
+# apm wrapper
+# -------------------------------------
+# apm install で git clone する時に必要な env を手動実行経路にも提供する。
+# `nix run .#switch` の activation hook (nix/home/programs/apm.nix) と同等。
+#   1. 社内 VPN SSL inspection 対策: /etc/nix/ca-bundle.pem を GIT_SSL_CAINFO
+#      に inject。bundle が無い環境 (CI 等) では skip して無影響。
+#   2. private repo 認証: gh auth token を GITHUB_APM_PAT に流す。
+#      gh が無い / login していない環境では skip。
+apm() {
+  local -a inject=()
+  [ -f /etc/nix/ca-bundle.pem ] && inject+=("GIT_SSL_CAINFO=/etc/nix/ca-bundle.pem")
+  if command -v gh >/dev/null 2>&1; then
+    local token
+    token=$(command gh auth token 2>/dev/null)
+    [ -n "$token" ] && inject+=("GITHUB_APM_PAT=$token")
+  fi
+  command env "${inject[@]}" apm "$@"
+}
+
+# -------------------------------------
 # other settings
 # -------------------------------------
 
