@@ -205,6 +205,7 @@
       "Read(**/*.p12)"
     ]
   },
+  "model": "opus",
   "hooks": {
     "PreToolUse": [
       {
@@ -268,5 +269,5 @@
     }
   },
   "language": "japanese",
-  "model": "opus"
+  "skipAutoPermissionPrompt": true
 }
