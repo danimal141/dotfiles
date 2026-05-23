@@ -24,3 +24,7 @@ node_modules/
 # `nix build` / `nix run` の derivation output symlink
 result
 result-*
+
+# APM dependencies
+apm_modules/
+tools/apm/.claude/
