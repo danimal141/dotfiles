@@ -31,6 +31,11 @@ raw symlink vs declarative module (`programs.<tool>.{enable,settings}`)
 * `tools/nvim/lazy-lock.json` は tracked にして再現性を担保
 * MCP server 設定変更は `cd tools/claude && ./setup-mcp.sh` を手動実行
   (`nix run .#switch` 時には自動実行されない)
+* Google IME の keymap は `tools/google-ime/keymap.tsv` (Kotoeri preset) を
+  source of truth とし `~/.config/google-ime/keymap.tsv` に symlink される。
+  反映は Google IME 環境設定 → 一般 → キー設定の選択 → カスタム → 編集 →
+  インポート で同 path を 1 度指定する手動 bootstrap が必要 (mozc は
+  config1.db = binary protobuf に keymap を畳み込むため watch path 無し)
 * `tools/apm/apm.yml` を編集したら `nix run .#switch` で sha256 比較
   hook が発火 (冪等)
 * Neovim の LSP は各 server に `cmd` を明示し、PATH 上に binary が無い

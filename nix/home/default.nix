@@ -26,6 +26,7 @@
     ./programs/ghostty.nix
     ./programs/ctags.nix
     ./programs/vscode.nix
+    ./programs/google-ime.nix
   ];
 
   # nixpkgs unstable に対応する home-manager リリース。
