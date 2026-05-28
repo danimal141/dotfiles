@@ -85,5 +85,12 @@
       -dict-add 61 '{enabled=1;value={parameters=(32,49,1572864);type=standard;};}'
     # cfprefsd を再起動して running session に即反映 (login 後の再ログインを不要に)
     $AS_USER /usr/bin/killall cfprefsd 2>/dev/null || true
+    # plist は更新されても hotkey 配信側 (loginwindow / SymbolicHotKey の
+    # subscriber) がキャッシュを抱えたままで実際の key event が古い割当
+    # (例: Ctrl Space) に流れ続ける既知問題への対処。activateSettings -u は
+    # macOS 内部の signal を投げて全 subscriber に再読込させる (System
+    # Settings GUI 経由で値を変えた時と同じ経路)。これが無いと "defaults
+    # read では新値だが GUI と実挙動は旧値" という乖離が残る。
+    /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u 2>/dev/null || true
   '';
 }
