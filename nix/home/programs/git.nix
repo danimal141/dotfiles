@@ -34,6 +34,13 @@
       diff = {
         ignoreSubmodules = "dirty";
       };
+      # 社内 VPN SSL inspection 下で git の TLS 検証を通すため、Nix が配置する
+      # CA bundle (/etc/nix/ca-bundle.pem) を git に渡す。brew update が内部で
+      # 呼ぶ git fetch や ghq clone など全 git 経路に効く。bundle が無い環境
+      # では git が失敗するが、本 dotfiles は VPN 配下の業務マシン前提。
+      http = {
+        sslCAInfo = "/etc/nix/ca-bundle.pem";
+      };
     };
 
     ignores = [
