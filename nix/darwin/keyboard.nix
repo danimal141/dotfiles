@@ -93,4 +93,30 @@
     # read では新値だが GUI と実挙動は旧値" という乖離が残る。
     /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u 2>/dev/null || true
   '';
+
+  # 上の activation script の永続化補助。activation は `darwin-rebuild switch`
+  # 時のみ実行されるが、AppleSymbolicHotKeys の ID 60/61 は再起動を跨ぐと
+  # macOS 側 (loginwindow / IME 関連の input source setup と思しき何か) に
+  # 書き戻されることが実測で確認できたため、login 時に同じ write を再実行
+  # して上書きする。caps lock の hidutil mapping と同じく
+  # 「switch 時 + login 時の二重適用」で再起動跨ぎを確実にする。
+  #
+  # launchd.user.agents は user context で起動するので、activation script
+  # 側で必要だった `launchctl asuser` ラッパーは不要。
+  launchd.user.agents.reapply-input-source-hotkeys = {
+    serviceConfig = {
+      Label = "org.danimal141.reapply-input-source-hotkeys";
+      ProgramArguments = [
+        "/bin/sh"
+        "-c"
+        ''
+          /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 60 '{enabled=1;value={parameters=(32,49,1048576);type=standard;};}'
+          /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 61 '{enabled=1;value={parameters=(32,49,1572864);type=standard;};}'
+          /usr/bin/killall cfprefsd 2>/dev/null || true
+          /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u 2>/dev/null || true
+        ''
+      ];
+      RunAtLoad = true;
+    };
+  };
 }
