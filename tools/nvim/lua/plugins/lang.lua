@@ -13,7 +13,9 @@ return {
         close_on_bdelete = true,
         syntax = true,
         theme = "dark",
-        app = "webview",
+        -- webview は内蔵 Deno webview でリンククリックが効かないため、
+        -- OS デフォルトブラウザを起動する "browser" を使う。
+        app = "browser",
       })
       vim.api.nvim_create_user_command("PeekOpen", require("peek").open, {})
       vim.api.nvim_create_user_command("PeekClose", require("peek").close, {})
