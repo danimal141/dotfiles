@@ -6,7 +6,14 @@ return {
     -- 社内 VPN の SSL inspection 下では deno.land への HTTPS 取得が
     -- UnknownIssuer になるため、init.lua と同じ /etc/nix/ca-bundle.pem を
     -- DENO_CERT に渡して build を通す。
-    build = "DENO_CERT=/etc/nix/ca-bundle.pem deno task --quiet build:fast",
+    -- 加えて upstream の app/src/markdownit.ts は全リンクの href を
+    -- 'javascript:return' に書き換えてしまい (webview 内ナビ抑止のため)、
+    -- browser モードで開いた preview でリンクが踏めず、クリックで
+    -- "Illegal return statement" まで吐く。bundle 前に sed で該当行を
+    -- 除去し、リンクの href を保持させる。
+    -- sed の -i は BSD (空引数必須) / GNU (引数なしも可) で挙動が違うため
+    -- -i.bak で両対応し、直後に .bak を削除する。
+    build = [[sed -i.bak "s|token.attrSet('href', 'javascript:return');||" app/src/markdownit.ts && rm app/src/markdownit.ts.bak && DENO_CERT=/etc/nix/ca-bundle.pem deno task --quiet build:fast]],
     config = function()
       require("peek").setup({
         auto_load = true,
