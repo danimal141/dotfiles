@@ -1,11 +1,11 @@
 lockfile_version: '1'
-generated_at: '2026-06-06T10:57:31.695495+00:00'
+generated_at: '2026-06-06T12:20:56.763244+00:00'
 apm_version: 0.12.4
 dependencies:
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: ed5608870060683747655e78ef3366575df9ef10
-  resolved_ref: v0.6.0
+  resolved_commit: de1cf3bfa6b37816dfe2ff5ad2b37409b7e8d68c
+  resolved_ref: v0.7.0
   virtual_path: skills/chrome-cdp
   is_virtual: true
   package_type: claude_skill
@@ -14,8 +14,8 @@ dependencies:
   content_hash: sha256:3152bf480dfc3752e831342673c600e55f76add9dcab044e890647233e4e77d0
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: ed5608870060683747655e78ef3366575df9ef10
-  resolved_ref: v0.6.0
+  resolved_commit: de1cf3bfa6b37816dfe2ff5ad2b37409b7e8d68c
+  resolved_ref: v0.7.0
   virtual_path: skills/codebase-analyzer
   is_virtual: true
   package_type: claude_skill
@@ -24,8 +24,8 @@ dependencies:
   content_hash: sha256:f6c5696dc9cbb55eef72e08ffcc41bd2e119dd836a5cd8a740c7e655624248c6
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: ed5608870060683747655e78ef3366575df9ef10
-  resolved_ref: v0.6.0
+  resolved_commit: de1cf3bfa6b37816dfe2ff5ad2b37409b7e8d68c
+  resolved_ref: v0.7.0
   virtual_path: skills/create-pr
   is_virtual: true
   package_type: claude_skill
@@ -34,8 +34,8 @@ dependencies:
   content_hash: sha256:eb1b7a4069a6c2aa35ac67a3ded0da87ae1a1bdab704ffd46a936fc929729619
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: ed5608870060683747655e78ef3366575df9ef10
-  resolved_ref: v0.6.0
+  resolved_commit: de1cf3bfa6b37816dfe2ff5ad2b37409b7e8d68c
+  resolved_ref: v0.7.0
   virtual_path: skills/dig
   is_virtual: true
   package_type: claude_skill
@@ -44,18 +44,18 @@ dependencies:
   content_hash: sha256:a69b9fb667a63ce650e85856464067eb9d31a21ecaa735baf08b153c7450013f
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: ed5608870060683747655e78ef3366575df9ef10
-  resolved_ref: v0.6.0
+  resolved_commit: de1cf3bfa6b37816dfe2ff5ad2b37409b7e8d68c
+  resolved_ref: v0.7.0
   virtual_path: skills/gh-project-summary
   is_virtual: true
   package_type: claude_skill
   deployed_files:
   - .claude/skills/gh-project-summary
-  content_hash: sha256:4d477da10f4f4fd21ee344733658b0dd1b806d74487cfbc77f4c0c597b13f787
+  content_hash: sha256:0b5caa5fcb667409388aa9ab7a73f352436c130f6fc80ca3bc69d4d74a51b9de
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: ed5608870060683747655e78ef3366575df9ef10
-  resolved_ref: v0.6.0
+  resolved_commit: de1cf3bfa6b37816dfe2ff5ad2b37409b7e8d68c
+  resolved_ref: v0.7.0
   virtual_path: skills/git-commit
   is_virtual: true
   package_type: claude_skill
@@ -64,8 +64,8 @@ dependencies:
   content_hash: sha256:46e2f905ff61634f3e0eca3b18451ccfedce8d223dc56e6777a72070299f171d
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: ed5608870060683747655e78ef3366575df9ef10
-  resolved_ref: v0.6.0
+  resolved_commit: de1cf3bfa6b37816dfe2ff5ad2b37409b7e8d68c
+  resolved_ref: v0.7.0
   virtual_path: skills/infra-codebase-analyzer
   is_virtual: true
   package_type: claude_skill
@@ -74,18 +74,18 @@ dependencies:
   content_hash: sha256:786f35862ed7e0e3f69b70c60820f5627b6f60ce4c57abfbf9edcf2d3c52207a
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: ed5608870060683747655e78ef3366575df9ef10
-  resolved_ref: v0.6.0
+  resolved_commit: de1cf3bfa6b37816dfe2ff5ad2b37409b7e8d68c
+  resolved_ref: v0.7.0
   virtual_path: skills/interview-design
   is_virtual: true
   package_type: claude_skill
   deployed_files:
   - .claude/skills/interview-design
-  content_hash: sha256:0551f58cdc9e9a5a0542b6ebd1075f442690ade8df8aa17790a3e31ff1012973
+  content_hash: sha256:10c38457c89ed8f8d6b21d42ab3838e92db451db0d1ff56505953c4a847b399c
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: ed5608870060683747655e78ef3366575df9ef10
-  resolved_ref: v0.6.0
+  resolved_commit: de1cf3bfa6b37816dfe2ff5ad2b37409b7e8d68c
+  resolved_ref: v0.7.0
   virtual_path: skills/new-eng-outsource
   is_virtual: true
   package_type: claude_skill
@@ -94,8 +94,8 @@ dependencies:
   content_hash: sha256:5407c90c7963379e7d2c00d45e56d9ea3daeced1891552b46d3094d151bcc375
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: ed5608870060683747655e78ef3366575df9ef10
-  resolved_ref: v0.6.0
+  resolved_commit: de1cf3bfa6b37816dfe2ff5ad2b37409b7e8d68c
+  resolved_ref: v0.7.0
   virtual_path: skills/resignation-report
   is_virtual: true
   package_type: claude_skill
