@@ -62,7 +62,13 @@ in
       # 成功時のみ hash を記録する。失敗時 (GitHub clone 認証失敗 / network
       # 障害 等) に hash を書くと、以降「hash 一致 → installed」と誤判定して
       # 失敗を隠してしまうため、exit code を必ず check する。
-      if (cd "$HOME/.apm" && $DRY_RUN_CMD "$APM_BIN" install --target claude --global); then
+      # --parallel-downloads 1 で直列化する。apm の dep が同一 mono-repo
+      # (例: danimal141/skilltree) を共有する場合、default 4 並列だと
+      # `git clone --bare` が同一 repo に対して同時実行され、exit 128 で
+      # 落ちる現象が再現する (skilltree 全 skill が単一 repo にぶら下がる
+      # 構成のため毎回踏む)。並列度を 1 にしても 1 件目の clone 後は
+      # apm 内 cache に乗るため後続は即時 (cached) となり実時間ほぼ不変。
+      if (cd "$HOME/.apm" && $DRY_RUN_CMD "$APM_BIN" install --target claude --global --parallel-downloads 1); then
         echo "$NEW_HASH" > "$HASH_FILE"
       else
         echo "[apmInstall] FAILED (hash not recorded; will retry next switch)" >&2
