@@ -49,6 +49,7 @@
       ".tags"
       "*.code-workspace"
       "**/.claude/reports/"
+      "**/.claude/settings.local.json"
       ".serena/"
     ];
 
