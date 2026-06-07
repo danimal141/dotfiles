@@ -19,6 +19,10 @@
 #     `gh` が PATH にあれば `gh auth token` の出力を GITHUB_APM_PAT に
 #     export してから install を呼ぶ。secret を repo / zshrc に書かない経路。
 #     `gh auth login` の事前実行が前提。
+#   * 社内 VPN SSL inspection 下では git clone の TLS 検証が default CA
+#     bundle で失敗する (exit 128) ため、/etc/nix/ca-bundle.pem が存在
+#     する場合のみ GIT_SSL_CAINFO に inject する。zshrc の apm wrapper
+#     と同じ経路。bundle が無い環境 (CI 等) では skip して無影響。
 let
   apmDir = "${dotfilesPath}/tools/apm";
 in
@@ -57,6 +61,12 @@ in
         if [ -n "$GH_TOKEN_VAL" ]; then
           export GITHUB_APM_PAT="$GH_TOKEN_VAL"
         fi
+      fi
+      # 社内 VPN SSL inspection 下では git の default CA bundle で TLS
+      # 検証が失敗 (exit 128) するため、/etc/nix/ca-bundle.pem があれば
+      # GIT_SSL_CAINFO に inject する。zshrc 側の apm wrapper と同等。
+      if [ -f /etc/nix/ca-bundle.pem ]; then
+        export GIT_SSL_CAINFO=/etc/nix/ca-bundle.pem
       fi
       echo "[apmInstall] running apm install --target claude --global (apm=$APM_BIN)"
       # 成功時のみ hash を記録する。失敗時 (GitHub clone 認証失敗 / network
