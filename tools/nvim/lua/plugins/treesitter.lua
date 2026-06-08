@@ -56,6 +56,15 @@ return {
           seen[lang] = true
         end
       end
+      -- markview.nvim が要求する parser。markdown は vim builtin syntax を
+      -- highlight に使う方針なので ft_to_lang には載せず (treesitter.start
+      -- を markdown では呼ばない)、parser だけ install しておく。
+      for _, lang in ipairs({ "markdown", "markdown_inline" }) do
+        if not seen[lang] then
+          table.insert(parsers, lang)
+          seen[lang] = true
+        end
+      end
       require("nvim-treesitter").install(parsers):wait(300000)
 
       -- filetype 一致時に treesitter highlight を起動する。markdown は
