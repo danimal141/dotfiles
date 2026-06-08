@@ -29,16 +29,6 @@ return {
     end,
   },
   {
-    -- in-buffer の markdown プレビュー。peek.nvim (browser 経由) と
-    -- 性質が異なるため検証用に併用。markdown / markdown_inline parser は
-    -- treesitter.lua 側で install 済み。
-    "OXY2DEV/markview.nvim",
-    ft = { "markdown" },
-    config = function()
-      require("markview").setup({})
-    end,
-  },
-  {
     "tpope/vim-rails",
     ft = "ruby",
   },
