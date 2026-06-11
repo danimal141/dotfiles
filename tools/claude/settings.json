@@ -278,5 +278,6 @@
     }
   },
   "language": "japanese",
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
+  "model": "fable"
 }
