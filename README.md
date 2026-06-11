@@ -387,14 +387,49 @@ PATH resolution order (`tools/zsh/.zshrc`):
 
 1. `/etc/profiles/per-user/$USER/{bin,sbin}` — home-manager user profile
 2. `/run/current-system/sw/{bin,sbin}` — nix-darwin system profile
-3. `/opt/homebrew/{bin,sbin}` — Homebrew (formulae / casks outside the
+3. `/opt/homebrew/opt/{llvm,libpq,mysql@8.4}/bin` — keg-only Homebrew
+4. `$HOME/bin`, `$HOME/.local/bin` — local-installer destinations
+   (Claude Code's native binary lives here; placed before Homebrew so
+   that `which claude` resolves to the native install)
+5. `/usr/local/bin` — Docker Desktop / VSCode / Cursor shim location
+6. `/opt/homebrew/{bin,sbin}` — Homebrew (formulae / casks outside the
    Nix migration)
-4. `$HOME/bin`, `$HOME/.local/bin`
-5. mise activate then injects language runtime shims at the head of PATH
+7. mise activate then injects language runtime shims at the head of PATH
 
 The home-manager user profile sits before the system profile so that
 when both have a binary with the same name, the home-manager side
-(= pinned by `flake.lock`) wins.
+(= pinned by `flake.lock`) wins. `$HOME/.local/bin` is placed before
+Homebrew so the Claude Code native binary
+(`~/.local/bin/claude`) wins over the brew cask
+(`/opt/homebrew/bin/claude`) — see the next section.
+
+## Claude Code CLI install path
+
+The `claude` binary itself is installed via Anthropic's official native
+installer into `~/.local/bin/claude` (a standalone binary, no Node.js
+required, with built-in auto-update).
+
+During `nix run .#switch`, the `home.activation.claudeCodeInstall` hook
+checks whether `~/.local/bin/claude` exists and only fires
+`curl -fsSL https://claude.ai/install.sh | bash` when it is missing
+(idempotent). Day-to-day version updates are handled by the `claude`
+binary's own auto-update, so the switch hook only guarantees the first
+install.
+
+Under corporate VPN SSL inspection, `/etc/nix/ca-bundle.pem` is injected
+into curl via `SSL_CERT_FILE` / `CURL_CA_BUNDLE` so TLS verification
+succeeds (same approach as [apmInstall](#claude-code-skills-via-apm)).
+
+The brew cask `claude-code` is still declared in
+`nix/darwin/homebrew.nix` for redundancy, but `tools/zsh/.zshrc` orders
+`~/.local/bin` before `/opt/homebrew/bin`, so `which claude` returns the
+native binary. To drop the brew version entirely, run
+`brew uninstall --cask claude-code` manually once — removing the
+declaration alone does not uninstall because
+`homebrew.onActivation.cleanup = none`.
+
+MCP server configuration (`tools/claude/setup-mcp.sh`) is driven through
+`claude mcp add` and is independent of the install path.
 
 ## Claude Code skills via APM
 

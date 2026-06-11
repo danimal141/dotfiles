@@ -1,6 +1,6 @@
-{ config, dotfilesPath, ... }:
+{ config, lib, dotfilesPath, ... }:
 
-# Claude Code CLI 設定 (~/.claude/) を out-of-store symlink で配置する。
+# Claude Code CLI 設定 (~/.claude/) と native binary 本体を管理する。
 #
 # ~/.claude/ 全体を 1 つの symlink にしてしまうと Claude Code が動的に
 # 書き換える `projects/` `todos/` `shell-snapshots/` `statsig/` `ide/` が
@@ -13,6 +13,13 @@
 #
 # setup-mcp.sh は ~/.claude には配置せず、repo 内で `cd tools/claude &&
 # ./setup-mcp.sh` で直接呼ぶ運用。
+#
+# claude binary 本体は Anthropic 公式 native installer
+# (curl -fsSL https://claude.ai/install.sh | bash) で ~/.local/bin/claude
+# に配置する。brew cask (claude-code) も宣言上は残しているが、tools/zsh
+# の PATH 順で ~/.local/bin が /opt/homebrew/bin より勝つように設定して
+# native を優先させる。日常的なバージョン更新は native binary 内蔵の
+# auto-update が担う (switch では「未 install のときだけ install」を保証)。
 let
   claudeDir = "${dotfilesPath}/tools/claude";
 in
@@ -35,4 +42,50 @@ in
     ".claude/skills/.gitignore".source =
       config.lib.file.mkOutOfStoreSymlink "${claudeDir}/skills/.gitignore";
   };
+
+  home.activation.claudeCodeInstall = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+    # home-manager の activation hook はデフォルト PATH が極めて minimal で、
+    # Nix store 系も /usr/bin 系も含まない。install.sh は内部で curl /
+    # shasum / sysctl / cut / sed / mkdir 等の標準 CLI を絶対パス無しで呼ぶため、
+    # 解決経路を網羅的に通す:
+    #   * /run/current-system/sw/bin  — nix-darwin systemPackages (curl 等)
+    #   * /usr/bin, /usr/sbin, /bin, /sbin — Apple 標準 (shasum, sysctl, cut 等)
+    # apmInstall は pkgs.coreutils の sha256sum を絶対パスで呼ぶので
+    # /run/current-system/sw/bin だけで足りたが、install.sh は外部 script
+    # のため絶対パス置換が効かない。
+    export PATH="/run/current-system/sw/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+
+    CLAUDE_BIN="$HOME/.local/bin/claude"
+    # 既に install 済みなら何もしない。日常の version 更新は claude binary
+    # 内蔵の auto-update に任せ、switch hook は「初回 install のみ保証」する。
+    if [ -x "$CLAUDE_BIN" ]; then
+      echo "[claudeCodeInstall] skip (already installed at $CLAUDE_BIN)"
+      return 0
+    fi
+
+    CURL_BIN=$(command -v curl || true)
+    if [ -z "$CURL_BIN" ]; then
+      echo "[claudeCodeInstall] skip (curl not found in PATH)" >&2
+      return 0
+    fi
+
+    # 社内 VPN SSL inspection 下では curl の default CA bundle で TLS 検証が
+    # 失敗するため、/etc/nix/ca-bundle.pem があれば inject する。
+    # zshrc の apm wrapper / apmInstall hook と同じ経路。bundle が無い環境
+    # (CI 等) では skip して無影響。
+    if [ -f /etc/nix/ca-bundle.pem ]; then
+      export SSL_CERT_FILE=/etc/nix/ca-bundle.pem
+      export CURL_CA_BUNDLE=/etc/nix/ca-bundle.pem
+    fi
+
+    echo "[claudeCodeInstall] installing claude code native binary..."
+    # install.sh は最新版を取得 → ~/.claude/downloads/ に DL → checksum 検証
+    # → `claude install` で ~/.local/bin/claude に launcher を配置、までを
+    # 自動で行う。失敗時は何も書かず次回 switch で再試行できる。
+    if "$CURL_BIN" -fsSL https://claude.ai/install.sh | $DRY_RUN_CMD bash; then
+      echo "[claudeCodeInstall] installed at $CLAUDE_BIN"
+    else
+      echo "[claudeCodeInstall] FAILED (will retry next switch)" >&2
+    fi
+  '';
 }

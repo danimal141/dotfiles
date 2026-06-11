@@ -363,12 +363,44 @@ PATH 解決順 (`tools/zsh/.zshrc`):
 
 1. `/etc/profiles/per-user/$USER/{bin,sbin}` — home-manager のユーザプロファイル
 2. `/run/current-system/sw/{bin,sbin}` — nix-darwin の system プロファイル
-3. `/opt/homebrew/{bin,sbin}` — Homebrew (Nix 移行外の formulae / cask)
-4. `$HOME/bin`, `$HOME/.local/bin`
-5. mise activate がこの後で言語ランタイム shim を PATH 先頭に差し込む
+3. `/opt/homebrew/opt/{llvm,libpq,mysql@8.4}/bin` — keg-only Homebrew
+4. `$HOME/bin`, `$HOME/.local/bin` — ユーザローカル installer の置き場
+   (Claude Code native binary がここで、brew cask より前に置くことで
+   `which claude` を native に寄せている)
+5. `/usr/local/bin` — Docker Desktop / VSCode / Cursor 等の shim
+6. `/opt/homebrew/{bin,sbin}` — Homebrew 通常 prefix (Nix 移行外の formulae / cask)
+7. mise activate がこの後で言語ランタイム shim を PATH 先頭に差し込む
 
 home-manager の user プロファイルを system プロファイルより前に置くのは、
 同名バイナリで home-manager 側 (= flake.lock pin) を勝たせるため。
+`$HOME/.local/bin` を Homebrew より前に置くのは、Claude Code native binary
+(`~/.local/bin/claude`) を brew cask (`/opt/homebrew/bin/claude`) より
+優先させるため (詳細は次節)。
+
+## Claude Code CLI のインストール経路
+
+`claude` 本体は Anthropic 公式 native installer で `~/.local/bin/claude`
+に配置している (Node.js 不要の standalone binary、auto-update 内蔵)。
+
+`nix run .#switch` 時に `home.activation.claudeCodeInstall` hook が
+`~/.local/bin/claude` の有無を判定し、無いときだけ
+`curl -fsSL https://claude.ai/install.sh | bash` を発火する (冪等)。
+日常的なバージョン更新は `claude` binary 自身の auto-update が担うため、
+switch hook は「未 install 時の初回 install」だけを保証する。
+
+社内 VPN SSL inspection 下では `/etc/nix/ca-bundle.pem` を `SSL_CERT_FILE`
+/ `CURL_CA_BUNDLE` 経由で curl に inject して TLS 検証を通す
+([apmInstall](#claude-code-skills-via-apm) と同じ経路)。
+
+brew cask `claude-code` も `nix/darwin/homebrew.nix` で宣言上は残しているが、
+`tools/zsh/.zshrc` の PATH 順で `~/.local/bin` が `/opt/homebrew/bin` より
+前に来るため `which claude` は native binary を返す。完全に brew 版を捨てたい
+ときは手動で `brew uninstall --cask claude-code` を 1 度実行する
+(`homebrew.onActivation.cleanup = none` のため declaration から外しても
+自動 uninstall されない)。
+
+MCP server 設定 (`tools/claude/setup-mcp.sh`) は `claude mcp add` 経由で動くため
+install 経路の変更とは独立。
 
 ## Claude Code skills via APM
 

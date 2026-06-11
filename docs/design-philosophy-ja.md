@@ -186,7 +186,7 @@ dotfiles/
 │           ├── git.nix            # programs.git + ignores + includeIf
 │           ├── tmux.nix           # ~/.tmux.conf, ~/.tmux_start_dir, ~/.local/bin/tmux-start
 │           ├── nvim.nix           # ~/.config/nvim 全体を tools/nvim/ に symlink (lazy.nvim + nvim-lspconfig 構成)
-│           ├── claude.nix         # ~/.claude/* (動的領域除く)
+│           ├── claude.nix         # ~/.claude/* (動的領域除く) + claudeCodeInstall hook (~/.local/bin/claude)
 │           ├── codex.nix          # ~/.codex/* (config.toml は text 生成 / wrapper は symlink /
 │           │                        # AGENTS.md は tools/claude/CLAUDE.md への out-of-store symlink)
 │           ├── apm.nix            # ~/.apm/* + home.activation.apmInstall hook

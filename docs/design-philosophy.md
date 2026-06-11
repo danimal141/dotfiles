@@ -198,7 +198,7 @@ dotfiles/
 │           ├── git.nix            # programs.git + ignores + includeIf
 │           ├── tmux.nix           # ~/.tmux.conf, ~/.tmux_start_dir, ~/.local/bin/tmux-start
 │           ├── nvim.nix           # symlinks the entire ~/.config/nvim to tools/nvim/ (lazy.nvim + nvim-lspconfig)
-│           ├── claude.nix         # ~/.claude/* (excluding dynamic areas)
+│           ├── claude.nix         # ~/.claude/* (excluding dynamic areas) + claudeCodeInstall hook (~/.local/bin/claude)
 │           ├── codex.nix          # ~/.codex/* (config.toml is text-generated / wrappers symlinked /
 │           │                        # AGENTS.md is an out-of-store symlink to tools/claude/CLAUDE.md)
 │           ├── apm.nix            # ~/.apm/* + home.activation.apmInstall hook

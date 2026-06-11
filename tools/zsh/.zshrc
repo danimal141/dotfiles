@@ -30,12 +30,22 @@ typeset -U path cdpath fpath manpath
 #      mysql@8.4 の mysql クライアント等) を expose する。Nix の **後** に置く
 #      ことで、Nix 管理の同名 CLI があれば Nix 側が勝つ (= 「Nix 管理下の
 #      ライブラリは Nix のパスから利用可能」を不変条件として保つ)。
-#   4. /usr/local/bin
+#   4. $HOME/bin, $HOME/.local/bin
+#      ユーザローカル installer (curl install.sh 系) が置く先。Homebrew の
+#      通常 prefix (/opt/homebrew/bin) より **前** に置く。
+#      理由: Claude Code を Anthropic 公式 native installer
+#      (~/.local/bin/claude) で運用しているため、同名 binary を提供する
+#      brew cask claude-code (/opt/homebrew/bin/claude) より優先させる必要が
+#      ある。副作用として、今後 ~/.local/bin に置かれる他のバイナリも
+#      Homebrew 版より優先される。意図しない override を避けたいときは
+#      ~/.local/bin に置かないか、brew 側の formula 名 (例: `gclaude` 等)
+#      にリネームして解決する。
+#   5. /usr/local/bin
 #      Docker Desktop / VSCode / Cursor 等の installer が shim を置く先。
 #      Apple Silicon Mac 前提なので Intel Homebrew prefix としては使わない。
-#   5. /opt/homebrew/bin
+#   6. /opt/homebrew/bin
 #      Homebrew の通常 prefix (Nix 移行外の formulae / cask)。
-#   6. mise activate (後段) が言語ランタイム shim を PATH 先頭に差し込む。
+#   7. mise activate (後段) が言語ランタイム shim を PATH 先頭に差し込む。
 path=(
   /etc/profiles/per-user/$USER/bin(N-/)
   /etc/profiles/per-user/$USER/sbin(N-/)
@@ -44,6 +54,11 @@ path=(
   /opt/homebrew/opt/llvm/bin(N-/)
   /opt/homebrew/opt/libpq/bin(N-/)
   /opt/homebrew/opt/mysql@8.4/bin(N-/)
+  $HOME/bin(N-/)
+  # $HOME/.local/bin: Claude Code native binary (~/.local/bin/claude) が
+  # brew cask claude-code (/opt/homebrew/bin/claude) より勝つよう、
+  # Homebrew 群より前に置く。詳細は上のコメントの 4 番。
+  $HOME/.local/bin(N-/)
   # /usr/local/bin: Docker Desktop / VSCode / Cursor などが shim を置く先。
   # Apple Silicon Mac でも Homebrew (= /opt/homebrew) 以外の installer が
   # 使うので残す (Intel Homebrew prefix としての役目はない)。
@@ -51,8 +66,6 @@ path=(
   /opt/homebrew/bin(N-/)
   /opt/homebrew/sbin(N-/)
   /usr/bin(N-/)
-  $HOME/bin(N-/)
-  $HOME/.local/bin(N-/)
   $path
 )
 
