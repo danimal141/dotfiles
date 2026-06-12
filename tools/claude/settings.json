@@ -215,6 +215,7 @@
       "Read(**/*.p12)"
     ]
   },
+  "model": "fable",
   "hooks": {
     "PreToolUse": [
       {
@@ -267,7 +268,8 @@
     "rust-analyzer-lsp@claude-plugins-official": true,
     "pyright-lsp@claude-plugins-official": true,
     "ruby-lsp@claude-plugins-official": true,
-    "example-skills@anthropic-agent-skills": true
+    "example-skills@anthropic-agent-skills": true,
+    "superpowers@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "anthropic-agent-skills": {
@@ -278,6 +280,5 @@
     }
   },
   "language": "japanese",
-  "skipAutoPermissionPrompt": true,
-  "model": "fable"
+  "skipAutoPermissionPrompt": true
 }
