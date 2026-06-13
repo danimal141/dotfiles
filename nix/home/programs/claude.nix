@@ -53,6 +53,14 @@ in
     # apmInstall は pkgs.coreutils の sha256sum を絶対パスで呼ぶので
     # /run/current-system/sw/bin だけで足りたが、install.sh は外部 script
     # のため絶対パス置換が効かない。
+    #
+    # activation script は全 hook を単一ファイルに inline 展開し set -eu で
+    # 実行するため、top-level の `return` は不正
+    # (return: can only `return' from a function or sourced script) になり、
+    # set -e で activation 全体が中断して後続 hook (codexInstall 等) に
+    # 到達しない。hook 本体を subshell で囲み early-exit は `exit` で表現する。
+    # 併せて export (PATH / SSL_CERT_FILE) を後続 hook へ漏らさない。
+    (
     export PATH="/run/current-system/sw/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 
     CLAUDE_BIN="$HOME/.local/bin/claude"
@@ -60,13 +68,13 @@ in
     # 内蔵の auto-update に任せ、switch hook は「初回 install のみ保証」する。
     if [ -x "$CLAUDE_BIN" ]; then
       echo "[claudeCodeInstall] skip (already installed at $CLAUDE_BIN)"
-      return 0
+      exit 0
     fi
 
     CURL_BIN=$(command -v curl || true)
     if [ -z "$CURL_BIN" ]; then
       echo "[claudeCodeInstall] skip (curl not found in PATH)" >&2
-      return 0
+      exit 0
     fi
 
     # 社内 VPN SSL inspection 下では curl の default CA bundle で TLS 検証が
@@ -82,10 +90,24 @@ in
     # install.sh は最新版を取得 → ~/.claude/downloads/ に DL → checksum 検証
     # → `claude install` で ~/.local/bin/claude に launcher を配置、までを
     # 自動で行う。失敗時は何も書かず次回 switch で再試行できる。
-    if "$CURL_BIN" -fsSL https://claude.ai/install.sh | $DRY_RUN_CMD bash; then
+    #
+    # `curl | bash` の stdin パイプは使わない。home-manager の activation は
+    # pipefail を有効にしないため、SSL inspection 等で curl が失敗して空を
+    # 吐いても bash 側が exit 0 で正常終了し、未 install なのに「installed」と
+    # 誤報告してしまう (FAILED が出ない偽陽性)。installer を一旦ファイルに
+    # 落として curl の終了ステータスを直接 if で検査し、DL 成功時のみ実行する。
+    INSTALLER=$(mktemp)
+    if ! "$CURL_BIN" -fsSL https://claude.ai/install.sh -o "$INSTALLER"; then
+      echo "[claudeCodeInstall] FAILED to download installer (will retry next switch)" >&2
+      rm -f "$INSTALLER"
+      exit 0
+    fi
+    if $DRY_RUN_CMD bash "$INSTALLER"; then
       echo "[claudeCodeInstall] installed at $CLAUDE_BIN"
     else
       echo "[claudeCodeInstall] FAILED (will retry next switch)" >&2
     fi
+    rm -f "$INSTALLER"
+    )
   '';
 }
