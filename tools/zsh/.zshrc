@@ -33,10 +33,11 @@ typeset -U path cdpath fpath manpath
 #   4. $HOME/bin, $HOME/.local/bin
 #      ユーザローカル installer (curl install.sh 系) が置く先。Homebrew の
 #      通常 prefix (/opt/homebrew/bin) より **前** に置く。
-#      理由: Claude Code を Anthropic 公式 native installer
-#      (~/.local/bin/claude) で運用しているため、同名 binary を提供する
-#      brew cask claude-code (/opt/homebrew/bin/claude) より優先させる必要が
-#      ある。副作用として、今後 ~/.local/bin に置かれる他のバイナリも
+#      理由: Claude Code / Codex を公式 native installer
+#      (~/.local/bin/claude, ~/.local/bin/codex) で運用しているため、同名
+#      binary を提供する brew (cask claude-code / formula codex,
+#      /opt/homebrew/bin/...) より優先させる必要がある。副作用として、今後
+#      ~/.local/bin に置かれる他のバイナリも
 #      Homebrew 版より優先される。意図しない override を避けたいときは
 #      ~/.local/bin に置かないか、brew 側の formula 名 (例: `gclaude` 等)
 #      にリネームして解決する。
@@ -55,9 +56,10 @@ path=(
   /opt/homebrew/opt/libpq/bin(N-/)
   /opt/homebrew/opt/mysql@8.4/bin(N-/)
   $HOME/bin(N-/)
-  # $HOME/.local/bin: Claude Code native binary (~/.local/bin/claude) が
-  # brew cask claude-code (/opt/homebrew/bin/claude) より勝つよう、
-  # Homebrew 群より前に置く。詳細は上のコメントの 4 番。
+  # $HOME/.local/bin: Claude Code / Codex の native binary
+  # (~/.local/bin/{claude,codex}) が brew (claude-code cask / codex formula) の
+  # /opt/homebrew/bin/... より勝つよう、Homebrew 群より前に置く。
+  # 詳細は上のコメントの 4 番。
   $HOME/.local/bin(N-/)
   # /usr/local/bin: Docker Desktop / VSCode / Cursor などが shim を置く先。
   # Apple Silicon Mac でも Homebrew (= /opt/homebrew) 以外の installer が

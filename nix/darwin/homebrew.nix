@@ -64,14 +64,18 @@
     #                              sheldon に移行済み (tools/sheldon/plugins.toml)
     # * DB / dev サーバー          — mysql, postgresql@17, redis, libpq, qemu
     # * Ruby ecosystem            — ruby-build (mise 経由 Ruby のビルド helper)
-    # * その他 (調査要 / 大物 Python) — codex, googleworkspace-cli, ansible, azure-cli,
+    # * その他 (調査要 / 大物 Python) — googleworkspace-cli, ansible, azure-cli,
     #                              readline (build dep として他 brew が引いている可能性)
+    #
+    # codex は OpenAI 公式 native installer (~/.local/bin/codex) に移行したため
+    # brews から外した (詳細は nix/home/programs/codex.nix)。cleanup="none" の
+    # ため過去に brew install した実機の codex は残り得るが、PATH 順で native が
+    # 勝つ。完全に消すなら手動で `brew uninstall codex` を実行する。
     brews = [
       "FairwindsOps/tap/pluto"
       "ansible"
       "argoproj/tap/argocd"
       "azure-cli"
-      "codex"
       "ffmpeg"
       "fujiwara/tap/tfstate-lookup"
       "googleworkspace-cli"
