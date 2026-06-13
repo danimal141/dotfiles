@@ -215,7 +215,7 @@
       "Read(**/*.p12)"
     ]
   },
-  "model": "fable",
+  "model": "opus",
   "hooks": {
     "PreToolUse": [
       {
