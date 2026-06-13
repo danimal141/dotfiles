@@ -66,22 +66,7 @@ After completion, `which git` resolves to
 
 ### 3. Inject secrets
 
-The repo is public — secrets are not tracked. Three injection paths:
-
-#### codex
-
-User-placed `~/.codex/.env`:
-
-```shell
-cp tools/codex/.env.example ~/.codex/.env
-chmod 600 ~/.codex/.env
-$EDITOR ~/.codex/.env       # fill in values for each key in .env.example
-```
-
-`tools/codex/wrappers/gemini-mcp.sh` (symlinked to
-`~/.codex/wrappers/gemini-mcp.sh`) sources `.env` at startup and injects
-the env into the MCP server child processes. See
-`tools/codex/.env.example` for the env vars actually used.
+The repo is public — secrets are not tracked. Two injection paths:
 
 #### Claude Code MCP server env (optional)
 
@@ -380,8 +365,8 @@ argument) work fine.
   * `~/.apm/{apm_modules,config.json,.claude,.github}` (APM dynamic area)
   * `~/.local/share/nvim/{lazy,site/parser}/` (lazy.nvim and
     nvim-treesitter dynamic areas)
-  * `~/.codex/.env`, `~/.gitconfig.local`, `~/.gitconfig.work` (secrets /
-    org name; user-handwritten)
+  * `~/.gitconfig.local`, `~/.gitconfig.work` (secrets / org name;
+    user-handwritten)
 
 PATH resolution order (`tools/zsh/.zshrc`):
 

@@ -60,21 +60,7 @@ cd ~/Documents/dev/dotfiles
 
 ### 3. シークレット注入
 
-repo に secrets を tracked しない方針。注入経路は 3 つ:
-
-#### codex
-
-`~/.codex/.env` を user 手動配置:
-
-```shell
-cp tools/codex/.env.example ~/.codex/.env
-chmod 600 ~/.codex/.env
-$EDITOR ~/.codex/.env       # .env.example の各キーに値を埋める
-```
-
-`tools/codex/wrappers/gemini-mcp.sh` (= `~/.codex/wrappers/gemini-mcp.sh` への
-symlink) が起動時に `.env` を source して MCP server の env として inject
-する。何の env が必要かは `tools/codex/.env.example` を参照。
+repo に secrets を tracked しない方針。注入経路は 2 つ:
 
 #### Claude Code MCP server env (任意)
 
@@ -357,7 +343,7 @@ LocalHostName` では新 host を検出できず `setup.sh` は `work` にフォ
   * `~/.codex/{sessions,log.json}` (codex 動的領域)
   * `~/.apm/{apm_modules,config.json,.claude,.github}` (APM 動的領域)
   * `~/.local/share/nvim/{lazy,site/parser}/` (lazy.nvim と nvim-treesitter 動的領域)
-  * `~/.codex/.env`, `~/.gitconfig.local`, `~/.gitconfig.work` (secrets / org 名、user 手書き)
+  * `~/.gitconfig.local`, `~/.gitconfig.work` (secrets / org 名、user 手書き)
 
 PATH 解決順 (`tools/zsh/.zshrc`):
 

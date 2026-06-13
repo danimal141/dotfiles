@@ -91,11 +91,10 @@ in
     # → `claude install` で ~/.local/bin/claude に launcher を配置、までを
     # 自動で行う。失敗時は何も書かず次回 switch で再試行できる。
     #
-    # `curl | bash` の stdin パイプは使わない。home-manager の activation は
-    # pipefail を有効にしないため、SSL inspection 等で curl が失敗して空を
-    # 吐いても bash 側が exit 0 で正常終了し、未 install なのに「installed」と
-    # 誤報告してしまう (FAILED が出ない偽陽性)。installer を一旦ファイルに
-    # 落として curl の終了ステータスを直接 if で検査し、DL 成功時のみ実行する。
+    # `curl | bash` のパイプは使わず、installer を一旦ファイルに落として curl の
+    # 終了ステータスを直接 if で検査し、DL 成功時のみ実行する。SSL inspection 等で
+    # curl が失敗したら DL を破棄して FAILED を出し次回 switch で再試行する。
+    # パイプの終了ステータス解釈に頼らず DL の完全成功を独立に確認するため。
     INSTALLER=$(mktemp)
     if ! "$CURL_BIN" -fsSL https://claude.ai/install.sh -o "$INSTALLER"; then
       echo "[claudeCodeInstall] FAILED to download installer (will retry next switch)" >&2

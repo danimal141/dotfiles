@@ -38,8 +38,9 @@ Files that home-manager places via `home.file`:
 * `.claude/` (CLAUDE.md / settings.json / hooks/ / rules/ /
   mcp-servers.yaml / skills/.gitignore + dynamic areas projects/ todos/
   shell-snapshots/ statsig/ ide/)
-* `.codex/` (config.toml is text-generated / wrappers / AGENTS.md →
-  tools/claude/CLAUDE.md symlink + dynamic areas sessions/ log.json)
+* `.codex/` (config.toml is generated via pkgs.formats.toml then
+  mutable-copied by activation / AGENTS.md → tools/claude/CLAUDE.md symlink
+  * dynamic areas sessions/ log.json)
 * `.apm/` (apm.yml / apm.lock.yaml / .gitignore + dynamic areas
   apm_modules/ config.json / .claude/ / .github/)
 * `.local/bin/tmux-start` (executable)
@@ -101,13 +102,14 @@ For APM's install hook and the skill ingestion procedure, see
 
 ## Codex
 
-* `~/.codex/config.toml` is generated via home-manager's `text =` (the
-  `user` variable interpolates the wrapper's absolute path). This loses
-  the "edit and reload" experience — after editing you must
-  `nix run .#switch`.
-* `GEMINI_API_KEY` lives in `~/.codex/.env` (gitignored, user-placed by
-  hand). The wrapper (`tools/codex/wrappers/gemini-mcp.sh`) sources it
-  at launch and injects it as the env for `mcp-gemini-google-search`.
+* `~/.codex/config.toml` is generated from `settings` (a Nix attribute
+  set) via `pkgs.formats.toml`, then the `codexConfig` activation hook
+  writes it as a mutable real file (overwritten every switch). codex
+  appends `[projects]` trust to config.toml at startup, so it cannot be a
+  read-only symlink (the write fails with code -32603). After editing the
+  settings you must `nix run .#switch`.
+* MCP servers match claude (`tools/claude/mcp-servers.yaml`): `context7`
+  and `terraform` only.
 * `~/.codex/AGENTS.md` is an out-of-store symlink to
   `tools/claude/CLAUDE.md` (both tools share the same system instruction).
 

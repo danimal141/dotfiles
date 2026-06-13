@@ -37,9 +37,9 @@ markdownlint / apm / codex AGENTS.md / mise/config.toml).
 As an exception, when you want Nix to render the contents (e.g., embed
 host- or user-specific values with `${user}`) but no `programs.<tool>`
 module exists, generate the file in-store with
-`home.file.<path>.text = ''...''` (example: codex `config.toml`'s
-absolute wrapper paths). See section B of "The three placement patterns"
-below.
+`home.file.<path>.text = ''...''` (this becomes a symlink to a read-only
+store file, so it suits only static config the tool never rewrites). See
+section B of "The three placement patterns" below.
 
 The decisive difference between these is "what does editing-to-apply
 look like?":
@@ -120,9 +120,9 @@ flowchart LR
 
     subgraph B["B. text generation"]
         direction LR
-        BNix["home.file.text = ''...''<br/>(e.g. codex config.toml)"]:::src
-        BStore["/nix/store/...-config.toml"]:::store
-        BHome["~/.codex/config.toml<br/>symlink → store"]:::home
+        BNix["home.file.text = ''...''<br/>(per user/host render)"]:::src
+        BStore["/nix/store/...-config"]:::store
+        BHome["~/.tool/config<br/>symlink → store (read-only)"]:::home
         BNix -->|"nix run .#switch"| BStore -.-> BHome
     end
 
@@ -199,8 +199,8 @@ dotfiles/
 │           ├── tmux.nix           # ~/.tmux.conf, ~/.tmux_start_dir, ~/.local/bin/tmux-start
 │           ├── nvim.nix           # symlinks the entire ~/.config/nvim to tools/nvim/ (lazy.nvim + nvim-lspconfig)
 │           ├── claude.nix         # ~/.claude/* (excluding dynamic areas) + claudeCodeInstall hook (~/.local/bin/claude)
-│           ├── codex.nix          # ~/.codex/* (config.toml is text-generated / wrappers symlinked /
-│           │                        # AGENTS.md is an out-of-store symlink to tools/claude/CLAUDE.md)
+│           ├── codex.nix          # ~/.codex/* (config.toml generated via pkgs.formats.toml, mutable-copied by codexConfig hook /
+│           │                        # AGENTS.md is an out-of-store symlink to tools/claude/CLAUDE.md) + codexInstall hook (~/.local/bin/codex)
 │           ├── apm.nix            # ~/.apm/* + home.activation.apmInstall hook
 │           ├── mise.nix           # programs.mise + ~/.config/mise/config.toml + miseTrust hook
 │           ├── markdownlint.nix   # ~/.markdownlint.jsonc symlink
@@ -213,7 +213,6 @@ dotfiles/
 │   ├── tmux/{.tmux.conf, .tmux_start_dir, bin/tmux-start}
 │   ├── nvim/{init.lua, lazy-lock.json, lua/{options,mappings,autocmds}.lua, lua/plugins/*.lua, after/ftplugin/*.lua}
 │   ├── claude/{CLAUDE.md, settings.json, mcp-servers.yaml, hooks/, rules/, skills/.gitignore, .env.example, setup-mcp.sh}
-│   ├── codex/{wrappers/gemini-mcp.sh, .env.example}
 │   ├── apm/{apm.yml, apm.lock.yaml, .gitignore}
 │   ├── mise/config.toml
 │   ├── markdownlint/.markdownlint.jsonc
@@ -248,8 +247,10 @@ directly to the repo file.
 into the Nix store, and `~/<path>` becomes a symlink there.
 
 * **Where to use**: when the body needs to be rendered per user / host
-  via Nix `${user}` and friends (example: codex `config.toml`'s absolute
-  wrapper paths)
+  via Nix `${user}` and friends, and the tool does not rewrite the config
+  itself. codex `config.toml` used to live here, but since codex appends
+  trust at startup it moved to a mutable copy via an activation hook (from
+  a `pkgs.formats.toml` output)
 * **Trade-off**: editing means rewriting `text = ''...''` inside
   `nix/home/programs/<tool>.nix` → `nix run .#switch` required
 
@@ -288,15 +289,9 @@ This ensures:
 
 ## Secrets design
 
-The repo is intended to be public, so secrets are never tracked. Three
+The repo is intended to be public, so secrets are never tracked. Two
 injection paths exist:
 
-* **wrapper script + `~/.codex/.env`** (env values for codex-side MCP
-  servers): user places `~/.codex/.env` manually (no gitignore needed
-  = lives outside the repo); the wrapper
-  (`tools/codex/wrappers/gemini-mcp.sh`) sources it at startup and
-  injects env into the child process. `tools/codex/.env.example` is
-  tracked as the template; refer to it for the env vars in use.
 * **MCP server registration + `tools/claude/.env`** (env values for
   Claude Code MCP servers):
   `tools/claude/setup-mcp.sh` sources the in-repo

@@ -24,8 +24,8 @@ raw symlink vs declarative module (`programs.<tool>.{enable,settings}`)
 
 ## 作業時の注意点
 
-* secrets は tracked file に置かない (`~/.codex/.env` /
-  `~/.gitconfig.local` / `~/.gitconfig.work` は user 側で配置)
+* secrets は tracked file に置かない (`~/.gitconfig.local` /
+  `~/.gitconfig.work` は user 側で配置)
 * `tools/zsh/.zshrc` は raw text symlink。home-manager の zshrc 注入を
   有効化すると衝突する
 * `tools/nvim/lazy-lock.json` は tracked にして再現性を担保

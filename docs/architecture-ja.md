@@ -37,8 +37,9 @@
 * `.claude/` (CLAUDE.md / settings.json / hooks/ / rules/ /
   mcp-servers.yaml / skills/.gitignore + 動的領域 projects/ todos/
   shell-snapshots/ statsig/ ide/)
-* `.codex/` (config.toml は text 生成 / wrappers / AGENTS.md →
-  tools/claude/CLAUDE.md symlink + 動的領域 sessions/ log.json)
+* `.codex/` (config.toml は pkgs.formats.toml 生成物を activation で mutable
+  コピー / AGENTS.md → tools/claude/CLAUDE.md symlink + 動的領域 sessions/
+  log.json)
 * `.apm/` (apm.yml / apm.lock.yaml / .gitignore + 動的領域 apm_modules/
   config.json / .claude/ / .github/)
 * `.local/bin/tmux-start` (executable)
@@ -96,12 +97,13 @@ APM の install hook / skill 取り込み手順は
 
 ## Codex
 
-* `~/.codex/config.toml` は home-manager の `text =` で生成 (user 変数で
-  wrapper 絶対パスを補完)。raw 編集即反映の体験は失うので、編集後は
-  `nix run .#switch` 必須
-* `GEMINI_API_KEY` は `~/.codex/.env` (gitignore 対象、user 手動配置) を
-  wrapper (`tools/codex/wrappers/gemini-mcp.sh`) が起動時に source して
-  `mcp-gemini-google-search` の env として inject
+* `~/.codex/config.toml` は `settings` (Nix attribute set) を
+  `pkgs.formats.toml` で生成し、`codexConfig` activation hook が mutable な
+  実ファイルとして毎回上書き配置する。codex 自身が起動時に `[projects]`
+  trust を config.toml へ追記するため read-only symlink にはできない
+  (書込が code -32603 で失敗する)。設定の編集後は `nix run .#switch` 必須
+* MCP server は claude (`tools/claude/mcp-servers.yaml`) と揃え `context7` /
+  `terraform` のみ
 * `~/.codex/AGENTS.md` は `tools/claude/CLAUDE.md` への out-of-store symlink
   (両者で同じ system instruction を共有)
 
