@@ -36,10 +36,11 @@ Files that home-manager places via `home.file`:
 * `.zshrc` `.tmux.conf` `.tmux_start_dir` `.markdownlint.jsonc` `.ctags.d/`
 * `.config/{git,mise,nvim}/` (XDG)
 * `.claude/` (CLAUDE.md / settings.json / hooks/ / rules/ /
-  mcp-servers.yaml / skills/.gitignore + dynamic areas projects/ todos/
+  mcp-servers.json / skills/.gitignore + dynamic areas projects/ todos/
   shell-snapshots/ statsig/ ide/)
 * `.codex/` (config.toml is generated via pkgs.formats.toml then
-  mutable-copied by activation / AGENTS.md → tools/claude/CLAUDE.md symlink
+  mutable-copied by activation / AGENTS.md → tools/codex/AGENTS.md
+  (→ tools/claude/CLAUDE.md) symlink / skills/.gitignore
   * dynamic areas sessions/ log.json)
 * `.apm/` (apm.yml / apm.lock.yaml / .gitignore + dynamic areas
   apm_modules/ config.json / .claude/ / .github/)
@@ -92,10 +93,24 @@ left outside `home.file` as mutable directories under `~/`. See
 
 * Only `tools/claude/skills/.gitignore` is tracked. Skills installed by
   APM (chrome-cdp, codebase-analyzer, ...) land under `~/.claude/skills/`
-  and are ignored.
-* MCP servers are declared by hand in `tools/claude/mcp-servers.yaml`.
-  Run `cd tools/claude && ./setup-mcp.sh` to expand them into
-  `~/.claude/mcp.json` — this is **not** triggered automatically on apply.
+  and are ignored. The same skills are also deployed to `~/.codex/skills/`
+  (see Codex below).
+* MCP servers are defined in `tools/mcp/servers.json`, the single source of
+  truth shared with codex. Run `cd tools/claude && ./setup-mcp.sh` to expand
+  them into `~/.claude/mcp.json` — this is **not** triggered automatically
+  on apply.
+* `rules/*.md` (`~/.claude/rules/` is auto-loaded by claude as user-level
+  rules, no `@import` needed) holds markdown / nix / web-fetch / tools
+  guidance. `nix.md` is scoped to `**/*.nix` via `paths:` frontmatter.
+* `hooks/` holds PreToolUse destructive-command blocking
+  (block-destructive-commands.py) and the PR gate (pr-review-gate.sh blocks
+  `gh pr create` with exit 2 unless `/code-review` ran; pr-review-mark.sh
+  sets the marker on PostToolUse(Skill)), plus PostToolUse markdownlint
+  auto-fix.
+* `settings.json` stays a raw symlink (live-editable). It carries `$schema`
+  (schemastore) and the `claudeSettingsValidate` activation hook validates it
+  with check-jsonschema on switch (non-blocking early detection of breakage;
+  live-edit preserved).
 
 For APM's install hook and the skill ingestion procedure, see
 [README.md#claude-code-skills-via-apm](../README.md#claude-code-skills-via-apm).
@@ -108,10 +123,16 @@ For APM's install hook and the skill ingestion procedure, see
   appends `[projects]` trust to config.toml at startup, so it cannot be a
   read-only symlink (the write fails with code -32603). After editing the
   settings you must `nix run .#switch`.
-* MCP servers match claude (`tools/claude/mcp-servers.yaml`): `context7`
-  and `terraform` only.
-* `~/.codex/AGENTS.md` is an out-of-store symlink to
-  `tools/claude/CLAUDE.md` (both tools share the same system instruction).
+* MCP servers are read from `tools/mcp/servers.json` (shared with claude) by
+  `codex.nix` via `builtins.fromJSON` and expanded into `mcp_servers` (single
+  source of truth): `context7` and `terraform` only.
+* Skills are also deployed to `~/.codex/skills/` via
+  `apm install --target claude,codex --global` in `apm.nix`. Only
+  `tools/codex/skills/.gitignore` is tracked, ignoring APM artifacts (same
+  pattern as claude).
+* `~/.codex/AGENTS.md` is an out-of-store symlink to `tools/codex/AGENTS.md`,
+  which is itself an in-repo symlink to `../claude/CLAUDE.md`, so both tools
+  share the same system instruction in a single file.
 
 For the full secret-injection design, see
 [design-philosophy.md#secrets-design](design-philosophy.md#secrets-design)

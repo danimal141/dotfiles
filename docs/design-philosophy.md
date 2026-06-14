@@ -200,7 +200,7 @@ dotfiles/
 │           ├── nvim.nix           # symlinks the entire ~/.config/nvim to tools/nvim/ (lazy.nvim + nvim-lspconfig)
 │           ├── claude.nix         # ~/.claude/* (excluding dynamic areas) + claudeCodeInstall hook (~/.local/bin/claude)
 │           ├── codex.nix          # ~/.codex/* (config.toml generated via pkgs.formats.toml, mutable-copied by codexConfig hook /
-│           │                        # AGENTS.md is an out-of-store symlink to tools/claude/CLAUDE.md) + codexInstall hook (~/.local/bin/codex)
+│           │                        # AGENTS.md symlinks tools/codex/AGENTS.md (→ tools/claude/CLAUDE.md) / mcp_servers read from tools/mcp/servers.json / skills/.gitignore) + codexInstall hook (~/.local/bin/codex)
 │           ├── apm.nix            # ~/.apm/* + home.activation.apmInstall hook
 │           ├── mise.nix           # programs.mise + ~/.config/mise/config.toml + miseTrust hook
 │           ├── markdownlint.nix   # ~/.markdownlint.jsonc symlink
@@ -212,7 +212,9 @@ dotfiles/
 │   ├── zsh/.zshrc
 │   ├── tmux/{.tmux.conf, .tmux_start_dir, bin/tmux-start}
 │   ├── nvim/{init.lua, lazy-lock.json, lua/{options,mappings,autocmds}.lua, lua/plugins/*.lua, after/ftplugin/*.lua}
-│   ├── claude/{CLAUDE.md, settings.json, mcp-servers.yaml, hooks/, rules/, skills/.gitignore, .env.example, setup-mcp.sh}
+│   ├── claude/{CLAUDE.md, settings.json, hooks/, rules/, skills/.gitignore, .env.example, setup-mcp.sh}
+│   ├── codex/{AGENTS.md (→ ../claude/CLAUDE.md), skills/.gitignore}
+│   ├── mcp/servers.json              # MCP server definitions shared by claude/codex (single source of truth)
 │   ├── apm/{apm.yml, apm.lock.yaml, .gitignore}
 │   ├── mise/config.toml
 │   ├── markdownlint/.markdownlint.jsonc
@@ -237,7 +239,7 @@ directly to the repo file.
 * **No `nix run .#switch` needed**: content changes update only the
   symlink target's body
 * **Where to use**: zsh / tmux / nvim / claude (CLAUDE.md /
-  settings.json / hooks / rules / mcp-servers.yaml) / codex AGENTS.md /
+  settings.json / hooks / rules / mcp-servers.json) / codex AGENTS.md /
   apm (apm.yml / apm.lock.yaml / .gitignore) / tools/mise/config.toml /
   markdownlint / ghostty / ctags
 
@@ -296,7 +298,7 @@ injection paths exist:
   Claude Code MCP servers):
   `tools/claude/setup-mcp.sh` sources the in-repo
   `tools/claude/.env` and injects the values as the `env:` of each
-  server in `tools/claude/mcp-servers.yaml`. Note that it reads
+  server in `tools/mcp/servers.json`. Note that it reads
   **the in-repo `tools/claude/.env`**, not `~/.claude/.env` (because
   the script expects to be run as
   `cd tools/claude && ./setup-mcp.sh` and reads `${SCRIPT_DIR}/.env`).
@@ -380,7 +382,7 @@ home-manager's user-side activation path. Runs as the user after
 `activate`'s `writeBoundary`.
 
 * `apmInstall` (apm.nix): stores the sha256 of `~/.apm/apm.yml` in
-  `~/.apm/.apm.yml.hash` and fires `apm install --target claude` only
+  `~/.apm/.apm.yml.hash` and fires `apm install --target claude,codex` only
   when it differs (idempotent)
 * `miseTrust` (mise.nix): registers the repo path
   `tools/mise/config.toml` in mise's trust store (workaround for the

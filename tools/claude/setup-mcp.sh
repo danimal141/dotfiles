@@ -1,7 +1,15 @@
 #!/usr/bin/env bash
 
 # Claude MCP Setup Script
-# This script reads MCP server configurations from YAML and executes claude mcp add commands
+#
+# 共有 MCP 定義 tools/mcp/servers.json を claude 側へ登録する claude 専用
+# consumer。servers.json は codex とも共有する single source of truth だが、
+# codex は codex.nix が宣言的に config.toml へ展開するため不要。claude は
+# user-scope の MCP が ~/.claude.json (claude 自身が書き換える mutable file) に
+# 入り read-only symlink にできないため、`claude mcp add` で命令的に登録する。
+# この非対称は「claude vs codex」ではなく「命令的 vs 宣言的」に由来する。
+# .env も claude 固有 (`claude mcp add -e` 用。codex は
+# shell_environment_policy.inherit=all でシェル env を継承するため不要)。
 
 set -euo pipefail
 
@@ -13,7 +21,12 @@ NC='\033[0m' # No Color
 
 # Script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-MCP_CONFIG="${SCRIPT_DIR}/mcp-servers.yaml"
+# MCP server 定義は codex と共有する tools/mcp/servers.json を single source of
+# truth とする。JSON は valid YAML なので yq (mikefarah) が .json 拡張子から
+# json として読めるが、出力も json になりスカラが quote 付き ("npx") になる。
+# 後段の dedup (grep "^name$") や `claude mcp add` 引数組み立てが unquoted を
+# 前提とするため、yq には -o=yaml を付けて出力を unquoted に固定する。
+MCP_CONFIG="${SCRIPT_DIR}/../mcp/servers.json"
 ENV_FILE="${SCRIPT_DIR}/.env"
 
 # Default values
@@ -106,8 +119,8 @@ else
     print_warn ".env file not found. Environment variables may not be available."
 fi
 
-# Get the number of servers in the YAML
-server_count=$(yq eval '.servers | length' "$MCP_CONFIG")
+# Get the number of servers in the config
+server_count=$(yq eval -o=yaml '.servers | length' "$MCP_CONFIG")
 
 if [[ $server_count -eq 0 ]]; then
     print_warn "No servers found in configuration"
@@ -129,11 +142,11 @@ fi
 # Process each server
 for ((i=0; i<$server_count; i++)); do
     # Get server name (key)
-    server_name=$(yq eval ".servers | keys | .[$i]" "$MCP_CONFIG")
+    server_name=$(yq eval -o=yaml ".servers | keys | .[$i]" "$MCP_CONFIG")
 
     # Get server configuration
-    command=$(yq eval ".servers.$server_name.command" "$MCP_CONFIG")
-    args=$(yq eval ".servers.$server_name.args[]" "$MCP_CONFIG" | tr '\n' ' ')
+    command=$(yq eval -o=yaml ".servers.$server_name.command" "$MCP_CONFIG")
+    args=$(yq eval -o=yaml ".servers.$server_name.args[]" "$MCP_CONFIG" | tr '\n' ' ')
 
     # Check if server already exists
     if echo "$existing_servers" | grep -q "^${server_name}$"; then
@@ -147,13 +160,13 @@ for ((i=0; i<$server_count; i++)); do
     claude_cmd="claude mcp add $server_name --scope $SCOPE"
 
     # Add environment variables if they exist
-    env_count=$(yq eval ".servers.$server_name.env | length" "$MCP_CONFIG" 2>/dev/null || echo "0")
+    env_count=$(yq eval -o=yaml ".servers.$server_name.env | length" "$MCP_CONFIG" 2>/dev/null || echo "0")
     if [[ $env_count -gt 0 ]]; then
         # Get all environment variable keys for this server
-        env_keys=$(yq eval ".servers.$server_name.env | keys | .[]" "$MCP_CONFIG" 2>/dev/null)
+        env_keys=$(yq eval -o=yaml ".servers.$server_name.env | keys | .[]" "$MCP_CONFIG" 2>/dev/null)
         for env_key in $env_keys; do
-            # Get the environment variable value from YAML
-            env_value=$(yq eval ".servers.$server_name.env.$env_key" "$MCP_CONFIG")
+            # Get the environment variable value from the config
+            env_value=$(yq eval -o=yaml ".servers.$server_name.env.$env_key" "$MCP_CONFIG")
             # Expand environment variables (replace ${VAR} with actual value)
             if [[ "$env_value" =~ ^\$\{([^}]+)\}$ ]]; then
                 var_name="${BASH_REMATCH[1]}"

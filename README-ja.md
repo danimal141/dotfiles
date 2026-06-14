@@ -66,8 +66,8 @@ repo に secrets を tracked しない方針。注入経路は 2 つ:
 
 `tools/claude/setup-mcp.sh` を `cd tools/claude && ./setup-mcp.sh` で
 実行する際、同 dir 内の `.env` を source して
-`tools/claude/mcp-servers.yaml` の各 server の `env:` 値として inject する。
-`mcp-servers.yaml` 内の server が env を要求していない時は配置不要。
+`tools/mcp/servers.json` (claude/codex 共有) の各 server の `env:` 値として
+inject する。`servers.json` 内の server が env を要求していない時は配置不要。
 必要なときは:
 
 ```shell
@@ -396,11 +396,12 @@ Claude Code のスキル群は [skilltree](https://github.com/danimal141/skilltr
 
 `nix run .#switch` 時に `home.activation.apmInstall` hook が `~/.apm/
 apm.yml` の sha256 を比較し、差分があるときだけ `apm install --target
-claude` を発火する (冪等)。手動で再実行する場合:
+claude,codex` を発火する (冪等)。skill は `~/.claude/skills/` と
+`~/.codex/skills/` の両方に配布される。手動で再実行する場合:
 
 ```shell
 cd ~/.apm
-apm install --target claude
+apm install --target claude,codex --global
 ```
 
 依存スキルを追加・削除する場合は `tools/apm/apm.yml` (repo 内、= `~/.apm/apm.yml`

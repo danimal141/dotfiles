@@ -188,7 +188,7 @@ dotfiles/
 │           ├── nvim.nix           # ~/.config/nvim 全体を tools/nvim/ に symlink (lazy.nvim + nvim-lspconfig 構成)
 │           ├── claude.nix         # ~/.claude/* (動的領域除く) + claudeCodeInstall hook (~/.local/bin/claude)
 │           ├── codex.nix          # ~/.codex/* (config.toml は pkgs.formats.toml 生成物を codexConfig hook で mutable コピー /
-│           │                        # AGENTS.md は tools/claude/CLAUDE.md への out-of-store symlink) + codexInstall hook (~/.local/bin/codex)
+│           │                        # AGENTS.md は tools/codex/AGENTS.md (→ tools/claude/CLAUDE.md) への symlink / mcp_servers は tools/mcp/servers.json を読込 / skills/.gitignore) + codexInstall hook (~/.local/bin/codex)
 │           ├── apm.nix            # ~/.apm/* + home.activation.apmInstall hook
 │           ├── mise.nix           # programs.mise + ~/.config/mise/config.toml + miseTrust hook
 │           ├── markdownlint.nix   # ~/.markdownlint.jsonc symlink
@@ -200,7 +200,9 @@ dotfiles/
 │   ├── zsh/.zshrc
 │   ├── tmux/{.tmux.conf, .tmux_start_dir, bin/tmux-start}
 │   ├── nvim/{init.lua, lazy-lock.json, lua/{options,mappings,autocmds}.lua, lua/plugins/*.lua, after/ftplugin/*.lua}
-│   ├── claude/{CLAUDE.md, settings.json, mcp-servers.yaml, hooks/, rules/, skills/.gitignore, .env.example, setup-mcp.sh}
+│   ├── claude/{CLAUDE.md, settings.json, hooks/, rules/, skills/.gitignore, .env.example, setup-mcp.sh}
+│   ├── codex/{AGENTS.md (→ ../claude/CLAUDE.md), skills/.gitignore}
+│   ├── mcp/servers.json              # claude/codex 共有の MCP server 定義 (single source of truth)
 │   ├── apm/{apm.yml, apm.lock.yaml, .gitignore}
 │   ├── mise/config.toml
 │   ├── markdownlint/.markdownlint.jsonc
@@ -222,7 +224,7 @@ repo の絶対 path を user 変数 (`/Users/${user}/Documents/dev/dotfiles`) �
 * **編集体験**: `nvim ~/.zshrc` で repo 内ファイルを開いて編集 → `source ~/.zshrc` で即反映
 * **`nix run .#switch` 不要**: ファイルの中身変更だけなら symlink target の中身が変わるだけ
 * **使い所**: zsh / tmux / nvim / claude (CLAUDE.md / settings.json /
-  hooks / rules / mcp-servers.yaml) / codex AGENTS.md / apm (apm.yml /
+  hooks / rules / mcp-servers.json) / codex AGENTS.md / apm (apm.yml /
   apm.lock.yaml / .gitignore) / tools/mise/config.toml / markdownlint /
   ghostty / ctags
 
@@ -273,7 +275,7 @@ repo は public 想定で運用しているため secrets を tracked file に�
 * **MCP server 登録 + `tools/claude/.env`** (Claude Code 側 MCP server の
   env):
   `tools/claude/setup-mcp.sh` が repo 内の `tools/claude/.env` を source して
-  `tools/claude/mcp-servers.yaml` の各 server の `env:` 値として inject する。
+  `tools/mcp/servers.json` の各 server の `env:` 値として inject する。
   `~/.claude/.env` ではなく **repo 内の `tools/claude/.env`** を読む点に注意
   (= setup-mcp.sh が `cd tools/claude && ./setup-mcp.sh` で実行されることを
   前提に `${SCRIPT_DIR}/.env` を見ている)。`tools/claude/.env` は gitignore で
@@ -349,7 +351,7 @@ home-manager のユーザ activation 経路。`activate` の `writeBoundary` 後
 ユーザ権限で走る。
 
 * `apmInstall` (apm.nix): `~/.apm/apm.yml` の sha256 を `~/.apm/.apm.yml.hash`
-  に保存し、差分があるときだけ `apm install --target claude` を実行 (冪等)
+  に保存し、差分があるときだけ `apm install --target claude,codex` を実行 (冪等)
 * `miseTrust` (mise.nix): repo path の `tools/mise/config.toml` を mise の trust
   store に登録 (out-of-store symlink で外部 path 扱いになる対策)
 
