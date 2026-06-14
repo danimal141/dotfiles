@@ -34,7 +34,7 @@ see [README.md#tool-responsibilities](../README.md#tool-responsibilities).
 Files that home-manager places via `home.file`:
 
 * `.zshrc` `.tmux.conf` `.tmux_start_dir` `.markdownlint.jsonc` `.ctags.d/`
-* `.config/{git,mise,nvim}/` (XDG)
+* `.config/{git,google-ime,mise,nvim}/` (XDG)
 * `.claude/` (CLAUDE.md / settings.json / hooks/ / rules/ /
   mcp-servers.json / skills/.gitignore + dynamic areas projects/ todos/
   shell-snapshots/ statsig/ ide/)
@@ -97,8 +97,8 @@ left outside `home.file` as mutable directories under `~/`. See
   `~/.agents/skills/` for codex (see Codex below).
 * MCP servers are defined in `tools/mcp/servers.json`, the single source of
   truth shared with codex. Run `cd tools/claude && ./setup-mcp.sh` to expand
-  them into `~/.claude/mcp.json` — this is **not** triggered automatically
-  on apply.
+  them into Claude's user-scope mutable config via `claude mcp add` — this
+  is **not** triggered automatically on apply.
 * `rules/*.md` (`~/.claude/rules/` is auto-loaded by claude as user-level
   rules, no `@import` needed) holds markdown / nix / web-fetch / tools
   guidance. `nix.md` is scoped to `**/*.nix` via `paths:` frontmatter.

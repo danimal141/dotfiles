@@ -134,7 +134,7 @@ print_info "Installing with scope: $SCOPE"
 print_info "Checking for existing MCP servers..."
 existing_servers=$(claude mcp list 2>/dev/null | grep ': ' | cut -d':' -f1 || echo "")
 
-# Debug: Print existing servers
+# Report existing servers before adding missing entries.
 if [[ -n "$existing_servers" ]]; then
     print_info "Detected existing servers: $(echo "$existing_servers" | tr '\n' ', ' | sed 's/, $//')"
 fi

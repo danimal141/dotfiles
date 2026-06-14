@@ -59,9 +59,7 @@ return {
       require("nvim-treesitter").install(parsers):wait(300000)
 
       -- filetype 一致時に treesitter highlight を起動する。markdown は
-      -- 意図的に pattern から外して vim builtin syntax を使う (master 由来の
-      -- range() bug 回避は main branch で不要になる想定だが、念のため markdown
-      -- だけ後で個別検証することにして当面 builtin に任せる)。
+      -- ft_to_lang に含めず、vim builtin syntax に任せる。
       vim.api.nvim_create_autocmd("FileType", {
         pattern = vim.tbl_keys(ft_to_lang),
         callback = function(args)

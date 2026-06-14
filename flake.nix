@@ -35,11 +35,9 @@
     # モジュールとして扱う。`autoMigrate = true` で既存の手動 brew インストールも
     # 引き継げる。
     #
-    # 一時 pin (matinzd/nix-homebrew PR #136): zhaofengli 本家は brew 5.1.7
-    # で stuck し、`cask_struct_generator.process_depends_on` の `nil.to_sym`
-    # で 14 cask (visual-studio-code 等) が fetch 不能。brew 5.1.10 で修正
-    # 済み (Homebrew/brew#22137)、PR #136 で追従。本家 merge 後に
-    # `github:zhaofengli/nix-homebrew` へ戻す。
+    # Fork commit に pin。nix-homebrew 側の Homebrew/brew 追従が遅れると
+    # cask metadata の schema 変更で fetch が壊れることがあるため、
+    # lock 更新時は upstream main へ戻せるか確認する。
     nix-homebrew = {
       url = "github:matinzd/nix-homebrew/a3b7269392d2b8379434fc3d4d3694c92e9e2278";
     };
@@ -55,9 +53,8 @@
     };
 
     # home-manager: ~/ 配下 (= user-level) の declarative 管理モジュール。
-    # nixpkgs-unstable (26.05 系) に対応する release branch がまだ無い
-    # (release-25.11 までしか存在しない、2026-05 時点) ので master の特定
-    # commit を pin する。`release-26.05` リリース後にそちらへ切り替える。
+    # nixpkgs-unstable に合わせるため、release branch ではなく master の特定
+    # commit を pin する。
     home-manager = {
       url = "github:nix-community/home-manager/00ed86e58bb6979a7921859fd1615d19382eac5c";
       inputs.nixpkgs.follows = "nixpkgs";

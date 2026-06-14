@@ -14,10 +14,9 @@
 # setup-mcp.sh は ~/.claude には配置せず、repo 内で `cd tools/claude &&
 # ./setup-mcp.sh` で直接呼ぶ運用。
 #
-# claude binary 本体は Anthropic 公式 native installer
-# (curl -fsSL https://claude.ai/install.sh | bash) で ~/.local/bin/claude
-# に配置する。brew cask (claude-code) も宣言上は残しているが、tools/zsh
-# の PATH 順で ~/.local/bin が /opt/homebrew/bin より勝つように設定して
+# claude binary 本体は Anthropic 公式 native installer を取得して
+# ~/.local/bin/claude に配置する。brew cask (claude-code) も宣言上は残しているが、
+# tools/zsh の PATH 順で ~/.local/bin が /opt/homebrew/bin より勝つように設定して
 # native を優先させる。日常的なバージョン更新は native binary 内蔵の
 # auto-update が担う (switch では「未 install のときだけ install」を保証)。
 let

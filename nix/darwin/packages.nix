@@ -79,18 +79,18 @@
     kubectx
     kustomize
     kubernetes-helm
-    krew            # kubectl plugin manager (旧 brew、単独 Go binary)
+    krew            # kubectl plugin manager
     stern
 
     # build / system 補助 — 多くの言語ビルドで前提になる薄い CLI / lib。
-    # 旧 brew から移植: Apple 特殊な機能を使っていない単独 binary / lib。
-    age             # 暗号化 CLI (旧 brew、Go 単一 binary)
+    # Apple 固有の統合を持たないものは Nix store 側で pin する。
+    age             # 暗号化 CLI
     automake        # GNU autotools
     bash-completion # bash の補完スクリプト群
-    cloudflared     # Cloudflare Tunnel CLI (旧 brew、Go 単一 binary)
+    cloudflared     # Cloudflare Tunnel CLI
     cmake           # C/C++ build tool
-    file            # libmagic 同梱 (旧 brew "libmagic" の代替)
-    mecab           # 日本語形態素解析 (旧 brew、純 C++)
+    file            # libmagic 同梱
+    mecab           # 日本語形態素解析
     zlib            # 圧縮 lib
 
     # Python tooling — Python runtime 自体は mise 配下、これは Python に

@@ -59,13 +59,11 @@
     # * Node / Python 前提のツール — markdownlint-cli, marp-cli
     # * macOS-only ツール          — terminal-notifier, im-select
     # * shell 本体                — zsh (login shell として brew 版を chsh)。
-    #                              zsh プラグイン (zsh-autosuggestions /
-    #                              zsh-syntax-highlighting / zsh-completions) は
-    #                              sheldon に移行済み (tools/sheldon/plugins.toml)
+    #                              zsh プラグインは tools/sheldon/plugins.toml で管理
     # * DB / dev サーバー          — mysql, postgresql@17, redis, libpq, qemu
     # * Ruby ecosystem            — ruby-build (mise 経由 Ruby のビルド helper)
-    # * その他 (調査要 / 大物 Python) — googleworkspace-cli, ansible, azure-cli,
-    #                              readline (build dep として他 brew が引いている可能性)
+    # * cloud / automation CLI     — googleworkspace-cli, ansible, azure-cli
+    # * build dependency           — readline
     #
     # codex は OpenAI 公式 native installer (~/.local/bin/codex) に移行したため
     # brews から外した (詳細は nix/home/programs/codex.nix)。cleanup="none" の

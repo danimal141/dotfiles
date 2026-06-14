@@ -215,11 +215,9 @@ Main reasons for keeping things on the Homebrew side in
   kayac/tap/ecspresso, mutagen-io/mutagen/mutagen-compose, etc.)
 * Apple / macOS integration is more reliable via brew (basictex, ffmpeg,
   imagemagick, llvm, mas)
-* CLIs that assume a Node / Python runtime (markdownlint-cli, marp-cli,
-  repomix, pipx)
+* CLIs that assume a Node / Python runtime (markdownlint-cli, marp-cli)
 * macOS-only tools (terminal-notifier, im-select)
-* Shell and plugins (zsh / zsh-autosuggestions / zsh-syntax-highlighting /
-  zsh-completions) — startup is faster via brew
+* Shell binary (zsh); zsh plugins are managed by sheldon
 
 Caveats:
 
@@ -233,8 +231,8 @@ Caveats:
 ### Editing / adding dotfiles
 
 Dotfiles placed via raw text symlinks (zsh / tmux / nvim / claude /
-ghostty / ctags / mise config.toml / markdownlint) are **edited by opening
-the repo file directly** (`nvim ~/.zshrc`):
+ghostty / ctags / google-ime / mise config.toml / markdownlint) are
+**edited by opening the repo file directly** (`nvim ~/.zshrc`):
 
 ```shell
 $ readlink ~/.zshrc
@@ -396,10 +394,9 @@ required, with built-in auto-update).
 
 During `nix run .#switch`, the `home.activation.claudeCodeInstall` hook
 checks whether `~/.local/bin/claude` exists and only fires
-`curl -fsSL https://claude.ai/install.sh | bash` when it is missing
-(idempotent). Day-to-day version updates are handled by the `claude`
-binary's own auto-update, so the switch hook only guarantees the first
-install.
+the native installer when it is missing (idempotent). Day-to-day version
+updates are handled by the `claude` binary's own auto-update, so the
+switch hook only guarantees the first install.
 
 Under corporate VPN SSL inspection, `/etc/nix/ca-bundle.pem` is injected
 into curl via `SSL_CERT_FILE` / `CURL_CA_BUNDLE` so TLS verification

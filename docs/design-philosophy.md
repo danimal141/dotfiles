@@ -32,7 +32,7 @@ Anything outside those three motivations gets the default **out-of-store
 symlink**. Place the raw text under `tools/<tool>/` in the repo, then
 symlink it via `home.file.<path>.source` using `mkOutOfStoreSymlink`
 (examples: zshrc / tmux.conf / claude config / nvim / ctags / ghostty /
-markdownlint / apm / codex AGENTS.md / mise/config.toml).
+google-ime / markdownlint / apm / codex AGENTS.md / mise/config.toml).
 
 As an exception, when you want Nix to render the contents (e.g., embed
 host- or user-specific values with `${user}`) but no `programs.<tool>`
@@ -93,7 +93,7 @@ flowchart TB
     Home --> HomeOut["dotfiles under ~/<br/>(A: symlink / B: text / C: programs.*)"]:::out
 
     SysOut -.->|activationScripts.postActivation| ActSys["AppleSymbolicHotKeys<br/>targeted update"]:::out
-    HomeOut -.->|home.activation| ActHome["apmInstall / miseTrust"]:::out
+    HomeOut -.->|home.activation| ActHome["user activation hooks"]:::out
 ```
 
 ### Three placement patterns and reflection paths
@@ -161,7 +161,7 @@ flowchart TB
     Act --> LA["launchd.user.agents<br/>(plist placement only)"]:::agent
 
     Sys --> SysHook["postActivation:<br/>AppleSymbolicHotKeys dict-add"]
-    Home --> HomeHook["apmInstall (fires on sha256 diff)<br/>miseTrust (trust config.toml)"]
+    Home --> HomeHook["installers / generated config copies /<br/>hash-gated sync hooks"]
     LA -.->|"fires at next login"| LAHook["remap-caps-lock:<br/>reapply CapsLock→Control via hidutil"]
 ```
 
@@ -207,7 +207,8 @@ dotfiles/
 │           ├── starship.nix       # programs.starship.settings
 │           ├── ghostty.nix        # ~/Library/Application Support/com.mitchellh.ghostty/config
 │           ├── ctags.nix          # ~/.ctags.d/exclude.ctags
-│           └── vscode.nix         # ~/Library/Application Support/Code/User/{settings,keybindings}.json + extensions hook
+│           ├── vscode.nix         # ~/Library/Application Support/Code/User/{settings,keybindings}.json + extensions hook
+│           └── google-ime.nix     # ~/.config/google-ime/keymap.tsv
 ├── tools/                         # per-tool raw text dotfiles (consumed by nix/home/programs/*.nix)
 │   ├── zsh/.zshrc
 │   ├── tmux/{.tmux.conf, .tmux_start_dir, bin/tmux-start}
@@ -219,6 +220,7 @@ dotfiles/
 │   ├── mise/config.toml
 │   ├── markdownlint/.markdownlint.jsonc
 │   ├── ghostty/config
+│   ├── google-ime/keymap.tsv
 │   ├── ctags/exclude.ctags
 │   └── vscode/{settings.jsonc, keybindings.jsonc, extensions.txt, sync.sh}
 ├── setup.sh                       # initial bootstrap
@@ -241,7 +243,7 @@ directly to the repo file.
 * **Where to use**: zsh / tmux / nvim / claude (CLAUDE.md /
   settings.json / hooks / rules / mcp-servers.json) / codex AGENTS.md /
   apm (apm.yml / apm.lock.yaml / .gitignore) / tools/mise/config.toml /
-  markdownlint / ghostty / ctags
+  markdownlint / ghostty / google-ime / ctags
 
 ### B. text generation (text =)
 
@@ -387,9 +389,11 @@ home-manager's user-side activation path. Runs as the user after
 * `miseTrust` (mise.nix): registers the repo path
   `tools/mise/config.toml` in mise's trust store (workaround for the
   out-of-store symlink being treated as an external path)
+* Installer / sync hooks for tools that need mutable files or external
+  state, such as Claude Code, Codex, sheldon, and VSCode extensions
 
-Both call binaries via direct `pkgs.<tool>` paths to avoid PATH
-dependence. apm lives under nix-darwin's
+Hooks call binaries via direct `pkgs.<tool>` paths where possible to
+avoid PATH dependence. apm lives under nix-darwin's
 `environment.systemPackages`, so a PATH export to
 `/run/current-system/sw/bin` is added.
 

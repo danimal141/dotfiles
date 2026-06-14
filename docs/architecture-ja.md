@@ -33,7 +33,7 @@
 `home.file` 経由で home-manager が配置するもの:
 
 * `.zshrc` `.tmux.conf` `.tmux_start_dir` `.markdownlint.jsonc` `.ctags.d/`
-* `.config/{git,mise,nvim}/` (XDG)
+* `.config/{git,google-ime,mise,nvim}/` (XDG)
 * `.claude/` (CLAUDE.md / settings.json / hooks/ / rules/ /
   mcp-servers.json / skills/.gitignore + 動的領域 projects/ todos/
   shell-snapshots/ statsig/ ide/)
@@ -90,8 +90,8 @@
   `~/.agents/skills/` に配布される。下記 Codex 参照)
 * MCP server 設定は codex と共有する `tools/mcp/servers.json` を single source
   of truth とし、`tools/claude/setup-mcp.sh` を `cd tools/claude &&
-  ./setup-mcp.sh` で実行して `~/.claude/mcp.json` に展開 (apply 時には自動
-  実行されない)
+  ./setup-mcp.sh` で実行して `claude mcp add` 経由で user-scope の mutable
+  config に登録する (apply 時には自動実行されない)
 * `rules/*.md` (`~/.claude/rules/` は claude が `@import` 不要で自動ロードする
   user-level rule) に markdown / nix / web-fetch / tools の指針を置く。`nix.md` は
   `paths:` frontmatter で `**/*.nix` にスコープする

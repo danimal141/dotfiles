@@ -18,8 +18,7 @@
 #     (プロンプトが 1 度出るだけでエラーにならない)。switch 頻度は低く実害は
 #     小さい。user 変数 (wrapper 絶対パス) は settings 内で値として渡せる。
 #     settings のベースは ryoppippi/dotfiles の codex.nix を踏襲している。
-#   * codex binary 本体は OpenAI 公式 native installer
-#     (curl -fsSL https://chatgpt.com/codex/install.sh | sh) で
+#   * codex binary 本体は OpenAI 公式 native installer を取得して
 #     ~/.local/bin/codex に配置する (claude.nix と同じ運用)。日常的な
 #     version 更新は codex 内蔵の auto-update が担い、switch hook は
 #     「未 install のときだけ install」を保証する。brew formula (codex) は

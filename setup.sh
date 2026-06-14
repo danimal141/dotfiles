@@ -79,8 +79,8 @@ fi
 
 # ---- /nix の再起動跨ぎ永続化 (darwin-store daemon + fstab) ------------------
 # 公式 upstream installer は通常この 2 つを作るが、過去の install/uninstall
-# 失敗や macOS アップグレードで欠落することがある (= 今回 personal で発生した
-# 「再起動後に /nix が /Volumes/Nix Store に流れる」障害の真因)。
+# 失敗や macOS アップグレードで欠落すると、再起動後に Nix Store が
+# /nix ではなく /Volumes 側へ自動マウントされることがある。
 #   * org.nixos.darwin-store.plist — 起動時に Nix Store を /nix へ明示マウント
 #   * /etc/fstab の noauto 行       — macOS デフォルトの /Volumes 自動マウントを
 #                                     抑止し、実体マウントは上の daemon に任せる
