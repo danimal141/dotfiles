@@ -188,7 +188,7 @@ dotfiles/
 │           ├── nvim.nix           # ~/.config/nvim 全体を tools/nvim/ に symlink (lazy.nvim + nvim-lspconfig 構成)
 │           ├── claude.nix         # ~/.claude/* (動的領域除く) + claudeCodeInstall hook (~/.local/bin/claude)
 │           ├── codex.nix          # ~/.codex/* (config.toml は pkgs.formats.toml 生成物を codexConfig hook で mutable コピー /
-│           │                        # AGENTS.md は tools/codex/AGENTS.md (→ tools/claude/CLAUDE.md) への symlink / mcp_servers は tools/mcp/servers.json を読込 / skills/.gitignore) + codexInstall hook (~/.local/bin/codex)
+│           │                        # AGENTS.md は tools/codex/AGENTS.md (→ tools/claude/CLAUDE.md) への symlink / mcp_servers は tools/mcp/servers.json を読込。apm skill は ~/.agents/skills/ 側) + codexInstall hook (~/.local/bin/codex)
 │           ├── apm.nix            # ~/.apm/* + home.activation.apmInstall hook
 │           ├── mise.nix           # programs.mise + ~/.config/mise/config.toml + miseTrust hook
 │           ├── markdownlint.nix   # ~/.markdownlint.jsonc symlink
@@ -201,7 +201,7 @@ dotfiles/
 │   ├── tmux/{.tmux.conf, .tmux_start_dir, bin/tmux-start}
 │   ├── nvim/{init.lua, lazy-lock.json, lua/{options,mappings,autocmds}.lua, lua/plugins/*.lua, after/ftplugin/*.lua}
 │   ├── claude/{CLAUDE.md, settings.json, hooks/, rules/, skills/.gitignore, .env.example, setup-mcp.sh}
-│   ├── codex/{AGENTS.md (→ ../claude/CLAUDE.md), skills/.gitignore}
+│   ├── codex/{AGENTS.md (→ ../claude/CLAUDE.md)}
 │   ├── mcp/servers.json              # claude/codex 共有の MCP server 定義 (single source of truth)
 │   ├── apm/{apm.yml, apm.lock.yaml, .gitignore}
 │   ├── mise/config.toml

@@ -78,11 +78,10 @@ in
   home.file.".codex/AGENTS.md".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/codex/AGENTS.md";
 
-  # skills/ 配下は claude (apm.nix の --target claude,codex) が install する
-  # skill ディレクトリ群が入る。claude.nix と同様 .gitignore のみ symlink で
-  # 配置し、apm 産物を ignore する。
-  home.file.".codex/skills/.gitignore".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/codex/skills/.gitignore";
+  # apm (--target claude,codex) の skill は ~/.codex/skills/ ではなく cross-agent
+  # 標準の ~/.agents/skills/ に配布され、codex がそこを auto-discover する
+  # (~/.codex/skills/ は codex 内蔵の .system 専用)。~/.agents/ は apm が全面管理
+  # するため home-manager では何も配置しない。
 
   # config.toml を mutable な実ファイルとして毎回上書き配置する (read-only
   # symlink だと codex の trust 書込が code -32603 で失敗する。冒頭コメント

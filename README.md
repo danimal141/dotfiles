@@ -423,9 +423,11 @@ Claude Code skills live in
 [APM (Agent Package Manager)](https://github.com/microsoft/apm).
 
 During `nix run .#switch`, the `home.activation.apmInstall` hook compares
-the sha256 of `~/.apm/apm.yml` and fires `apm install --target claude,codex`
-only when the file changed (idempotent). Skills are deployed to both
-`~/.claude/skills/` and `~/.codex/skills/`. To rerun manually:
+the sha256 of `~/.apm/apm.yml` (plus the deploy targets) and fires
+`apm install --target claude,codex` only when it changed (idempotent; a
+target change also re-deploys). Skills go to `~/.claude/skills/` for claude
+and to the cross-agent `~/.agents/skills/` for codex (which auto-discovers
+it). To rerun manually:
 
 ```shell
 cd ~/.apm

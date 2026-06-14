@@ -9,13 +9,16 @@
 #     見える = 期待通りの運用。
 #   * apm_modules/ config.json などの apm が動的に作る領域は home.file
 #     対象外として ~/.apm/ 直下に普通に書ける mutable directory として残す。
-#   * activation hook は apm.yml の hash を ~/.apm/.apm.yml.hash に保存し、
-#     差分があり apm command が PATH にあるときだけ `apm install --target
-#     claude,codex --global` を実行する。`--global` で skill を user scope
-#     (~/.claude/skills/ と ~/.codex/skills/) に展開する (これがないと cwd 下の
-#     project scope に入ってしまう)。claude/codex 両 target に同じ skill を配布
-#     して system instruction (CLAUDE.md/AGENTS.md) と揃える。冪等で、apm 未
-#     インストール環境では skip する。
+#   * activation hook は apm.yml の内容 + deploy target の hash を
+#     ~/.apm/.apm.yml.hash に保存し、差分があり apm command が PATH にあるとき
+#     だけ `apm install --target claude,codex --global` を実行する。hash に
+#     target を含めるので、deps 不変でも target を変えれば再配布が走る (target
+#     を増やしたのに hash 一致で skip され配布漏れする事故を防ぐ)。`--global` で
+#     skill を user scope に展開する: claude は ~/.claude/skills/、codex は
+#     cross-agent 標準の ~/.agents/skills/ (codex がそこを auto-discover する。
+#     ~/.codex/skills/ ではない)。claude/codex 両 target に同じ skill を配布して
+#     system instruction (CLAUDE.md/AGENTS.md) と揃える。冪等で、apm 未インストール
+#     環境では skip する。
 #   * apm の GitHub clone は GITHUB_APM_PAT / GITHUB_TOKEN を要求するため、
 #     `gh` が PATH にあれば `gh auth token` の出力を GITHUB_APM_PAT に
 #     export してから install を呼ぶ。secret を repo / zshrc に書かない経路。
@@ -42,6 +45,10 @@ in
     # PATH に明示的に足してから command -v で解決する。
     export PATH="/run/current-system/sw/bin:$PATH"
 
+    # deploy target。hash 計算と install の両方で使う single source。ここを
+    # 変えれば hash が変わり再配布が走る。
+    APM_TARGETS="claude,codex"
+
     HASH_FILE="$HOME/.apm/.apm.yml.hash"
     # apm.yml は linkGeneration 後に symlink 配置されるが、初回など
     # ファイルが存在しない場合は skip する。
@@ -49,7 +56,9 @@ in
       echo "[apmInstall] skip (apm.yml not found)"
       return 0
     fi
-    NEW_HASH=$(${pkgs.coreutils}/bin/sha256sum "$HOME/.apm/apm.yml" | ${pkgs.gawk}/bin/awk '{print $1}')
+    # apm.yml の内容に加えて deploy target も hash に含める。deps 不変でも
+    # target を変えれば hash が変わり再配布が走る (target 追加時の配布漏れ防止)。
+    NEW_HASH=$( { ${pkgs.coreutils}/bin/cat "$HOME/.apm/apm.yml"; printf '\ntargets=%s\n' "$APM_TARGETS"; } | ${pkgs.coreutils}/bin/sha256sum | ${pkgs.gawk}/bin/awk '{print $1}')
     OLD_HASH=$(${pkgs.coreutils}/bin/cat "$HASH_FILE" 2>/dev/null || echo "")
     APM_BIN=$(command -v apm || true)
     GH_BIN=$(command -v gh || true)
@@ -69,7 +78,7 @@ in
       if [ -f /etc/nix/ca-bundle.pem ]; then
         export GIT_SSL_CAINFO=/etc/nix/ca-bundle.pem
       fi
-      echo "[apmInstall] running apm install --target claude,codex --global (apm=$APM_BIN)"
+      echo "[apmInstall] running apm install --target $APM_TARGETS --global (apm=$APM_BIN)"
       # 成功時のみ hash を記録する。失敗時 (GitHub clone 認証失敗 / network
       # 障害 等) に hash を書くと、以降「hash 一致 → installed」と誤判定して
       # 失敗を隠してしまうため、exit code を必ず check する。
@@ -79,7 +88,7 @@ in
       # 落ちる現象が再現する (skilltree 全 skill が単一 repo にぶら下がる
       # 構成のため毎回踏む)。並列度を 1 にしても 1 件目の clone 後は
       # apm 内 cache に乗るため後続は即時 (cached) となり実時間ほぼ不変。
-      if (cd "$HOME/.apm" && $DRY_RUN_CMD "$APM_BIN" install --target claude,codex --global --parallel-downloads 1); then
+      if (cd "$HOME/.apm" && $DRY_RUN_CMD "$APM_BIN" install --target "$APM_TARGETS" --global --parallel-downloads 1); then
         echo "$NEW_HASH" > "$HASH_FILE"
       else
         echo "[apmInstall] FAILED (hash not recorded; will retry next switch)" >&2

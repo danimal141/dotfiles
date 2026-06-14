@@ -40,8 +40,8 @@ Files that home-manager places via `home.file`:
   shell-snapshots/ statsig/ ide/)
 * `.codex/` (config.toml is generated via pkgs.formats.toml then
   mutable-copied by activation / AGENTS.md → tools/codex/AGENTS.md
-  (→ tools/claude/CLAUDE.md) symlink / skills/.gitignore
-  * dynamic areas sessions/ log.json)
+  (→ tools/claude/CLAUDE.md) symlink + dynamic areas sessions/ log.json;
+  apm skills land in ~/.agents/skills/ instead)
 * `.apm/` (apm.yml / apm.lock.yaml / .gitignore + dynamic areas
   apm_modules/ config.json / .claude/ / .github/)
 * `.local/bin/tmux-start` (executable)
@@ -93,8 +93,8 @@ left outside `home.file` as mutable directories under `~/`. See
 
 * Only `tools/claude/skills/.gitignore` is tracked. Skills installed by
   APM (chrome-cdp, codebase-analyzer, ...) land under `~/.claude/skills/`
-  and are ignored. The same skills are also deployed to `~/.codex/skills/`
-  (see Codex below).
+  and are ignored. The same skills are also deployed to the cross-agent
+  `~/.agents/skills/` for codex (see Codex below).
 * MCP servers are defined in `tools/mcp/servers.json`, the single source of
   truth shared with codex. Run `cd tools/claude && ./setup-mcp.sh` to expand
   them into `~/.claude/mcp.json` — this is **not** triggered automatically
@@ -126,10 +126,10 @@ For APM's install hook and the skill ingestion procedure, see
 * MCP servers are read from `tools/mcp/servers.json` (shared with claude) by
   `codex.nix` via `builtins.fromJSON` and expanded into `mcp_servers` (single
   source of truth): `context7` and `terraform` only.
-* Skills are also deployed to `~/.codex/skills/` via
-  `apm install --target claude,codex --global` in `apm.nix`. Only
-  `tools/codex/skills/.gitignore` is tracked, ignoring APM artifacts (same
-  pattern as claude).
+* Skills are deployed to the cross-agent `~/.agents/skills/` via
+  `apm install --target claude,codex --global` in `apm.nix`, and codex
+  auto-discovers them there (`~/.codex/skills/` holds only codex's built-in
+  `.system` skills; `~/.agents/` is managed entirely by apm).
 * `~/.codex/AGENTS.md` is an out-of-store symlink to `tools/codex/AGENTS.md`,
   which is itself an in-repo symlink to `../claude/CLAUDE.md`, so both tools
   share the same system instruction in a single file.

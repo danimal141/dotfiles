@@ -38,8 +38,8 @@
   mcp-servers.json / skills/.gitignore + 動的領域 projects/ todos/
   shell-snapshots/ statsig/ ide/)
 * `.codex/` (config.toml は pkgs.formats.toml 生成物を activation で mutable
-  コピー / AGENTS.md → tools/codex/AGENTS.md (→ tools/claude/CLAUDE.md) symlink /
-  skills/.gitignore + 動的領域 sessions/ log.json)
+  コピー / AGENTS.md → tools/codex/AGENTS.md (→ tools/claude/CLAUDE.md) symlink
+  * 動的領域 sessions/ log.json。apm skill は ~/.agents/skills/ 側に入る)
 * `.apm/` (apm.yml / apm.lock.yaml / .gitignore + 動的領域 apm_modules/
   config.json / .claude/ / .github/)
 * `.local/bin/tmux-start` (executable)
@@ -86,8 +86,8 @@
 
 * `tools/claude/skills/.gitignore` のみ tracked、APM が install する skill
   (chrome-cdp, codebase-analyzer, ...) は `~/.claude/skills/` 配下に展開され
-  gitignore で ignore される (codex にも同一 skill が `~/.codex/skills/` に
-  配布される。下記 Codex 参照)
+  gitignore で ignore される (codex にも同一 skill が cross-agent 標準の
+  `~/.agents/skills/` に配布される。下記 Codex 参照)
 * MCP server 設定は codex と共有する `tools/mcp/servers.json` を single source
   of truth とし、`tools/claude/setup-mcp.sh` を `cd tools/claude &&
   ./setup-mcp.sh` で実行して `~/.claude/mcp.json` に展開 (apply 時には自動
@@ -118,8 +118,9 @@ APM の install hook / skill 取り込み手順は
   `builtins.fromJSON` で読み `mcp_servers` に展開する (single source of truth)。
   現状は `context7` / `terraform` のみ
 * skill は `apm.nix` の `apm install --target claude,codex --global` で
-  `~/.codex/skills/` にも配布される。`tools/codex/skills/.gitignore` のみ
-  tracked で APM 産物を ignore する (claude と同パターン)
+  cross-agent 標準の `~/.agents/skills/` に配布され、codex がそこを
+  auto-discover する (`~/.codex/skills/` は codex 内蔵の `.system` 専用。
+  `~/.agents/` は apm が全面管理するため home-manager では何も配置しない)
 * `~/.codex/AGENTS.md` は `tools/codex/AGENTS.md` への out-of-store symlink。
   `tools/codex/AGENTS.md` 自体が `../claude/CLAUDE.md` への in-repo symlink な
   ので、claude と同じ system instruction を 1 ファイルで共有する

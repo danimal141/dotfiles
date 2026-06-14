@@ -200,7 +200,7 @@ dotfiles/
 │           ├── nvim.nix           # symlinks the entire ~/.config/nvim to tools/nvim/ (lazy.nvim + nvim-lspconfig)
 │           ├── claude.nix         # ~/.claude/* (excluding dynamic areas) + claudeCodeInstall hook (~/.local/bin/claude)
 │           ├── codex.nix          # ~/.codex/* (config.toml generated via pkgs.formats.toml, mutable-copied by codexConfig hook /
-│           │                        # AGENTS.md symlinks tools/codex/AGENTS.md (→ tools/claude/CLAUDE.md) / mcp_servers read from tools/mcp/servers.json / skills/.gitignore) + codexInstall hook (~/.local/bin/codex)
+│           │                        # AGENTS.md symlinks tools/codex/AGENTS.md (→ tools/claude/CLAUDE.md) / mcp_servers read from tools/mcp/servers.json. apm skills go to ~/.agents/skills/) + codexInstall hook (~/.local/bin/codex)
 │           ├── apm.nix            # ~/.apm/* + home.activation.apmInstall hook
 │           ├── mise.nix           # programs.mise + ~/.config/mise/config.toml + miseTrust hook
 │           ├── markdownlint.nix   # ~/.markdownlint.jsonc symlink
@@ -213,7 +213,7 @@ dotfiles/
 │   ├── tmux/{.tmux.conf, .tmux_start_dir, bin/tmux-start}
 │   ├── nvim/{init.lua, lazy-lock.json, lua/{options,mappings,autocmds}.lua, lua/plugins/*.lua, after/ftplugin/*.lua}
 │   ├── claude/{CLAUDE.md, settings.json, hooks/, rules/, skills/.gitignore, .env.example, setup-mcp.sh}
-│   ├── codex/{AGENTS.md (→ ../claude/CLAUDE.md), skills/.gitignore}
+│   ├── codex/{AGENTS.md (→ ../claude/CLAUDE.md)}
 │   ├── mcp/servers.json              # MCP server definitions shared by claude/codex (single source of truth)
 │   ├── apm/{apm.yml, apm.lock.yaml, .gitignore}
 │   ├── mise/config.toml

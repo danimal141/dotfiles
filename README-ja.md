@@ -396,8 +396,10 @@ Claude Code のスキル群は [skilltree](https://github.com/danimal141/skilltr
 
 `nix run .#switch` 時に `home.activation.apmInstall` hook が `~/.apm/
 apm.yml` の sha256 を比較し、差分があるときだけ `apm install --target
-claude,codex` を発火する (冪等)。skill は `~/.claude/skills/` と
-`~/.codex/skills/` の両方に配布される。手動で再実行する場合:
+claude,codex` を発火する (冪等。hash は target も含むので target 変更時も
+再配布される)。skill は claude が `~/.claude/skills/`、codex が cross-agent
+標準の `~/.agents/skills/` (codex がそこを auto-discover) に配布される。
+手動で再実行する場合:
 
 ```shell
 cd ~/.apm
