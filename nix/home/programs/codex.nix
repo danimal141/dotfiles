@@ -2,9 +2,11 @@
 
 # Codex CLI 設定 (~/.codex/) を home-manager で管理する。
 #
-#   * AGENTS.md は repo の tools/claude/CLAUDE.md を直接指す out-of-store
-#     symlink。CLAUDE.md 編集が ~/.claude/CLAUDE.md と ~/.codex/AGENTS.md
-#     の両方に即反映される (両者で同じ system instruction を共有したい意図)。
+#   * AGENTS.md は repo の tools/codex/AGENTS.md を指す out-of-store symlink。
+#     tools/codex/AGENTS.md 自体が ../claude/CLAUDE.md への in-repo symlink な
+#     ので、~/.codex/AGENTS.md → tools/codex/AGENTS.md → tools/claude/CLAUDE.md
+#     の 2 段で解決する。CLAUDE.md 編集が ~/.claude/CLAUDE.md と
+#     ~/.codex/AGENTS.md の両方に即反映される (同じ system instruction を共有)。
 #   * config.toml は read-only symlink にできない。codex は起動時に
 #     [projects] trust_level を config.toml へ追記するが、home.file の symlink
 #     は nix store の read-only file を指すため、trust 書込が code -32603
@@ -27,10 +29,20 @@
 let
   tomlFormat = pkgs.formats.toml { };
 
+  # MCP server は claude (setup-mcp.sh) と single source of truth を共有する。
+  # tools/mcp/servers.json を path literal で eval-pure に読み込む
+  # (dotfilesPath 文字列の readFile は flake purity を壊しうるため、flake store
+  # に取り込まれる相対 path literal を使う。codex.nix は nix/home/programs/ 配下
+  # なので repo root へは ../../../)。env が空のときは TOML に空テーブルを出さない
+  # よう omit し、生成される [mcp_servers] を従来と同一に保つ。
+  mcpServers = (builtins.fromJSON (builtins.readFile ../../../tools/mcp/servers.json)).servers;
+  mkCodexMcp = _name: v:
+    { inherit (v) command args; }
+    // lib.optionalAttrs ((v.env or { }) != { }) { inherit (v) env; };
+
   # codex の declarative 設定。pkgs.formats.toml で config.toml を生成し
   # codexConfig hook が mutable な実ファイルとして配置する。ベースは
-  # ryoppippi/dotfiles の codex.nix。mcp_servers は ryoppippi 側に無いため
-  # 従来の定義を維持する。
+  # ryoppippi/dotfiles の codex.nix。
   settings = {
     model = "gpt-5.5";
     approval_policy = "on-request";
@@ -57,23 +69,20 @@ let
 
     plugins."github@openai-curated".enabled = true;
 
-    # MCP server は claude (tools/claude/mcp-servers.yaml) と揃え context7 と
-    # terraform のみとする。
-    mcp_servers = {
-      context7 = {
-        command = "npx";
-        args = [ "-y" "@upstash/context7-mcp" ];
-      };
-      terraform = {
-        command = "docker";
-        args = [ "run" "-i" "--rm" "hashicorp/terraform-mcp-server" ];
-      };
-    };
+    # MCP server は claude (setup-mcp.sh) と共有する tools/mcp/servers.json を
+    # single source of truth として読み込む (上の mcpServers / mkCodexMcp 参照)。
+    mcp_servers = lib.mapAttrs mkCodexMcp mcpServers;
   };
 in
 {
   home.file.".codex/AGENTS.md".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/claude/CLAUDE.md";
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/codex/AGENTS.md";
+
+  # skills/ 配下は claude (apm.nix の --target claude,codex) が install する
+  # skill ディレクトリ群が入る。claude.nix と同様 .gitignore のみ symlink で
+  # 配置し、apm 産物を ignore する。
+  home.file.".codex/skills/.gitignore".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/codex/skills/.gitignore";
 
   # config.toml を mutable な実ファイルとして毎回上書き配置する (read-only
   # symlink だと codex の trust 書込が code -32603 で失敗する。冒頭コメント

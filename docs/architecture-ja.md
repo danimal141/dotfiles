@@ -35,11 +35,11 @@
 * `.zshrc` `.tmux.conf` `.tmux_start_dir` `.markdownlint.jsonc` `.ctags.d/`
 * `.config/{git,mise,nvim}/` (XDG)
 * `.claude/` (CLAUDE.md / settings.json / hooks/ / rules/ /
-  mcp-servers.yaml / skills/.gitignore + 動的領域 projects/ todos/
+  mcp-servers.json / skills/.gitignore + 動的領域 projects/ todos/
   shell-snapshots/ statsig/ ide/)
 * `.codex/` (config.toml は pkgs.formats.toml 生成物を activation で mutable
-  コピー / AGENTS.md → tools/claude/CLAUDE.md symlink + 動的領域 sessions/
-  log.json)
+  コピー / AGENTS.md → tools/codex/AGENTS.md (→ tools/claude/CLAUDE.md) symlink /
+  skills/.gitignore + 動的領域 sessions/ log.json)
 * `.apm/` (apm.yml / apm.lock.yaml / .gitignore + 動的領域 apm_modules/
   config.json / .claude/ / .github/)
 * `.local/bin/tmux-start` (executable)
@@ -86,10 +86,12 @@
 
 * `tools/claude/skills/.gitignore` のみ tracked、APM が install する skill
   (chrome-cdp, codebase-analyzer, ...) は `~/.claude/skills/` 配下に展開され
-  gitignore で ignore される
-* MCP server 設定は `tools/claude/mcp-servers.yaml` に手書き、
-  `tools/claude/setup-mcp.sh` を `cd tools/claude && ./setup-mcp.sh` で実行
-  して `~/.claude/mcp.json` に展開 (apply 時には自動実行されない)
+  gitignore で ignore される (codex にも同一 skill が `~/.codex/skills/` に
+  配布される。下記 Codex 参照)
+* MCP server 設定は codex と共有する `tools/mcp/servers.json` を single source
+  of truth とし、`tools/claude/setup-mcp.sh` を `cd tools/claude &&
+  ./setup-mcp.sh` で実行して `~/.claude/mcp.json` に展開 (apply 時には自動
+  実行されない)
 
 APM の install hook / skill 取り込み手順は
 [README-ja.md#claude-code-skills-via-apm](../README-ja.md#claude-code-skills-via-apm)
@@ -102,10 +104,15 @@ APM の install hook / skill 取り込み手順は
   実ファイルとして毎回上書き配置する。codex 自身が起動時に `[projects]`
   trust を config.toml へ追記するため read-only symlink にはできない
   (書込が code -32603 で失敗する)。設定の編集後は `nix run .#switch` 必須
-* MCP server は claude (`tools/claude/mcp-servers.yaml`) と揃え `context7` /
-  `terraform` のみ
-* `~/.codex/AGENTS.md` は `tools/claude/CLAUDE.md` への out-of-store symlink
-  (両者で同じ system instruction を共有)
+* MCP server は claude と共有する `tools/mcp/servers.json` を `codex.nix` が
+  `builtins.fromJSON` で読み `mcp_servers` に展開する (single source of truth)。
+  現状は `context7` / `terraform` のみ
+* skill は `apm.nix` の `apm install --target claude,codex --global` で
+  `~/.codex/skills/` にも配布される。`tools/codex/skills/.gitignore` のみ
+  tracked で APM 産物を ignore する (claude と同パターン)
+* `~/.codex/AGENTS.md` は `tools/codex/AGENTS.md` への out-of-store symlink。
+  `tools/codex/AGENTS.md` 自体が `../claude/CLAUDE.md` への in-repo symlink な
+  ので、claude と同じ system instruction を 1 ファイルで共有する
 
 secrets 注入経路全体の設計は
 [design-philosophy-ja.md#secrets-設計](design-philosophy-ja.md#secrets-設計)

@@ -29,8 +29,11 @@ in
       config.lib.file.mkOutOfStoreSymlink "${claudeDir}/CLAUDE.md";
     ".claude/settings.json".source =
       config.lib.file.mkOutOfStoreSymlink "${claudeDir}/settings.json";
-    ".claude/mcp-servers.yaml".source =
-      config.lib.file.mkOutOfStoreSymlink "${claudeDir}/mcp-servers.yaml";
+    # MCP server 定義は codex と共有する tools/mcp/servers.json を single
+    # source of truth とする (情報用ミラー。実際の登録は setup-mcp.sh が repo
+    # の同ファイルを直接読んで `claude mcp add` する)。
+    ".claude/mcp-servers.json".source =
+      config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/mcp/servers.json";
     ".claude/.env.example".source =
       config.lib.file.mkOutOfStoreSymlink "${claudeDir}/.env.example";
 

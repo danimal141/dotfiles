@@ -73,8 +73,8 @@ The repo is public — secrets are not tracked. Two injection paths:
 When you run `tools/claude/setup-mcp.sh` as
 `cd tools/claude && ./setup-mcp.sh`, the script sources `.env` in the
 same directory and injects the values as the `env:` of each server in
-`tools/claude/mcp-servers.yaml`. Skip this step entirely when no
-registered server requires env vars. When some do:
+`tools/mcp/servers.json` (shared by claude/codex). Skip this step entirely
+when no registered server requires env vars. When some do:
 
 ```shell
 cp tools/claude/.env.example tools/claude/.env
@@ -423,12 +423,13 @@ Claude Code skills live in
 [APM (Agent Package Manager)](https://github.com/microsoft/apm).
 
 During `nix run .#switch`, the `home.activation.apmInstall` hook compares
-the sha256 of `~/.apm/apm.yml` and fires `apm install --target claude`
-only when the file changed (idempotent). To rerun manually:
+the sha256 of `~/.apm/apm.yml` and fires `apm install --target claude,codex`
+only when the file changed (idempotent). Skills are deployed to both
+`~/.claude/skills/` and `~/.codex/skills/`. To rerun manually:
 
 ```shell
 cd ~/.apm
-apm install --target claude
+apm install --target claude,codex --global
 ```
 
 To add or remove a skill, edit `tools/apm/apm.yml` (in-repo source for the
