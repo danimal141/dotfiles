@@ -44,10 +44,29 @@ echo "[setup] Targeting flake host: .#$TARGET_HOST"
 echo "[setup] Installing Xcode CLT..."
 xcode-select --install 2>/dev/null || true
 
-# ---- Nix install ----------------------------------------------------------
+# ---- Nix install / remount ------------------------------------------------
+# install 判定を「`command -v nix` の有無」だけに頼ると、再起動で /nix が
+# 未マウントになった状態 (= Nix は入っているが PATH に nix が居ない) で
+# installer を呼んでしまい、installer 自身の `/etc/bashrc.backup-before-nix`
+# 痕跡検出で停止する。これを避けるため 3 分岐で判定する:
+#   1. /nix がマウント済み                  → 何もしない
+#   2. Nix Store ボリュームは在るが未マウント → remount (再起動後マウント消失)
+#   3. ボリュームも無い (完全新規)           → 公式 upstream installer を実行
 # `https://nixos.org/nix/install` が公式 upstream マルチユーザ installer。
 # 末尾を `installer` と書くと 404 になるので注意。
-if ! command -v nix >/dev/null 2>&1; then
+NIX_VOLUME_NAME="Nix Store"
+if mount | grep -q ' on /nix '; then
+  echo "[setup] /nix already mounted."
+elif diskutil info "$NIX_VOLUME_NAME" >/dev/null 2>&1; then
+  echo "[setup] Nix Store volume exists but /nix is unmounted. Remounting..."
+  # macOS デフォルトで /Volumes/Nix Store に付いている誤マウントを解除してから
+  # synthetic mountpoint を作り直し、/nix へ貼り直す。
+  if mount | grep -q '/Volumes/Nix Store'; then
+    sudo diskutil unmount "/Volumes/Nix Store" || true
+  fi
+  sudo /System/Library/Filesystems/apfs.fs/Contents/Resources/apfs.util -t || true
+  sudo diskutil mount -mountPoint /nix "$NIX_VOLUME_NAME"
+else
   echo "[setup] Installing Nix (official upstream installer)..."
   sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install)
 fi
@@ -57,6 +76,49 @@ if [ -e /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
   # shellcheck disable=SC1091
   . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
 fi
+
+# ---- /nix の再起動跨ぎ永続化 (darwin-store daemon + fstab) ------------------
+# 公式 upstream installer は通常この 2 つを作るが、過去の install/uninstall
+# 失敗や macOS アップグレードで欠落することがある (= 今回 personal で発生した
+# 「再起動後に /nix が /Volumes/Nix Store に流れる」障害の真因)。
+#   * org.nixos.darwin-store.plist — 起動時に Nix Store を /nix へ明示マウント
+#   * /etc/fstab の noauto 行       — macOS デフォルトの /Volumes 自動マウントを
+#                                     抑止し、実体マウントは上の daemon に任せる
+# どちらも存在チェックで冪等。installer が既に作っている場合 (暗号化ストアの
+# unlockVolume 版を含む) は触らない。
+ensure_nix_mount_persistence() {
+  local plist=/Library/LaunchDaemons/org.nixos.darwin-store.plist
+  if [ ! -f "$plist" ]; then
+    echo "[setup] Installing darwin-store daemon (mount /nix at boot)..."
+    sudo tee "$plist" >/dev/null <<'PLIST'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>Label</key>
+  <string>org.nixos.darwin-store</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/sh</string>
+    <string>-c</string>
+    <string>/usr/sbin/diskutil mount -mountPoint /nix "Nix Store"</string>
+  </array>
+</dict>
+</plist>
+PLIST
+    sudo chown root:wheel "$plist"
+    sudo chmod 0644 "$plist"
+    sudo launchctl bootstrap system "$plist" 2>/dev/null || true
+  fi
+  if ! sudo grep -qsF '/nix apfs' /etc/fstab; then
+    echo "[setup] Adding /nix entry to /etc/fstab..."
+    printf 'LABEL=Nix\\040Store /nix apfs rw,noauto,nobrowse,nosuid,noatime,owners\n' \
+      | sudo EDITOR='tee -a' vifs
+  fi
+}
+ensure_nix_mount_persistence
 
 # ---- Corporate VPN SSL inspection support ---------------------------------
 # nix-daemon は launchd 経由で root 起動するため、ユーザー shell の
