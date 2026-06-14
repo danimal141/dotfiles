@@ -99,6 +99,18 @@ left outside `home.file` as mutable directories under `~/`. See
   truth shared with codex. Run `cd tools/claude && ./setup-mcp.sh` to expand
   them into `~/.claude/mcp.json` — this is **not** triggered automatically
   on apply.
+* `rules/*.md` (`~/.claude/rules/` is auto-loaded by claude as user-level
+  rules, no `@import` needed) holds markdown / nix / web-fetch / tools
+  guidance. `nix.md` is scoped to `**/*.nix` via `paths:` frontmatter.
+* `hooks/` holds PreToolUse destructive-command blocking
+  (block-destructive-commands.py) and the PR gate (pr-review-gate.sh blocks
+  `gh pr create` with exit 2 unless `/code-review` ran; pr-review-mark.sh
+  sets the marker on PostToolUse(Skill)), plus PostToolUse markdownlint
+  auto-fix.
+* `settings.json` stays a raw symlink (live-editable). It carries `$schema`
+  (schemastore) and the `claudeSettingsValidate` activation hook validates it
+  with check-jsonschema on switch (non-blocking early detection of breakage;
+  live-edit preserved).
 
 For APM's install hook and the skill ingestion procedure, see
 [README.md#claude-code-skills-via-apm](../README.md#claude-code-skills-via-apm).

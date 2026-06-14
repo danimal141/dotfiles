@@ -92,6 +92,16 @@
   of truth とし、`tools/claude/setup-mcp.sh` を `cd tools/claude &&
   ./setup-mcp.sh` で実行して `~/.claude/mcp.json` に展開 (apply 時には自動
   実行されない)
+* `rules/*.md` (`~/.claude/rules/` は claude が `@import` 不要で自動ロードする
+  user-level rule) に markdown / nix / web-fetch / tools の指針を置く。`nix.md` は
+  `paths:` frontmatter で `**/*.nix` にスコープする
+* `hooks/` に PreToolUse の破壊コマンド遮断 (block-destructive-commands.py) と
+  PR 作成ゲート (pr-review-gate.sh: `/code-review` 未実行なら `gh pr create` を
+  exit 2 でブロック / pr-review-mark.sh が PostToolUse(Skill) で marker 設置)、
+  PostToolUse の markdownlint 自動修正を配置
+* `settings.json` は raw symlink で live-edit 可能。`$schema` (schemastore) を
+  持ち、`claudeSettingsValidate` activation hook が switch 時に check-jsonschema で
+  非ブロッキング検証する (壊れた設定の早期検知。live-edit は維持)
 
 APM の install hook / skill 取り込み手順は
 [README-ja.md#claude-code-skills-via-apm](../README-ja.md#claude-code-skills-via-apm)

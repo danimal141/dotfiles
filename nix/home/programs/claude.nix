@@ -1,4 +1,4 @@
-{ config, lib, dotfilesPath, ... }:
+{ config, lib, pkgs, dotfilesPath, ... }:
 
 # Claude Code CLI 設定 (~/.claude/) と native binary 本体を管理する。
 #
@@ -111,5 +111,32 @@ in
     fi
     rm -f "$INSTALLER"
     )
+  '';
+
+  # settings.json は raw symlink で live-edit 可能なまま、switch 時に JSON schema
+  # 検証だけ行う中間案 (live-edit の快適さを保ちつつ壊れた設定を早期検知)。
+  # settings.json 先頭の `$schema` (schemastore) を読み check-jsonschema で検証
+  # する。remote schema を fetch するため非ブロッキングにし、失敗 (network 障害 /
+  # schema 不整合) は警告のみで activation を止めない。check-jsonschema は取得した
+  # schema を cache するので 2 回目以降の switch は速い。linkGeneration 後に
+  # ~/.claude/settings.json (symlink) が存在することに依存する。
+  home.activation.claudeSettingsValidate = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+    SETTINGS="$HOME/.claude/settings.json"
+    if [ -f "$SETTINGS" ]; then
+      SCHEMA=$(${pkgs.jq}/bin/jq -r '.["$schema"] // empty' "$SETTINGS")
+      if [ -n "$SCHEMA" ]; then
+        # 社内 VPN SSL inspection 下では schema fetch の TLS 検証が失敗するため
+        # /etc/nix/ca-bundle.pem があれば inject する (他 hook と同経路)。
+        if [ -f /etc/nix/ca-bundle.pem ]; then
+          export SSL_CERT_FILE=/etc/nix/ca-bundle.pem
+          export REQUESTS_CA_BUNDLE=/etc/nix/ca-bundle.pem
+        fi
+        if $DRY_RUN_CMD ${pkgs.check-jsonschema}/bin/check-jsonschema --schemafile "$SCHEMA" "$SETTINGS"; then
+          echo "[claudeSettingsValidate] settings.json OK"
+        else
+          echo "[claudeSettingsValidate] WARN: settings.json schema 検証に失敗 (non-blocking)" >&2
+        fi
+      fi
+    fi
   '';
 }
