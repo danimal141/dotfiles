@@ -20,7 +20,7 @@ def load_notify_module():
 
 
 class BlockDestructiveCommandsTest(unittest.TestCase):
-    def run_hook(self, command, tool_name="exec_command", input_field="cmd"):
+    def run_hook(self, command, tool_name="Bash", input_field="command"):
         return subprocess.run(
             [sys.executable, HOOKS_DIR / "block-destructive-commands.py"],
             input=json.dumps(
@@ -42,8 +42,10 @@ class BlockDestructiveCommandsTest(unittest.TestCase):
         self.assertEqual(result.returncode, 2)
         self.assertIn("BLOCKED:", result.stderr)
 
-    def test_keeps_claude_command_input_compatible(self):
-        result = self.run_hook("git reset --hard", tool_name="Bash", input_field="command")
+    def test_accepts_internal_cmd_input(self):
+        result = self.run_hook(
+            "git reset --hard", tool_name="exec_command", input_field="cmd"
+        )
 
         self.assertEqual(result.returncode, 2)
 

@@ -10,6 +10,9 @@
 #   * hooks.json / hooks/ は repo の tools/codex/ を指す out-of-store symlink。
 #     破壊コマンド遮断ポリシーは tools/claude/hooks/ と symlink で共有し、
 #     sandbox / approval の補助 guardrail として使う。
+#   * rules/destructive.rules は個別 out-of-store symlink。~/.codex/rules/
+#     全体は codex が承認済み allow rule を default.rules に追記する mutable 領域
+#     なので symlink しない。
 #   * config.toml は read-only symlink にできない。codex は起動時に
 #     [projects] trust_level を config.toml へ追記するが、home.file の symlink
 #     は nix store の read-only file を指すため、trust 書込が code -32603
@@ -90,6 +93,8 @@ in
     config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/codex/hooks.json";
   home.file.".codex/hooks".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/codex/hooks";
+  home.file.".codex/rules/destructive.rules".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/codex/rules/destructive.rules";
 
   # apm (--target claude,codex) の skill は ~/.codex/skills/ ではなく cross-agent
   # 標準の ~/.agents/skills/ に配布され、codex がそこを auto-discover する

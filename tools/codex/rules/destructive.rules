@@ -1,0 +1,122 @@
+# Codex exec policy: guard destructive commands that request sandbox escape.
+#
+# `forbidden` is used only where a stable command prefix identifies the
+# destructive operation. Broader commands use `prompt` because dangerous flags
+# may appear later in the argument list and prefix rules cannot inspect them.
+
+prefix_rule(
+    pattern = ["terraform", "destroy"],
+    decision = "forbidden",
+    justification = "Run terraform plan and obtain explicit approval instead.",
+    match = ["terraform destroy", "terraform destroy -target=module.example"],
+    not_match = ["terraform plan", "terraform apply"],
+)
+
+prefix_rule(
+    pattern = ["tofu", "destroy"],
+    decision = "forbidden",
+    justification = "Run tofu plan and obtain explicit approval instead.",
+    match = ["tofu destroy", "tofu destroy -target=module.example"],
+    not_match = ["tofu plan", "tofu apply"],
+)
+
+prefix_rule(
+    pattern = [["terraform", "tofu"], "state", ["rm", "mv", "push", "replace-provider"]],
+    decision = "forbidden",
+    justification = "Inspect state and perform state mutations manually.",
+    match = [
+        "terraform state rm module.example",
+        "tofu state push terraform.tfstate",
+    ],
+    not_match = ["terraform state list", "tofu state show module.example"],
+)
+
+prefix_rule(
+    pattern = ["git", "reset", "--hard"],
+    decision = "forbidden",
+    justification = "Use git status and restore specific files instead.",
+    match = ["git reset --hard", "git reset --hard HEAD~1"],
+    not_match = ["git reset --soft HEAD~1", "git reset HEAD file.txt"],
+)
+
+prefix_rule(
+    pattern = ["git", "branch", "-D"],
+    decision = "forbidden",
+    justification = "Use git branch -d or delete the branch manually.",
+    match = ["git branch -D feature/example"],
+    not_match = ["git branch -d feature/example", "git branch --list"],
+)
+
+prefix_rule(
+    pattern = ["git", "push", ["--force", "-f"]],
+    decision = "forbidden",
+    justification = "Use --force-with-lease instead of force push.",
+    match = ["git push --force origin main", "git push -f origin main"],
+    not_match = ["git push --force-with-lease origin main", "git push origin main"],
+)
+
+prefix_rule(
+    pattern = ["docker", "system", "prune"],
+    decision = "forbidden",
+    justification = "Remove specific Docker resources instead.",
+    match = ["docker system prune", "docker system prune -a"],
+    not_match = ["docker system df", "docker image prune"],
+)
+
+prefix_rule(
+    pattern = ["kubectl", "delete", ["namespace", "node"]],
+    decision = "forbidden",
+    justification = "Deleting namespaces or nodes requires manual execution.",
+    match = ["kubectl delete namespace production", "kubectl delete node worker-1"],
+    not_match = ["kubectl delete pod example", "kubectl get namespace"],
+)
+
+prefix_rule(
+    pattern = ["rm", ["-rf", "-fr"]],
+    decision = "forbidden",
+    justification = "Delete specific files without recursive force options.",
+    match = ["rm -rf build", "rm -fr build"],
+    not_match = ["rm file.txt", "rm -r build"],
+)
+
+prefix_rule(
+    pattern = ["rm", ["-r", "--recursive"], ["-f", "--force"]],
+    decision = "forbidden",
+    justification = "Delete specific files without recursive force options.",
+    match = ["rm -r -f build", "rm --recursive --force build"],
+    not_match = ["rm -r build", "rm -f file.txt"],
+)
+
+prefix_rule(
+    pattern = ["rm", ["-f", "--force"], ["-r", "--recursive"]],
+    decision = "forbidden",
+    justification = "Delete specific files without recursive force options.",
+    match = ["rm -f -r build", "rm --force --recursive build"],
+    not_match = ["rm -f file.txt", "rm -r build"],
+)
+
+# Broad operations require a review because destructive flags may appear after
+# positional arguments and cannot be expressed safely as prefix-only rules.
+prefix_rule(
+    pattern = ["rm"],
+    decision = "prompt",
+    justification = "Review file deletion before running it outside the sandbox.",
+)
+
+prefix_rule(
+    pattern = ["git", ["commit", "push", "clean"]],
+    decision = "prompt",
+    justification = "Review Git mutations and verify no bypass or force flags are used.",
+)
+
+prefix_rule(
+    pattern = [["terraform", "tofu"], "apply"],
+    decision = "prompt",
+    justification = "Review the plan and verify auto-approve is not used.",
+)
+
+prefix_rule(
+    pattern = ["kubectl", "delete"],
+    decision = "prompt",
+    justification = "Review the Kubernetes resource deletion.",
+)

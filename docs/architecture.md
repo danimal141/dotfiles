@@ -134,10 +134,17 @@ For APM's install hook and the skill ingestion procedure, see
   which is itself an in-repo symlink to `../claude/CLAUDE.md`, so both tools
   share the same system instruction in a single file.
 * `~/.codex/hooks.json` and `~/.codex/hooks/` are out-of-store symlinks to
-  `tools/codex/`. The `PreToolUse` hook blocks destructive `exec_command` /
-  `shell_command` calls using the same policy as Claude Code. Hooks supplement
-  Codex's sandbox and approval policy; after changing them, review and trust
-  them again with `/hooks`.
+  `tools/codex/`. The `PreToolUse` hook blocks destructive Bash commands using
+  the same policy as Claude Code. Hooks supplement Codex's sandbox and approval
+  policy; after changing them, review and trust them again with `/hooks`.
+  Codex's `unified_exec` interception is currently incomplete, so this hook is
+  a best-effort guardrail rather than the sole enforcement boundary.
+* `~/.codex/rules/destructive.rules` is an out-of-store symlink to the managed
+  Codex exec policy. Stable destructive prefixes such as `git reset --hard`
+  are forbidden, while broader mutations such as `git push` require approval.
+  These rules govern commands that request sandbox escape. The surrounding
+  `~/.codex/rules/` directory remains mutable so Codex can maintain
+  `default.rules`.
 * Turn completion notifications use Codex's top-level `notify` command, while
   approval requests use `tui.notifications` when the terminal is unfocused.
   Claude's markdown auto-fix and pre-PR review gate are intentionally not

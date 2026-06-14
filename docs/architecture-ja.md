@@ -125,9 +125,15 @@ APM の install hook / skill 取り込み手順は
   `tools/codex/AGENTS.md` 自体が `../claude/CLAUDE.md` への in-repo symlink な
   ので、claude と同じ system instruction を 1 ファイルで共有する
 * `~/.codex/hooks.json` / `~/.codex/hooks/` は `tools/codex/` への
-  out-of-store symlink。`PreToolUse` hook が `exec_command` / `shell_command`
-  の破壊的コマンドを Claude Code と同じポリシーで遮断する。hook は sandbox /
-  approval policy の補助であり、変更後は `/hooks` で内容を再確認して trust する
+  out-of-store symlink。`PreToolUse` hook が破壊的な Bash command を Claude Code
+  と同じポリシーで遮断する。hook は sandbox / approval policy の補助であり、
+  変更後は `/hooks` で内容を再確認して trust する
+  (`unified_exec` の interception は現状不完全なため、hook 単独で強制しない)
+* `~/.codex/rules/destructive.rules` は管理対象の Codex exec policy への
+  out-of-store symlink。`git reset --hard` のように危険性が固定 prefix で
+  確定する操作は `forbidden`、`git push` のような広い変更操作は承認必須にする。
+  exec policy は sandbox 外実行の可否を制御する。Codex が `default.rules` を
+  更新できるよう、親の `~/.codex/rules/` は mutable のままにする
 * turn 完了通知は Codex の top-level `notify`、承認待ち通知は terminal が
   unfocused のときの `tui.notifications` を使う。Claude の markdown 自動修正と
   PR 作成前レビューゲートは、Codex に同等の信頼できる hook 入力・イベントが
