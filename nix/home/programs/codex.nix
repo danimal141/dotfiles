@@ -7,6 +7,9 @@
 #     ので、~/.codex/AGENTS.md → tools/codex/AGENTS.md → tools/claude/CLAUDE.md
 #     の 2 段で解決する。CLAUDE.md 編集が ~/.claude/CLAUDE.md と
 #     ~/.codex/AGENTS.md の両方に即反映される (同じ system instruction を共有)。
+#   * hooks.json / hooks/ は repo の tools/codex/ を指す out-of-store symlink。
+#     破壊コマンド遮断ポリシーは tools/claude/hooks/ と symlink で共有し、
+#     sandbox / approval の補助 guardrail として使う。
 #   * config.toml は read-only symlink にできない。codex は起動時に
 #     [projects] trust_level を config.toml へ追記するが、home.file の symlink
 #     は nix store の read-only file を指すため、trust 書込が code -32603
@@ -52,6 +55,7 @@ let
     personality = "pragmatic";
     service_tier = "standard";
     project_doc_fallback_filenames = [ "CLAUDE.md" ];
+    notify = [ "python3" "${dotfilesPath}/tools/codex/hooks/notify.py" ];
 
     shell_environment_policy = {
       "inherit" = "all";
@@ -60,8 +64,14 @@ let
 
     features = {
       goals = true;
+      hooks = true;
       multi_agent = true;
       terminal_resize_reflow = true;
+    };
+
+    tui = {
+      notifications = [ "approval-requested" ];
+      notification_condition = "unfocused";
     };
 
     notice.fast_default_opt_out = false;
@@ -76,6 +86,10 @@ in
 {
   home.file.".codex/AGENTS.md".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/codex/AGENTS.md";
+  home.file.".codex/hooks.json".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/codex/hooks.json";
+  home.file.".codex/hooks".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/codex/hooks";
 
   # apm (--target claude,codex) の skill は ~/.codex/skills/ ではなく cross-agent
   # 標準の ~/.agents/skills/ に配布され、codex がそこを auto-discover する

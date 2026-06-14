@@ -133,6 +133,16 @@ For APM's install hook and the skill ingestion procedure, see
 * `~/.codex/AGENTS.md` is an out-of-store symlink to `tools/codex/AGENTS.md`,
   which is itself an in-repo symlink to `../claude/CLAUDE.md`, so both tools
   share the same system instruction in a single file.
+* `~/.codex/hooks.json` and `~/.codex/hooks/` are out-of-store symlinks to
+  `tools/codex/`. The `PreToolUse` hook blocks destructive `exec_command` /
+  `shell_command` calls using the same policy as Claude Code. Hooks supplement
+  Codex's sandbox and approval policy; after changing them, review and trust
+  them again with `/hooks`.
+* Turn completion notifications use Codex's top-level `notify` command, while
+  approval requests use `tui.notifications` when the terminal is unfocused.
+  Claude's markdown auto-fix and pre-PR review gate are intentionally not
+  mirrored because Codex does not expose equivalent reliable hook inputs and
+  lifecycle events.
 
 For the full secret-injection design, see
 [design-philosophy.md#secrets-design](design-philosophy.md#secrets-design)

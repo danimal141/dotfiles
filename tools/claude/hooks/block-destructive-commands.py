@@ -92,7 +92,10 @@ def main():
     except (json.JSONDecodeError, EOFError):
         sys.exit(0)
 
-    command = data.get("tool_input", {}).get("command", "")
+    tool_input = data.get("tool_input", {})
+    command = tool_input.get("command") or tool_input.get("cmd", "")
+    if isinstance(command, list):
+        command = " ".join(command)
     if not command:
         sys.exit(0)
 

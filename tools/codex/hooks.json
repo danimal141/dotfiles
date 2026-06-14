@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "^(exec_command|shell_command)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ~/.codex/hooks/block-destructive-commands.py",
+            "statusMessage": "Checking command safety..."
+          }
+        ]
+      }
+    ]
+  }
+}
