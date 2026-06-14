@@ -119,7 +119,7 @@ else
     print_warn ".env file not found. Environment variables may not be available."
 fi
 
-# Get the number of servers in the YAML
+# Get the number of servers in the config
 server_count=$(yq eval -o=yaml '.servers | length' "$MCP_CONFIG")
 
 if [[ $server_count -eq 0 ]]; then
@@ -165,7 +165,7 @@ for ((i=0; i<$server_count; i++)); do
         # Get all environment variable keys for this server
         env_keys=$(yq eval -o=yaml ".servers.$server_name.env | keys | .[]" "$MCP_CONFIG" 2>/dev/null)
         for env_key in $env_keys; do
-            # Get the environment variable value from YAML
+            # Get the environment variable value from the config
             env_value=$(yq eval -o=yaml ".servers.$server_name.env.$env_key" "$MCP_CONFIG")
             # Expand environment variables (replace ${VAR} with actual value)
             if [[ "$env_value" =~ ^\$\{([^}]+)\}$ ]]; then
