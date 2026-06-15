@@ -1,5 +1,22 @@
 { user, lib, ... }:
 
+let
+  # OpenStep 形式 (`{enabled=1;parameters=(32,...);}`) では数値も string として
+  # 保存され、System Settings が hotkey として採用しない。XML plist 形式で
+  # boolean / integer 型を明示する。
+  inputSourceHotkey = modifier: ''
+    <dict>
+      <key>enabled</key><true/>
+      <key>value</key>
+      <dict>
+        <key>parameters</key>
+        <array><integer>32</integer><integer>49</integer><integer>${toString modifier}</integer></array>
+        <key>type</key><string>standard</string>
+      </dict>
+    </dict>
+  '';
+in
+
 # キーボード layer の declarative 副作用を 3 経路で組み合わせる:
 #
 #   1. `system.keyboard` — HID 層で Caps Lock を Control に remap
@@ -80,9 +97,9 @@
     USER_UID=$(id -u -- ${user})
     AS_USER="launchctl asuser $USER_UID sudo --user=${user} --"
     $AS_USER /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys \
-      -dict-add 60 '{enabled=1;value={parameters=(32,49,1048576);type=standard;};}'
+      -dict-add 60 '${inputSourceHotkey 1048576}'
     $AS_USER /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys \
-      -dict-add 61 '{enabled=1;value={parameters=(32,49,1572864);type=standard;};}'
+      -dict-add 61 '${inputSourceHotkey 1572864}'
     # cfprefsd を再起動して running session に即反映 (login 後の再ログインを不要に)
     $AS_USER /usr/bin/killall cfprefsd 2>/dev/null || true
     # plist は更新されても hotkey 配信側 (loginwindow / SymbolicHotKey の
@@ -110,8 +127,8 @@
         "/bin/sh"
         "-c"
         ''
-          /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 60 '{enabled=1;value={parameters=(32,49,1048576);type=standard;};}'
-          /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 61 '{enabled=1;value={parameters=(32,49,1572864);type=standard;};}'
+          /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 60 '${inputSourceHotkey 1048576}'
+          /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 61 '${inputSourceHotkey 1572864}'
           /usr/bin/killall cfprefsd 2>/dev/null || true
           /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u 2>/dev/null || true
         ''
