@@ -150,12 +150,27 @@ pin、`setup.sh` の `npm ci` で `node_modules/` に install され、hook は
 
 ### 困ったとき
 
-* **Nix の SSL エラー (`self-signed certificate in certificate chain`)** —
+* **Nix / curl の SSL エラー (`self-signed certificate in certificate chain`)** —
   `setup.sh` の手順 3 が走っているか (`/etc/nix/ca-bundle.pem` が 100KB
   以上ある) を確認。社内 IT が新しい CA を Keychain に push した直後は
-  bundle 再生成 (`sudo bash -c "security find-certificate -a -p
-  /Library/Keychains/System.keychain >> /etc/nix/ca-bundle.pem ..." && sudo
-  launchctl kickstart -k system/org.nixos.nix-daemon`)
+  bundle を一時ファイルへ再生成してから置換する:
+
+  ```shell
+  (
+    set -e
+    tmp=$(mktemp)
+    trap 'unlink "$tmp"' EXIT
+    security find-certificate -a -p /Library/Keychains/System.keychain > "$tmp"
+    security find-certificate -a -p /System/Library/Keychains/SystemRootCertificates.keychain >> "$tmp"
+    test -s "$tmp"
+    sudo install -m 0644 "$tmp" /etc/nix/ca-bundle.pem
+    sudo launchctl kickstart -k system/org.nixos.nix-daemon
+  )
+  ```
+
+  `codex update` で curl の証明書検証が失敗した後に
+  `Update ran successfully!` と表示されても、`curl | sh` の終了コード判定に
+  よる誤表示であり更新は成功していない。
 * **`darwin-rebuild` が「unrecognized content in /etc/...」で止まる** —
   該当ファイルを `.before-nix-darwin` に退避してから再実行
 * **`darwin-rebuild` の Homebrew step で formula / cask 名解決失敗** —
@@ -320,7 +335,8 @@ LocalHostName` では新 host を検出できず `setup.sh` は `work` にフォ
     shortcut (`AppleSymbolicHotKeys` の ID 60/61) の targeted update
   * `nix/darwin/nix-daemon.nix` — `nix.settings` (experimental-features /
     trusted-users / SSL CA bundle) と `nix.gc`、`environment.variables`
-    (NIX_SSL_CERT_FILE / HOMEBREW_FORBIDDEN_FORMULAE)
+    (NIX_SSL_CERT_FILE / SSL_CERT_FILE / CURL_CA_BUNDLE /
+    HOMEBREW_FORBIDDEN_FORMULAE)
   * `nix/darwin/system.nix` — `system.primaryUser` / `users.users.<user>` /
     `programs.zsh.enable = false` / `system.stateVersion` の root residual
   * `nix/darwin/default.nix` — 上記 6 ファイルを 1 つにまとめる imports。

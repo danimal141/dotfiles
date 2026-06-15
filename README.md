@@ -158,12 +158,27 @@ secretlint itself and the rule preset are pinned in `package.json` /
 
 ### Troubleshooting
 
-* **Nix SSL error (`self-signed certificate in certificate chain`)** —
+* **Nix / curl SSL error (`self-signed certificate in certificate chain`)** —
   Verify that `setup.sh` step 3 has run (`/etc/nix/ca-bundle.pem` is at
   least 100 KB). If corporate IT has just pushed a new CA to the Keychain,
-  regenerate the bundle (`sudo bash -c "security find-certificate -a -p
-  /Library/Keychains/System.keychain >> /etc/nix/ca-bundle.pem ..." && sudo
-  launchctl kickstart -k system/org.nixos.nix-daemon`)
+  regenerate the bundle in a temporary file before replacing it:
+
+  ```shell
+  (
+    set -e
+    tmp=$(mktemp)
+    trap 'unlink "$tmp"' EXIT
+    security find-certificate -a -p /Library/Keychains/System.keychain > "$tmp"
+    security find-certificate -a -p /System/Library/Keychains/SystemRootCertificates.keychain >> "$tmp"
+    test -s "$tmp"
+    sudo install -m 0644 "$tmp" /etc/nix/ca-bundle.pem
+    sudo launchctl kickstart -k system/org.nixos.nix-daemon
+  )
+  ```
+
+  If `codex update` prints `Update ran successfully!` after curl certificate
+  verification failed, the message is a false positive caused by the
+  `curl | sh` pipeline status; Codex was not updated.
 * **`darwin-rebuild` aborts with "unrecognized content in /etc/..."** —
   Move the offending file to `.before-nix-darwin` and rerun
 * **Homebrew formula / cask name resolution fails during `darwin-rebuild`'s
@@ -339,7 +354,8 @@ argument) work fine.
     input source switch shortcut (`AppleSymbolicHotKeys` IDs 60/61)
   * `nix/darwin/nix-daemon.nix` — `nix.settings` (experimental-features /
     trusted-users / SSL CA bundle), `nix.gc`,
-    `environment.variables` (NIX_SSL_CERT_FILE /
+    `environment.variables` (NIX_SSL_CERT_FILE / SSL_CERT_FILE /
+    CURL_CA_BUNDLE /
     HOMEBREW_FORBIDDEN_FORMULAE)
   * `nix/darwin/system.nix` — `system.primaryUser` / `users.users.<user>`
     / `programs.zsh.enable = false` / `system.stateVersion` residuals
