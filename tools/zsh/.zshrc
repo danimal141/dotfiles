@@ -7,6 +7,15 @@ export LC_ALL=en_US.UTF-8
 export EDITOR=nvim
 export VISUAL=nvim
 
+# Nix の OpenSSL curl は macOS Keychain を直接参照しない。社内 VPN の SSL
+# inspection CA を含む Keychain 由来 bundle を、codex update 等の子プロセスへ
+# 継承させる。
+if [[ -f /etc/nix/ca-bundle.pem ]]; then
+  export NIX_SSL_CERT_FILE=/etc/nix/ca-bundle.pem
+  export SSL_CERT_FILE=/etc/nix/ca-bundle.pem
+  export CURL_CA_BUNDLE=/etc/nix/ca-bundle.pem
+fi
+
 # -------------------------------------
 # path
 # -------------------------------------

@@ -354,8 +354,7 @@ argument) work fine.
     input source switch shortcut (`AppleSymbolicHotKeys` IDs 60/61)
   * `nix/darwin/nix-daemon.nix` — `nix.settings` (experimental-features /
     trusted-users / SSL CA bundle), `nix.gc`,
-    `environment.variables` (NIX_SSL_CERT_FILE / SSL_CERT_FILE /
-    CURL_CA_BUNDLE /
+    `environment.variables` (NIX_SSL_CERT_FILE /
     HOMEBREW_FORBIDDEN_FORMULAE)
   * `nix/darwin/system.nix` — `system.primaryUser` / `users.users.<user>`
     / `programs.zsh.enable = false` / `system.stateVersion` residuals

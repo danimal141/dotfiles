@@ -11,14 +11,11 @@
   # する想定。`claude` は Anthropic 公式の npm package で同様の二重 install
   # を避けたいので含める。
   #
-  # *_SSL_CERT_FILE / CURL_CA_BUNDLE: 社内 VPN の SSL inspection 対策
-  # (下の `nix.settings.ssl-cert-file` と同じ bundle を Nix と user shell の
-  # OpenSSL/curl に見せる)。
+  # NIX_SSL_CERT_FILE: 社内 VPN の SSL inspection 対策 (下の
+  # `nix.settings.ssl-cert-file` と同じ bundle を user shell にも見せる)。
   environment.variables = {
     HOMEBREW_FORBIDDEN_FORMULAE = "node python python3 pip npm pnpm yarn claude";
     NIX_SSL_CERT_FILE = "/etc/nix/ca-bundle.pem";
-    SSL_CERT_FILE = "/etc/nix/ca-bundle.pem";
-    CURL_CA_BUNDLE = "/etc/nix/ca-bundle.pem";
   };
 
   nix = {

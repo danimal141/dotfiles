@@ -335,8 +335,7 @@ LocalHostName` では新 host を検出できず `setup.sh` は `work` にフォ
     shortcut (`AppleSymbolicHotKeys` の ID 60/61) の targeted update
   * `nix/darwin/nix-daemon.nix` — `nix.settings` (experimental-features /
     trusted-users / SSL CA bundle) と `nix.gc`、`environment.variables`
-    (NIX_SSL_CERT_FILE / SSL_CERT_FILE / CURL_CA_BUNDLE /
-    HOMEBREW_FORBIDDEN_FORMULAE)
+    (NIX_SSL_CERT_FILE / HOMEBREW_FORBIDDEN_FORMULAE)
   * `nix/darwin/system.nix` — `system.primaryUser` / `users.users.<user>` /
     `programs.zsh.enable = false` / `system.stateVersion` の root residual
   * `nix/darwin/default.nix` — 上記 6 ファイルを 1 つにまとめる imports。
