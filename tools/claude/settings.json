@@ -281,13 +281,20 @@
     "pyright-lsp@claude-plugins-official": true,
     "ruby-lsp@claude-plugins-official": true,
     "example-skills@anthropic-agent-skills": true,
-    "superpowers@claude-plugins-official": true
+    "superpowers@claude-plugins-official": true,
+    "gws@gws-skills": true
   },
   "extraKnownMarketplaces": {
     "anthropic-agent-skills": {
       "source": {
         "source": "github",
         "repo": "anthropics/skills"
+      }
+    },
+    "gws-skills": {
+      "source": {
+        "source": "directory",
+        "path": "/Library/Application Support/ClaudeCode/marketplace/gws-skills"
       }
     }
   },
