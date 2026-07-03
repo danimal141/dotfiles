@@ -4,7 +4,7 @@
     "BASH_DEFAULT_TIMEOUT_MS": "120000",
     "BASH_MAX_TIMEOUT_MS": "600000",
     "MAX_THINKING_TOKENS": "31999",
-    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "60",
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "70",
     "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": "1"
   },
   "permissions": {
@@ -282,7 +282,8 @@
     "ruby-lsp@claude-plugins-official": true,
     "example-skills@anthropic-agent-skills": true,
     "superpowers@claude-plugins-official": true,
-    "gws@gws-skills": true
+    "gws@gws-skills": true,
+    "gog@gog-skills": true
   },
   "extraKnownMarketplaces": {
     "anthropic-agent-skills": {
@@ -296,9 +297,16 @@
         "source": "directory",
         "path": "/Library/Application Support/ClaudeCode/marketplace/gws-skills"
       }
+    },
+    "gog-skills": {
+      "source": {
+        "source": "directory",
+        "path": "/Library/Application Support/ClaudeCode/marketplace/gog-skills"
+      }
     }
   },
   "language": "japanese",
   "tui": "fullscreen",
+  "skipWorkflowUsageWarning": true,
   "skipAutoPermissionPrompt": true
 }
