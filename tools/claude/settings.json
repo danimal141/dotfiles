@@ -4,7 +4,7 @@
     "BASH_DEFAULT_TIMEOUT_MS": "120000",
     "BASH_MAX_TIMEOUT_MS": "600000",
     "MAX_THINKING_TOKENS": "31999",
-    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "70",
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "85",
     "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": "1"
   },
   "permissions": {
@@ -51,6 +51,8 @@
       "Bash(whoami:*)",
       "Bash(whois:*)",
       "Bash(pwd:*)",
+      "Bash(printf:*)",
+      "Bash(shasum:*)",
       "Bash(du:*)",
       "Bash(df:*)",
       "Bash(date:*)",
@@ -119,6 +121,7 @@
       "WebSearch",
       "TodoWrite",
       "Read",
+      "Write(//tmp/claude-compact-state/**)",
       "mcp__context7",
       "mcp__playwright",
       "mcp__serena"
@@ -215,6 +218,11 @@
     ]
   },
   "model": "claude-opus-4-6",
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/hooks/statusline.sh",
+    "padding": 0
+  },
   "hooks": {
     "PreToolUse": [
       {
@@ -247,6 +255,30 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/pr-review-mark.sh"
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/compaction-recovery.sh"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/userpromptsubmit-compaction-recovery.sh"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/userpromptsubmit-compact-prep-reminder.sh"
           }
         ]
       }
