@@ -3,13 +3,14 @@
 # nix-darwin が管理する Homebrew (tap / brew / cask) の宣言。
 #
 # 設計の意図:
-#   * Brewfile + brew bundle では「宣言から外したら自動 uninstall」が無く、
-#     dotfile を消しただけでは実機の brew は残る。`onActivation.cleanup`
-#     を有効にすると `darwin-rebuild switch` 時に未宣言パッケージが自動で
-#     uninstall されるため、git diff だけでパッケージ管理が完結する。
-#   * tap / brew / cask の三層を flake.lock 配下で管理することで、
-#     `darwin-rebuild --rollback` で「Homebrew インストール状態ごと」前世代
-#     に戻せる。
+#   * 常用する tap / brew / cask を nix-darwin 経由で宣言し、追加・削除の
+#     レビュー単位を git diff に寄せる。
+#   * `cleanup = "none"` で宣言外の手動 install は許容する。これは試用中の
+#     brew / cask を残すための意図的な drift 許容であり、Homebrew prefix の
+#     完全同期ではない。完全同期に寄せる場合は、まず `cleanup = "check"` で
+#     未宣言 package を検出する。
+#   * Homebrew の実体 version は上流 tap と `brew update` に依存するため、
+#     Nix store CLI ほど強い rollback 再現性は期待しない。
 {
   homebrew = {
     enable = true;

@@ -23,8 +23,9 @@ This doc focuses mostly on per-tool internals.
 * `nix/home/` — home-manager (user layer). `default.nix` is the entry
   point; `programs/<tool>.nix` is the "one file per tool" convention.
 * `tools/<tool>/` — raw text dotfiles that `home.file` symlinks into `~/`.
-* `setup.sh` — first-time bootstrap (Xcode CLT → Nix → CA bundle → /etc
-  quarantine → darwin-rebuild → mise install → LSP global → prek).
+* `setup.sh` — first-time bootstrap (Xcode CLT → Nix → CA bundle → flake host
+  validation → /etc quarantine → darwin-rebuild → mise install → LSP global →
+  prek).
 
 For what each module owns (the six system-layer files / home-layer split),
 see [README.md#tool-responsibilities](../README.md#tool-responsibilities).
@@ -61,6 +62,9 @@ left outside `home.file` as mutable directories under `~/`. See
   `Gemfile.lock` switches between `ruby_lsp` and `solargraph` exclusively
   (`tools/nvim/lua/plugins/lsp.lua`). Every server explicitly sets `cmd`,
   so when the binary is missing from PATH the server is skipped.
+  LSP servers intentionally come from both Nix and `setup.sh` global installs
+  under mise runtimes. Neovim only enables servers whose command exists on
+  `PATH`, so missing servers are not spawned.
 * Tree-sitter: nvim-treesitter on the main branch
   (`tools/nvim/lua/plugins/treesitter.lua`).
 * Placement: `nix/home/programs/nvim.nix` symlinks the entire
@@ -91,6 +95,9 @@ left outside `home.file` as mutable directories under `~/`. See
 
 ## Claude Code
 
+* The `claude` binary is installed into `~/.local/bin/claude` by the official
+  native installer. It is treated as a mutable latest tool, not something
+  rolled back by `flake.lock` or darwin generations.
 * Only `tools/claude/skills/.gitignore` is tracked. Skills installed by
   APM (chrome-cdp, codebase-analyzer, ...) land under `~/.claude/skills/`
   and are ignored. The same skills are also deployed to the cross-agent
@@ -117,6 +124,9 @@ For APM's install hook and the skill ingestion procedure, see
 
 ## Codex
 
+* The `codex` binary is installed into `~/.local/bin/codex` by the official
+  native installer. Like Claude Code, it is treated as a mutable latest tool,
+  not something rolled back by `flake.lock` or darwin generations.
 * `~/.codex/config.toml` is generated from `settings` (a Nix attribute
   set) via `pkgs.formats.toml`, then the `codexConfig` activation hook
   writes it as a mutable real file (overwritten every switch). codex

@@ -32,11 +32,12 @@
     # ~/.local/share/nvim/lazy 以下に展開されるので、本体だけ Nix で配ればよい。
     neovim
 
-    # language servers — nvim-lspconfig (tools/nvim/lua/plugins/lsp.lua) が
-    # attach する LSP server binary を PATH 上で解決する必要があるため
-    # Nix store で集中管理する。rust-analyzer は rustup の component に任せる
-    # (rustup component add rust-analyzer)、clangd は LLVM toolchain
-    # (Homebrew) 由来のものを使う。
+    # language servers — nvim-lspconfig (tools/nvim/lua/plugins/lsp.lua) は
+    # PATH 上に binary がある server だけを enable する。Nix で配れるものは
+    # ここに置き、Ruby LSP / pyright など runtime と密接なものは setup.sh が
+    # mise runtime 配下に global install する。rust-analyzer は rustup の
+    # component に任せる (rustup component add rust-analyzer)、clangd は
+    # LLVM toolchain (Homebrew) 由来のものを使う。
     gopls                                  # Go
     python3Packages.jedi-language-server   # Python
     solargraph                             # Ruby (ruby-lsp は composed bundle 前提で global 配備と相性が悪い)

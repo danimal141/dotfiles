@@ -21,8 +21,8 @@
 * `nix/home/` — home-manager (user 層)。`default.nix` が entry point、
   `programs/<tool>.nix` で 1 ファイル 1 ツール
 * `tools/<tool>/` — `home.file` で symlink される raw text dotfile の置き場
-* `setup.sh` — 初回 bootstrap (Xcode CLT → Nix → CA bundle → /etc 退避 →
-  darwin-rebuild → mise install → LSP global → prek)
+* `setup.sh` — 初回 bootstrap (Xcode CLT → Nix → CA bundle → flake host 検証 →
+  /etc 退避 → darwin-rebuild → mise install → LSP global → prek)
 
 各モジュールが何を担当するか (system 層 6 ファイルの内訳 / home 層の
 責務分担) は [README-ja.md#管理ツールの責務分担](../README-ja.md#管理ツールの責務分担)
@@ -59,6 +59,9 @@
   `ruby_lsp` / `solargraph` を排他的に切替
   (`tools/nvim/lua/plugins/lsp.lua`)。各 server に `cmd` を明示して
   PATH 上に binary が無い場合は enable を skip
+  * LSP server は Nix 配布と `setup.sh` による mise runtime 配下の global
+    install を併用する。Neovim は PATH にある server だけを enable するため、
+    未導入 server は spawn されない
 * Tree-sitter: nvim-treesitter (main branch、
   `tools/nvim/lua/plugins/treesitter.lua`)
 * 配置: `nix/home/programs/nvim.nix` が `tools/nvim/` 全体を `~/.config/nvim`
@@ -84,6 +87,9 @@
 
 ## Claude Code
 
+* `claude` 本体は公式 native installer で `~/.local/bin/claude` に入れる。
+  これは mutable latest tool として扱い、`flake.lock` や darwin generation の
+  rollback 対象にはしない
 * `tools/claude/skills/.gitignore` のみ tracked、APM が install する skill
   (chrome-cdp, codebase-analyzer, ...) は `~/.claude/skills/` 配下に展開され
   gitignore で ignore される (codex にも同一 skill が cross-agent 標準の
@@ -109,6 +115,9 @@ APM の install hook / skill 取り込み手順は
 
 ## Codex
 
+* `codex` 本体は公式 native installer で `~/.local/bin/codex` に入れる。
+  Claude Code と同じく mutable latest tool として扱い、`flake.lock` や
+  darwin generation の rollback 対象にはしない
 * `~/.codex/config.toml` は `settings` (Nix attribute set) を
   `pkgs.formats.toml` で生成し、`codexConfig` activation hook が mutable な
   実ファイルとして毎回上書き配置する。codex 自身が起動時に `[projects]`

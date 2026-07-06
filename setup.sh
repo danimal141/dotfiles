@@ -2,7 +2,7 @@
 # 新規 Mac の bootstrap スクリプト。
 #
 # 使い方:
-#   ./setup.sh             — LocalHostName を見て自動判定 (work / personal / personal2 ...)
+#   ./setup.sh             — LocalHostName が flake host と一致する場合のみ自動判定
 #   ./setup.sh work        — 仕事用 Mac 想定で flake host を明示
 #   ./setup.sh personal    — 個人用 Mac
 #
@@ -23,20 +23,24 @@
 set -e
 
 # ---- Hostname target -------------------------------------------------------
-# LocalHostName が flake の hosts attrset (work / personal / personal2 ...) と
-# 一致する場合は自動で flake host を決定する。一致しない時 (= 新規 Mac で IT
-# 部門が払い出した hostname のままの状態) は、第一引数で明示できる。
+# LocalHostName が flake の darwinConfigurations と一致する場合は自動で
+# flake host を決定する。一致しない時 (新規 Mac で IT 部門が払い出した
+# hostname のままの状態など) は、第一引数で明示する。
+#
+# 実在 host かどうかは Nix が使えるようになってから `nix eval` で検証する。
+# ここでは候補値を決めるだけにして、未知 hostname を `work` に寄せるような
+# 暗黙 fallback はしない。
 DETECTED="$(scutil --get LocalHostName 2>/dev/null || echo)"
-TARGET_HOST="${1:-$DETECTED}"
-case "$TARGET_HOST" in
-  work|personal|personal[0-9]*) ;;
-  *)
-    echo "[setup] LocalHostName '$DETECTED' is not a known flake host."
-    echo "[setup] Defaulting to 'work'. Override with: ./setup.sh <hostname>"
-    TARGET_HOST="work"
-    ;;
-esac
-echo "[setup] Targeting flake host: .#$TARGET_HOST"
+REQUESTED_HOST="${1:-}"
+TARGET_HOST="${REQUESTED_HOST:-$DETECTED}"
+if [ -n "$REQUESTED_HOST" ]; then
+  echo "[setup] Requested flake host: .#$TARGET_HOST"
+elif [ -n "$TARGET_HOST" ]; then
+  echo "[setup] Detected flake host candidate: .#$TARGET_HOST"
+else
+  echo "[setup] LocalHostName is empty. Pass an explicit flake host: ./setup.sh <hostname>" >&2
+  exit 1
+fi
 
 # ---- Xcode CLT ------------------------------------------------------------
 # Apple Silicon 前提なので Rosetta は install しない。x86_64 binary が必要に
@@ -146,6 +150,33 @@ sudo launchctl setenv NIX_SSL_CERT_FILE "$CA_BUNDLE" || true
 sudo launchctl kickstart -k system/org.nixos.nix-daemon || true
 # 同 shell の nix CLI も同じ bundle を見るようにしておく
 export NIX_SSL_CERT_FILE="$CA_BUNDLE"
+
+# ---- Validate target host --------------------------------------------------
+# flake に存在しない host を darwin-rebuild へ渡す前に止める。これにより、
+# 新規個人 Mac で引数を忘れた場合に `work` 構成が誤適用される事故を防ぐ。
+echo "[setup] Validating flake host: .#$TARGET_HOST"
+if ! AVAILABLE_HOSTS=$(nix --extra-experimental-features 'nix-command flakes' \
+  eval --raw .#darwinConfigurations \
+  --apply 'configs: builtins.concatStringsSep " " (builtins.attrNames configs)' 2>/dev/null); then
+  echo "[setup] Failed to evaluate flake hosts." >&2
+  echo "[setup] Check that this repository is a valid flake and Nix can fetch its inputs." >&2
+  exit 1
+fi
+
+HOST_FOUND=false
+for host in $AVAILABLE_HOSTS; do
+  if [ "$host" = "$TARGET_HOST" ]; then
+    HOST_FOUND=true
+    break
+  fi
+done
+
+if [ "$HOST_FOUND" != true ]; then
+  echo "[setup] Unknown flake host: '$TARGET_HOST'" >&2
+  echo "[setup] Available hosts: $AVAILABLE_HOSTS" >&2
+  echo "[setup] Run with an explicit existing host, for example: ./setup.sh work" >&2
+  exit 1
+fi
 
 # ---- Move conflicting /etc files out of the way ---------------------------
 # nix-darwin は activation 時に /etc/* を生成するが、Nix 公式 installer が

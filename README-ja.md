@@ -20,7 +20,7 @@ declarative に管理する個人用 dotfiles。`nix run .#switch` (内部で
 
 clone 先は任意 (本リポジトリの module は repo の絶対 path を `/Users/<user>/
 Documents/dev/dotfiles` に hardcode しているので、別 path に置く場合は
-`nix/home/programs/*.nix` の `dotfilesPath` を書き換える):
+`flake.nix` の `mkHost` が作る `dotfilesPath` を書き換える):
 
 ```shell
 git clone git@github.com:danimal141/dotfiles.git ~/Documents/dev/dotfiles
@@ -30,7 +30,7 @@ cd ~/Documents/dev/dotfiles
 ### 2. `setup.sh` を実行
 
 ```shell
-./setup.sh             # LocalHostName から flake host を自動判定
+./setup.sh             # LocalHostName が flake host と一致する場合のみ自動判定
 ./setup.sh work        # 仕事用 Mac として明示
 ./setup.sh personal    # 個人用 Mac として明示
 ```
@@ -42,18 +42,20 @@ cd ~/Documents/dev/dotfiles
 3. macOS Keychain から CA bundle を `/etc/nix/ca-bundle.pem` に焼き、`launchctl
    setenv` で nix-daemon に渡す (社内 VPN の SSL inspection 対策、個人 Mac
    でも害はない)
-4. Nix 公式 installer が書いた `/etc/bashrc` `/etc/nix/nix.conf` を
+4. `flake.nix` の `darwinConfigurations` に存在する host か検証する
+   (未知 host なら `work` に fallback せず停止)
+5. Nix 公式 installer が書いた `/etc/bashrc` `/etc/nix/nix.conf` を
    `*.before-nix-darwin` に退避 (nix-darwin の activation が「unrecognized
    content」を理由に abort するのを回避)
-5. `sudo -E nix run nix-darwin -- switch --flake ".#<hostname>"` を実行 —
+6. `sudo -E nix run nix-darwin -- switch --flake ".#<hostname>"` を実行 —
    `nix/darwin/{macos-defaults,keyboard,nix-daemon,system,packages,homebrew}.nix`
    (system 層 / Nix store CLI / brew / cask) / `nix/home/programs/*.nix`
    (home-manager 経由の dotfile symlink + VSCode settings/keybindings/extensions
    含む) が一括反映
-6. `mise install` で `~/.config/mise/config.toml` の言語 binary を実体 install
-7. LSP server (typescript / pyright / ruby-lsp / gopls) を global install
-8. `prek install` で `.git/hooks/pre-commit` を冪等に仕込む (secretlint hook)
-9. `exec $SHELL -l` で新 shell に切り替え
+7. `mise install` で `~/.config/mise/config.toml` の言語 binary を実体 install
+8. LSP server (typescript / pyright / ruby-lsp / gopls) を global install
+9. `prek install` で `.git/hooks/pre-commit` を冪等に仕込む (secretlint hook)
+10. `exec $SHELL -l` で新 shell に切り替え
 
 完走後は `which git` が `/etc/profiles/per-user/<user>/bin/git` または
 `/run/current-system/sw/bin/git` を返す状態になる。
@@ -221,6 +223,11 @@ wrapper の付加価値は次の 3 点:
 * macOS-only ツール (terminal-notifier, im-select)
 * shell 本体 (zsh)。zsh plugin は sheldon で管理
 
+Homebrew は `cleanup = "none"` で運用しているため、宣言外の手動 install は
+自動削除されない。これは「常用ツールは宣言するが、試用中の brew / cask は
+残せる」方針であり、Homebrew prefix の完全同期ではない。完全同期に寄せる
+場合は、まず `cleanup = "check"` で未宣言 package を検出するのが安全。
+
 注意:
 
 * `nix run .#update` (= `nix flake update` 全 input 一括) は壊れた時の
@@ -314,8 +321,8 @@ hosts = {
 ```
 
 初回は IT 部門が割り当てた元の hostname のままなので `scutil --get
-LocalHostName` では新 host を検出できず `setup.sh` は `work` にフォール
-バックする。**個人 Mac で引数を忘れると `work` 構成で switch される**ので
+LocalHostName` では新 host を検出できない。`setup.sh` は
+`darwinConfigurations` に存在しない host を検出すると停止するため、
 第 1 引数で必ず明示する。`darwin-rebuild` 完走後は LocalHostName が
 `<hostname>` に書き換わるので、二度目以降は `./setup.sh` 引数なしで動作する。
 
@@ -351,6 +358,12 @@ LocalHostName` では新 host を検出できず `setup.sh` は `work` にフォ
   * 宣言ソースは `~/.config/mise/config.toml` (= home-manager 経由 = repo の
     `tools/mise/config.toml`)。`mise install` が読んで実体を `~/.local/share/mise/
     installs/` に展開
+* LSP server:
+  * Nix で配布するもの (`gopls` / `typescript-language-server` /
+    `jedi-language-server` / `solargraph` 等) と、`setup.sh` が mise runtime
+    配下へ global install するもの (`pyright` / `ruby-lsp` 等) を併用する
+  * Neovim は PATH 上にある server だけを enable するため、未導入 server は
+    spawn されない
 * repo 管理外 (動的領域 / secrets):
   * `~/.claude/{projects,todos,shell-snapshots,statsig,ide}/` (Claude Code
     動的領域)
@@ -365,28 +378,35 @@ PATH 解決順 (`tools/zsh/.zshrc`):
 2. `/run/current-system/sw/{bin,sbin}` — nix-darwin の system プロファイル
 3. `/opt/homebrew/opt/{llvm,libpq,mysql@8.4}/bin` — keg-only Homebrew
 4. `$HOME/bin`, `$HOME/.local/bin` — ユーザローカル installer の置き場
-   (Claude Code native binary がここで、brew cask より前に置くことで
-   `which claude` を native に寄せている)
+   (Claude Code / Codex native binary がここで、brew cask より前に置くことで
+   `which claude` / `which codex` を native に寄せている)
 5. `/usr/local/bin` — Docker Desktop / VSCode / Cursor 等の shim
 6. `/opt/homebrew/{bin,sbin}` — Homebrew 通常 prefix (Nix 移行外の formulae / cask)
 7. mise activate がこの後で言語ランタイム shim を PATH 先頭に差し込む
 
 home-manager の user プロファイルを system プロファイルより前に置くのは、
 同名バイナリで home-manager 側 (= flake.lock pin) を勝たせるため。
-`$HOME/.local/bin` を Homebrew より前に置くのは、Claude Code native binary
-(`~/.local/bin/claude`) を brew cask (`/opt/homebrew/bin/claude`) より
-優先させるため (詳細は次節)。
+`$HOME/.local/bin` を Homebrew より前に置くのは、Claude Code / Codex の
+native binary を brew / cask より優先させるため (詳細は次節)。
 
 ## Claude Code CLI のインストール経路
 
 `claude` 本体は Anthropic 公式 native installer で `~/.local/bin/claude`
 に配置している (Node.js 不要の standalone binary、auto-update 内蔵)。
+Codex も同様に OpenAI 公式 native installer で `~/.local/bin/codex` に
+配置する。
 
 `nix run .#switch` 時に `home.activation.claudeCodeInstall` hook が
 `~/.local/bin/claude` の有無を判定し、無いときだけ
 native installer を実行する (冪等)。日常的なバージョン更新は `claude`
 binary 自身の auto-update が担うため、switch hook は「未 install 時の初回
 install」だけを保証する。
+Codex も `home.activation.codexInstall` hook が未 install 時だけ installer を
+実行し、日常的な更新は binary 側に任せる。
+
+この 2 つは `flake.lock` で pin される Nix store CLI ではなく、mutable latest
+tools として扱う。`darwin-rebuild --rollback` や `flake.lock` の巻き戻しでは
+Claude / Codex 本体の version は戻らない。
 
 社内 VPN SSL inspection 下では `/etc/nix/ca-bundle.pem` を `SSL_CERT_FILE`
 / `CURL_CA_BUNDLE` 経由で curl に inject して TLS 検証を通す
