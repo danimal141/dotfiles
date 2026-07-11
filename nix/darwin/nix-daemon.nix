@@ -21,12 +21,18 @@
   nix = {
     settings = {
       # flake / nix command を使うので必須
-      experimental-features = [ "nix-command" "flakes" ];
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
       # primaryUser を trusted にして daemon 経由のビルド (= sudo を求めない
       # nix store 操作 / `nix build`, `nix flake update` 等) を許可する。
       # `darwin-rebuild switch` 自体は nix-darwin の仕様変更で root 必須に
       # なったため `trusted-users` でも sudo は省略できないことに注意。
-      trusted-users = [ "@admin" user ];
+      trusted-users = [
+        "@admin"
+        user
+      ];
 
       # 社内 VPN の SSL inspection (中間者 CA) 対策。bundle は setup.sh が
       # macOS Keychain から `/etc/nix/ca-bundle.pem` に焼き出す。社内 CA を

@@ -22,6 +22,5 @@
 #   * 前提: dotfiles を `~/Documents/dev/dotfiles` に clone していること。
 #     別 path を使う場合は flake.nix 側の `dotfilesPath` を変更する。
 {
-  home.file.".zshrc".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/zsh/.zshrc";
+  home.file.".zshrc".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/zsh/.zshrc";
 }

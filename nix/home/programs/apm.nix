@@ -1,4 +1,10 @@
-{ config, lib, pkgs, dotfilesPath, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  dotfilesPath,
+  ...
+}:
 
 # APM (Agent Package Manager) 設定 (~/.apm/) を home-manager で管理する。
 #
@@ -31,12 +37,10 @@ let
   apmDir = "${dotfilesPath}/tools/apm";
 in
 {
-  home.file.".apm/apm.yml".source =
-    config.lib.file.mkOutOfStoreSymlink "${apmDir}/apm.yml";
+  home.file.".apm/apm.yml".source = config.lib.file.mkOutOfStoreSymlink "${apmDir}/apm.yml";
   home.file.".apm/apm.lock.yaml".source =
     config.lib.file.mkOutOfStoreSymlink "${apmDir}/apm.lock.yaml";
-  home.file.".apm/.gitignore".source =
-    config.lib.file.mkOutOfStoreSymlink "${apmDir}/.gitignore";
+  home.file.".apm/.gitignore".source = config.lib.file.mkOutOfStoreSymlink "${apmDir}/.gitignore";
 
   home.activation.apmInstall = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
     # home-manager の activation hook はデフォルト PATH に nix-darwin の

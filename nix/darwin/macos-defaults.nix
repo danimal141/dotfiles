@@ -160,7 +160,10 @@
       # 言語優先順位 (japanese first、english fallback)。
       # アプリが対応していれば日本語で出る、無ければ英語で出る。
       "NSGlobalDomain" = {
-        AppleLanguages = [ "ja-JP" "en-JP" ];
+        AppleLanguages = [
+          "ja-JP"
+          "en-JP"
+        ];
         AppleLocale = "ja_JP";
 
         # title bar の double-click で window を最小化させない。

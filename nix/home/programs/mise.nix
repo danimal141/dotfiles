@@ -1,4 +1,10 @@
-{ config, lib, pkgs, dotfilesPath, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  dotfilesPath,
+  ...
+}:
 
 # mise (language runtime manager) を home-manager の nixpkgs ビルドで導入。
 # binary は `/etc/profiles/per-user/<user>/bin/mise` に配置される。

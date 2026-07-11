@@ -8,6 +8,5 @@ let
   nvimDir = "${dotfilesPath}/tools/nvim";
 in
 {
-  home.file.".config/nvim".source =
-    config.lib.file.mkOutOfStoreSymlink nvimDir;
+  home.file.".config/nvim".source = config.lib.file.mkOutOfStoreSymlink nvimDir;
 }

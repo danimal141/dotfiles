@@ -61,7 +61,15 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, nix-darwin, nix-homebrew, llm-agents, home-manager }:
+  outputs =
+    inputs@{
+      self,
+      nixpkgs,
+      nix-darwin,
+      nix-homebrew,
+      llm-agents,
+      home-manager,
+    }:
     let
       # Hostname 規約:
       #   "work"     — 仕事用 Mac
@@ -100,13 +108,28 @@
       #   `inputs`       — `nix/packages.nix` が llm-agents.packages を参照する
       # Apple Silicon 専用想定なので system は aarch64-darwin に固定。
       # Intel Mac (x86_64-darwin) サポートが必要になったら関数引数に戻す。
-      mkHost = hostname: { user, gitName, gitEmail }:
+      mkHost =
+        hostname:
+        {
+          user,
+          gitName,
+          gitEmail,
+        }:
         let
           dotfilesPath = "/Users/${user}/Documents/dev/dotfiles";
         in
         nix-darwin.lib.darwinSystem {
           system = "aarch64-darwin";
-          specialArgs = { inherit user hostname gitName gitEmail dotfilesPath inputs; };
+          specialArgs = {
+            inherit
+              user
+              hostname
+              gitName
+              gitEmail
+              dotfilesPath
+              inputs
+              ;
+          };
           modules = [
             # nix/darwin/default.nix が defaults / keyboard / nix-daemon /
             # system.nix (residual) / packages.nix / homebrew.nix を一括 imports。
@@ -143,7 +166,14 @@
               # home-manager 側のモジュールにも host の specialArgs を渡す
               # (system 層と整合)。`gitName` / `gitEmail` は
               # `nix/home/programs/git.nix` が消費する。
-              home-manager.extraSpecialArgs = { inherit user gitName gitEmail dotfilesPath; };
+              home-manager.extraSpecialArgs = {
+                inherit
+                  user
+                  gitName
+                  gitEmail
+                  dotfilesPath
+                  ;
+              };
               # home.file で配置される ~/.zshrc 等が「既に手で書かれた状態」で
               # 衝突する初回 apply で `Existing file would be clobbered` の
               # activation 中断を避ける。`<path>.backup` にリネームして
@@ -186,7 +216,7 @@
       # 現在の Mac の hostname を `darwinConfigurations.<host>` の host 名に
       # 揃えるための shell snippet。`scutil --get LocalHostName` は
       # nix-darwin が apply 時に強制した名前 (work / personal / ...) を返す。
-      hostnameSnippet = ''HOST=$(/usr/sbin/scutil --get LocalHostName)'';
+      hostnameSnippet = "HOST=$(/usr/sbin/scutil --get LocalHostName)";
 
       darwinRebuild = "${nix-darwin.packages.aarch64-darwin.darwin-rebuild}/bin/darwin-rebuild";
     in

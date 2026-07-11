@@ -1,4 +1,11 @@
-{ config, lib, pkgs, user, dotfilesPath, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  user,
+  dotfilesPath,
+  ...
+}:
 
 # VSCode 設定 (~/Library/Application Support/Code/User/) を home-manager で
 # 管理する。

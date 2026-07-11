@@ -1,4 +1,10 @@
-{ config, lib, pkgs, dotfilesPath, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  dotfilesPath,
+  ...
+}:
 
 # Codex CLI 設定 (~/.codex/) を home-manager で管理する。
 #
@@ -41,9 +47,9 @@ let
   # なので repo root へは ../../../)。env が空のときは TOML に空テーブルを出さない
   # よう omit し、生成される [mcp_servers] を従来と同一に保つ。
   mcpServers = (builtins.fromJSON (builtins.readFile ../../../tools/mcp/servers.json)).servers;
-  mkCodexMcp = _name: v:
-    { inherit (v) command args; }
-    // lib.optionalAttrs ((v.env or { }) != { }) { inherit (v) env; };
+  mkCodexMcp =
+    _name: v:
+    { inherit (v) command args; } // lib.optionalAttrs ((v.env or { }) != { }) { inherit (v) env; };
 
   # codex の declarative 設定。pkgs.formats.toml で config.toml を生成し
   # codexConfig hook が mutable な実ファイルとして配置する。ベースは
@@ -58,7 +64,10 @@ let
     personality = "pragmatic";
     service_tier = "standard";
     project_doc_fallback_filenames = [ "CLAUDE.md" ];
-    notify = [ "python3" "${dotfilesPath}/tools/codex/hooks/notify.py" ];
+    notify = [
+      "python3"
+      "${dotfilesPath}/tools/codex/hooks/notify.py"
+    ];
 
     shell_environment_policy = {
       "inherit" = "all";

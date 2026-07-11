@@ -1,4 +1,10 @@
-{ config, lib, pkgs, dotfilesPath, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  dotfilesPath,
+  ...
+}:
 
 # sheldon (Rust 製 zsh プラグインマネージャー) の binary 配置と設定 symlink。
 #

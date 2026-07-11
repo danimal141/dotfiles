@@ -14,93 +14,95 @@
 #   Nix store 側が勝つ。下のリストに入れたものは brew 側からも消す
 #   (= `nix/homebrew.nix` の brews から削除する) のが原則。
 {
-  environment.systemPackages = (with pkgs; [
-    # core text & file utilities — どの言語でも使う薄い CLI 群。
-    # Nixpkgs の追従ラグはほぼ無いので Nix 化のリスクが低い。
-    bat
-    coreutils       # GNU coreutils。macOS 標準の BSD 版より GNU 互換が優先
-    fd
-    fzf
-    gnused          # macOS の sed は BSD 版でスクリプト互換性が低い
-    jq
-    ripgrep
-    tig
-    tree
-    yq-go           # Go 実装の yq (Python 版より速い)
+  environment.systemPackages =
+    (with pkgs; [
+      # core text & file utilities — どの言語でも使う薄い CLI 群。
+      # Nixpkgs の追従ラグはほぼ無いので Nix 化のリスクが低い。
+      bat
+      coreutils # GNU coreutils。macOS 標準の BSD 版より GNU 互換が優先
+      fd
+      fzf
+      gnused # macOS の sed は BSD 版でスクリプト互換性が低い
+      jq
+      ripgrep
+      tig
+      tree
+      yq-go # Go 実装の yq (Python 版より速い)
 
-    # editor — plugin は外部 git clone (lazy.nvim 経由) で
-    # ~/.local/share/nvim/lazy 以下に展開されるので、本体だけ Nix で配ればよい。
-    neovim
+      # editor — plugin は外部 git clone (lazy.nvim 経由) で
+      # ~/.local/share/nvim/lazy 以下に展開されるので、本体だけ Nix で配ればよい。
+      neovim
 
-    # language servers — nvim-lspconfig (tools/nvim/lua/plugins/lsp.lua) は
-    # PATH 上に binary がある server だけを enable する。Nix で配れるものは
-    # ここに置き、Ruby LSP / pyright など runtime と密接なものは setup.sh が
-    # mise runtime 配下に global install する。rust-analyzer は rustup の
-    # component に任せる (rustup component add rust-analyzer)、clangd は
-    # LLVM toolchain (Homebrew) 由来のものを使う。
-    gopls                                  # Go
-    python3Packages.jedi-language-server   # Python
-    solargraph                             # Ruby (ruby-lsp は composed bundle 前提で global 配備と相性が悪い)
-    terraform-ls                           # Terraform / HCL
-    typescript-language-server             # TypeScript / JavaScript
+      # language servers — nvim-lspconfig (tools/nvim/lua/plugins/lsp.lua) は
+      # PATH 上に binary がある server だけを enable する。Nix で配れるものは
+      # ここに置き、Ruby LSP / pyright など runtime と密接なものは setup.sh が
+      # mise runtime 配下に global install する。rust-analyzer は rustup の
+      # component に任せる (rustup component add rust-analyzer)、clangd は
+      # LLVM toolchain (Homebrew) 由来のものを使う。
+      gopls # Go
+      python3Packages.jedi-language-server # Python
+      solargraph # Ruby (ruby-lsp は composed bundle 前提で global 配備と相性が悪い)
+      terraform-ls # Terraform / HCL
+      typescript-language-server # TypeScript / JavaScript
 
-    # multiplexer
-    tmux
+      # multiplexer
+      tmux
 
-    # git — flake.lock pin で「全マシン同一バージョン」が嬉しい代表例
-    gh
-    git
+      # git — flake.lock pin で「全マシン同一バージョン」が嬉しい代表例
+      gh
+      git
 
-    # system inspection
-    htop
-    procps          # /proc 系 (watch / pgrep など) を macOS にも供給
-    pstree
+      # system inspection
+      htop
+      procps # /proc 系 (watch / pgrep など) を macOS にも供給
+      pstree
 
-    # network
-    curl
-    wget
+      # network
+      curl
+      wget
 
-    # shell helpers
-    direnv
-    parallel
+      # shell helpers
+      direnv
+      parallel
 
-    # git pre-commit framework (Rust 実装の高速版、`pre-commit` の drop-in 互換)。
-    # 本リポジトリの `.pre-commit-config.yaml` と secretlint hook を駆動して、
-    # API key 等の誤コミットを物理的に block する防衛線。
-    prek
+      # git pre-commit framework (Rust 実装の高速版、`pre-commit` の drop-in 互換)。
+      # 本リポジトリの `.pre-commit-config.yaml` と secretlint hook を駆動して、
+      # API key 等の誤コミットを物理的に block する防衛線。
+      prek
 
-    # docs / data
-    cloc
-    cue
-    graphviz
-    pandoc
+      # docs / data
+      cloc
+      cue
+      graphviz
+      pandoc
 
-    # kubernetes ecosystem — kubectl 本体は mise 管理。kubectx / kustomize /
-    # helm / stern / krew は補助ツールとしてバージョン pin したいので Nix 側に置く。
-    kubectx
-    kustomize
-    kubernetes-helm
-    krew            # kubectl plugin manager
-    stern
+      # kubernetes ecosystem — kubectl 本体は mise 管理。kubectx / kustomize /
+      # helm / stern / krew は補助ツールとしてバージョン pin したいので Nix 側に置く。
+      kubectx
+      kustomize
+      kubernetes-helm
+      krew # kubectl plugin manager
+      stern
 
-    # build / system 補助 — 多くの言語ビルドで前提になる薄い CLI / lib。
-    # Apple 固有の統合を持たないものは Nix store 側で pin する。
-    age             # 暗号化 CLI
-    automake        # GNU autotools
-    bash-completion # bash の補完スクリプト群
-    cloudflared     # Cloudflare Tunnel CLI
-    cmake           # C/C++ build tool
-    file            # libmagic 同梱
-    mecab           # 日本語形態素解析
-    zlib            # 圧縮 lib
+      # build / system 補助 — 多くの言語ビルドで前提になる薄い CLI / lib。
+      # Apple 固有の統合を持たないものは Nix store 側で pin する。
+      age # 暗号化 CLI
+      automake # GNU autotools
+      bash-completion # bash の補完スクリプト群
+      cloudflared # Cloudflare Tunnel CLI
+      cmake # C/C++ build tool
+      file # libmagic 同梱
+      mecab # 日本語形態素解析
+      zlib # 圧縮 lib
 
-    # Python tooling — Python runtime 自体は mise 配下、これは Python に
-    # 依存しない (Rust 実装) project / package manager。pipx を置換する用途。
-    uv              # `uv tool install <cli>` 系も含めて pip / pipx / venv を統合
-  ]) ++ [
-    # APM (microsoft/apm) は本家 nixpkgs に未収録。
-    # numtide が `llm-agents.nix` flake で daily auto-update を提供しているので
-    # それを inputs 経由で取り込む (`flake.nix` 参照)。
-    inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.apm
-  ];
+      # Python tooling — Python runtime 自体は mise 配下、これは Python に
+      # 依存しない (Rust 実装) project / package manager。pipx を置換する用途。
+      uv # `uv tool install <cli>` 系も含めて pip / pipx / venv を統合
+    ])
+    ++ [
+      # APM (microsoft/apm) は本家 nixpkgs に未収録。
+      # numtide が `llm-agents.nix` flake で daily auto-update を提供しているので
+      # それを inputs 経由で取り込む (`flake.nix` 参照)。
+      inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.apm
+    ];
 }
