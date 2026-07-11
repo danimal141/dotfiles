@@ -49,7 +49,7 @@ let
   # codexConfig hook が mutable な実ファイルとして配置する。ベースは
   # ryoppippi/dotfiles の codex.nix。
   settings = {
-    model = "gpt-5.5";
+    model = "gpt-5.6-sol medium";
     approval_policy = "on-request";
     approvals_reviewer = "auto_review";
     allow_login_shell = true;
