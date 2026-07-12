@@ -9,6 +9,9 @@ vim/.vim/sessions/*
 .claude/tmp/
 .claude/settings.local.json
 
+# Codex local report output
+.codex/reports/
+
 # VSCode settings backup
 tools/vscode/settings.bak.json
 
