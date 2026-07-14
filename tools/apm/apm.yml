@@ -4,14 +4,14 @@ description: APM project for hideaki.ishii
 author: danimal141
 dependencies:
   apm:
-  - danimal141/skilltree/skills/dig#v0.13.0
-  - danimal141/skilltree/skills/git-commit#v0.13.0
-  - danimal141/skilltree/skills/create-pr#v0.13.0
-  - danimal141/skilltree/skills/codebase-analyzer#v0.13.0
-  - danimal141/skilltree/skills/infra-codebase-analyzer#v0.13.0
-  - danimal141/skilltree/skills/chrome-cdp#v0.13.0
-  - danimal141/skilltree/skills/japanese-tech-writing#v0.13.0
-  - danimal141/skilltree/skills/compact-prep#v0.13.0
+  - danimal141/skilltree/skills/dig#v0.14.0
+  - danimal141/skilltree/skills/git-commit#v0.14.0
+  - danimal141/skilltree/skills/create-pr#v0.14.0
+  - danimal141/skilltree/skills/codebase-analyzer#v0.14.0
+  - danimal141/skilltree/skills/infra-codebase-analyzer#v0.14.0
+  - danimal141/skilltree/skills/chrome-cdp#v0.14.0
+  - danimal141/skilltree/skills/japanese-tech-writing#v0.14.0
+  - danimal141/skilltree/skills/compact-prep#v0.14.0
   mcp: []
 includes: auto
 scripts: {}
