@@ -19,6 +19,11 @@
 #   * rules/destructive.rules は個別 out-of-store symlink。~/.codex/rules/
 #     全体は codex が承認済み allow rule を default.rules に追記する mutable 領域
 #     なので symlink しない。
+#   * herdr-agent-state.sh は herdr の agent-state 連携 hook。生成物だが
+#     ~/.codex 直下 (mutable 領域) に落ちるため、明示的に out-of-store symlink を
+#     張って tracked にする。これを省くと登録先の hooks.json (tracked) に entry
+#     だけが残り、script の無い他マシンで壊れる。再生成は
+#     `herdr integration install codex` の手動 bootstrap (nix/home/programs/herdr.nix)。
 #   * config.toml は read-only symlink にできない。codex は起動時に
 #     [projects] trust_level を config.toml へ追記するが、home.file の symlink
 #     は nix store の read-only file を指すため、trust 書込が code -32603
@@ -102,6 +107,8 @@ in
     config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/codex/hooks.json";
   home.file.".codex/hooks".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/codex/hooks";
+  home.file.".codex/herdr-agent-state.sh".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/codex/herdr-agent-state.sh";
   home.file.".codex/rules/destructive.rules".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/codex/rules/destructive.rules";
 

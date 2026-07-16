@@ -16,6 +16,7 @@
     ./programs/sheldon.nix
     ./programs/git.nix
     ./programs/tmux.nix
+    ./programs/herdr.nix
     ./programs/nvim.nix
     ./programs/claude.nix
     ./programs/codex.nix

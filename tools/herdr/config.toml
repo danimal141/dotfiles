@@ -1,0 +1,30 @@
+# herdr の設定。default から変える分だけを置く。
+# 全 key の解説付き default は `herdr --default-config` で出る。key を足すときは
+# 必ずその出力と突き合わせること。`herdr config check` は TOML の構文しか見ず、
+# 未知の key も不正な theme 名も素通りさせるので検証には使えない。
+# 反映は `herdr server reload-config` か prefix+shift+r (switch 不要)。
+#
+# このファイルは repo の実ファイルへの out-of-store symlink で、herdr 自身が
+# 書き換えうる。詳細は nix/home/programs/herdr.nix のコメント参照。
+
+# 初回起動時の onboarding を抑止する。出すと選択結果が config.toml へ書き戻され、
+# symlink 越しに repo が汚れる (キーの省略では抑止できない)。
+onboarding = false
+
+[theme]
+# ghostty (tools/ghostty/config の `theme = tokyonight`) と系統を揃える。
+# default は catppuccin なので明示が要る。
+name = "tokyo-night"
+
+[experimental]
+# prefix mode 中だけ macOS の入力ソースを ASCII 配列へ退避し、抜けたら戻す。
+# Google 日本語入力が ON のままでも prefix (ctrl+b) が届く。
+switch_ascii_input_source_in_prefix = true
+
+# TUI が自前で cursor を描く pane の cursor 位置を外側 terminal へ露出させ、
+# Google IME の変換候補ウィンドウが入力位置に追従するようにする。
+reveal_hidden_cursor_for_cjk_ime = true
+
+# 上の露出を agent pane に限定する。空配列 (default) だと cursor を隠す TUI 全般
+# (vim の normal mode 等) で余計な cursor が二重に見える。
+cjk_ime_agents = ["claude", "codex"]

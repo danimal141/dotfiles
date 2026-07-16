@@ -331,8 +331,8 @@ LocalHostName` では新 host を検出できない。`setup.sh` は
 * nix-darwin (system 層、`flake.lock` で pin、`nix/darwin/` 配下に集約):
   * `nix/darwin/packages.nix` — Nix store 供給の CLI バイナリ (git / tmux /
     neovim / fzf / ripgrep / jq / gh / kubectl 系 / apm など)
-  * `nix/darwin/homebrew.nix` — tap-only formulae / GUI cask / macOS 統合
-    の強い formulae
+  * `nix/darwin/homebrew.nix` — tap-only formulae / nixpkgs 未収載の formulae
+    (herdr) / GUI cask / macOS 統合の強い formulae
   * `nix/darwin/macos-defaults.nix` — `system.defaults.*` (Dock / Finder /
     NSGlobalDomain (KeyRepeat / 自動補完 OFF 等) / trackpad / WindowManager
     / menuExtraClock / CustomUserPreferences で Kotoeri / 言語等)
@@ -369,6 +369,7 @@ LocalHostName` では新 host を検出できない。`setup.sh` は
     動的領域)
   * `~/.codex/{sessions,log.json}` (codex 動的領域)
   * `~/.apm/{apm_modules,config.json,.claude,.github}` (APM 動的領域)
+  * `~/.herdr/` (herdr の session persist / worktree checkout 動的領域)
   * `~/.local/share/nvim/{lazy,site/parser}/` (lazy.nvim と nvim-treesitter 動的領域)
   * `~/.gitconfig.local`, `~/.gitconfig.work` (secrets / org 名、user 手書き)
 
@@ -442,3 +443,43 @@ apm install --target claude,codex --global
 
 依存スキルを追加・削除する場合は `tools/apm/apm.yml` (repo 内、= `~/.apm/apm.yml`
 への symlink 元) を編集して `nix run .#switch`。
+
+## herdr の agent 連携 bootstrap
+
+`setup-mcp.sh` や Google IME の keymap import と同じく、`nix run .#switch` では
+自動実行されない手動 bootstrap。新しいマシンでは既に commit 済みの成果物が
+symlink 経由で渡るので、必要になるのは herdr 側の hook が更新されたとき
+(`herdr integration status` が古い version を報告したとき) だけ。
+
+生成物が `~/.claude/settings.json` に届くため、起動中の Claude Code に書き戻され
+て hook が消えないよう、Claude Code を全終了してから実行して即 commit する。
+
+```shell
+cd ~/Documents/dev/dotfiles
+
+herdr integration install claude
+herdr integration install codex
+
+# symlink が実ファイルに置き換わっていないか (置き換わると git diff が何も出さず、
+# 次の switch が clobber エラーで止まる)
+ls -la ~/.claude/settings.json ~/.codex/hooks.json ~/.codex/herdr-agent-state.sh
+
+git diff
+git add -A && git commit -m "feat(herdr): agent-state 統合の hook を更新"
+```
+
+hook script を repo へ `mv` する必要は無い。installer は書込先を open するだけで
+symlink を辿るため、script も登録先 JSON も symlink 越しに repo の実ファイルへ
+直接着地する。`~/.codex/herdr-agent-state.sh` は symlink のまま残るので、これを
+`mv` すると repo のファイルを symlink 自身で上書きして自己ループを作ってしまう。
+
+commit 前に 2 点を手で直す。
+
+* installer は command に絶対パス (`/Users/<user>/...`) を単一引用符付きで書く。
+  work と personal で user 名が違うのでそのままでは片方で hook が解決できない。
+  各ファイルの既存表記に合わせて `settings.json` は `"$HOME/..."`、`hooks.json`
+  は `~/...` へ正規化する (単一引用符のままだと shell が展開しない)。
+* installer の既存 entry 判定は command 文字列の完全一致なので、正規化済みの
+  entry は認識されず SessionStart entry が 2 個に増える。古い方 (絶対パスの
+  entry) を消す。同じ理由で `herdr integration uninstall` も正規化済み entry を
+  除去できないため、外すときは手で消す。

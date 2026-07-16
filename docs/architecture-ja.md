@@ -33,7 +33,7 @@
 `home.file` 経由で home-manager が配置するもの:
 
 * `.zshrc` `.tmux.conf` `.tmux_start_dir` `.markdownlint.jsonc` `.ctags.d/`
-* `.config/{git,google-ime,mise,nvim}/` (XDG)
+* `.config/{git,google-ime,herdr,mise,nvim}/` (XDG)
 * `.claude/` (CLAUDE.md / settings.json / hooks/ / rules/ /
   mcp-servers.json / skills/.gitignore + 動的領域 projects/ todos/
   shell-snapshots/ statsig/ ide/)
@@ -151,6 +151,36 @@ APM の install hook / skill 取り込み手順は
 secrets 注入経路全体の設計は
 [design-philosophy-ja.md#secrets-設計](design-philosophy-ja.md#secrets-設計)
 と [README-ja.md#シークレット注入](../README-ja.md#シークレット注入) 参照。
+
+## herdr
+
+AI coding agent 向けの terminal workspace manager。tmux の代替ではなく併用で、
+tmux prefix は `C-t`、herdr prefix は default の `ctrl+b` なので衝突しない。
+
+* binary は nixpkgs 未収載のため Homebrew 供給 (`nix/darwin/homebrew.nix`)。
+  更新は `brew upgrade herdr`。herdr は Homebrew 管理下の binary を検出すると
+  self-update を拒否して brew へ誘導するので、経路は 1 本に保たれる
+* `~/.config/herdr/config.toml` は `tools/herdr/config.toml` への out-of-store
+  symlink (配置パターン A)。`herdr server reload-config` / prefix+shift+r で
+  live reload されるので switch を挟まない
+* config.toml は herdr 自身が書き換えうる (onboarding の選択 /
+  `herdr channel set` / `herdr config reset-keys`)。symlink 先が repo の実
+  ファイルなので書込は repo に届く。config 冒頭の `onboarding = false` で自動
+  発火する経路だけは塞ぎ、残りは「叩かない」で運用する
+* CJK IME 対策として `[experimental]` の
+  `switch_ascii_input_source_in_prefix` (prefix mode 中だけ ASCII 配列へ退避) と
+  `reveal_hidden_cursor_for_cjk_ime` + `cjk_ime_agents` (Claude Code / codex の
+  TUI で変換候補ウィンドウを追従させる) を有効化している。後者の allow-list を
+  agent に絞るのは、全 pane が対象だと vim の normal mode 等で cursor が二重に
+  見えるため
+* agent-state 連携の hook は `herdr integration install claude` / `... codex` を
+  1 度だけ手で実行して生成し、成果物を commit する。activation hook にしないのは
+  生成物が tracked file で、commit 済みなら他マシンには symlink でそのまま渡る
+  ため (setup-mcp.sh / Google IME keymap と同じ手動 bootstrap)
+* 生成物の着地先は claude と codex で非対称。claude は `~/.claude/hooks` が
+  ディレクトリ symlink なので `tools/claude/hooks/` へ自動的に落ちるが、
+  `~/.codex` は mutable な実ディレクトリなので `codex.nix` が
+  `.codex/herdr-agent-state.sh` の symlink を明示的に宣言して tracked にする
 
 ## VSCode
 

@@ -2,12 +2,23 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "^Bash$",
         "hooks": [
           {
-            "type": "command",
             "command": "python3 ~/.codex/hooks/block-destructive-commands.py",
-            "statusMessage": "Checking command safety..."
+            "statusMessage": "Checking command safety...",
+            "type": "command"
+          }
+        ],
+        "matcher": "^Bash$"
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "command": "bash ~/.codex/herdr-agent-state.sh session",
+            "timeout": 10,
+            "type": "command"
           }
         ]
       }
