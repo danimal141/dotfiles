@@ -25,4 +25,12 @@
 {
   home.file.".config/herdr/config.toml".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/herdr/config.toml";
+
+  # herdr-start (tmux-start の herdr 版) と、それが読むディレクトリ一覧。
+  # tmux.nix と同じく script の executable bit は repo 側の file mode を使う。
+  home.file.".config/herdr/start_dir".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/herdr/start_dir";
+
+  home.file.".local/bin/herdr-start".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/herdr/bin/herdr-start";
 }

@@ -1,0 +1,16 @@
+# herdr-start で開くディレクトリ一覧 (default、全 PC 共通)。
+#
+# nix/home/programs/herdr.nix が `~/.config/herdr/start_dir` をこのファイルへの
+# out-of-store symlink として配置するため、`nvim ~/.config/herdr/start_dir` で
+# 開いて編集すれば即反映される。
+#
+# フォーマット:
+#   * 1行に 1 ディレクトリまたはグロブパターン
+#   * `#` で始まる行と空行は無視
+#
+# PC 固有の path が必要になったら tools/tmux/.tmux_start_dir と同じ方針で
+# 対応する (default 更新 / specialArgs / symlink 解除)。
+
+~/Documents/dev/*
+~/Documents/Obsidian/hideaki_ishii_main_vault
+~/Documents/Obsidian/workspace
