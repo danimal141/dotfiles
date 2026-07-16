@@ -1,0 +1,134 @@
+#!/bin/bash
+# herdr-start: 開発用 herdr workspace を起動 (tmux-start の herdr 版)
+#
+# 使い方:
+#   herdr-start [ディレクトリ]      # 単一ディレクトリで workspace 作成
+#   herdr-start                     # ~/.config/herdr/start_dir から一括起動
+#
+# 設定ファイル（引数なしの場合）:
+#   ~/.config/herdr/start_dir - 1行に1ディレクトリを記述
+#   コメント行（#で始まる）と空行は無視されます
+#   グロブパターン対応: ~/dev/* で dev配下の全ディレクトリが対象
+#
+# 各 workspace は tab 3 つで作成: editor (nvim 起動済) / terminal / server
+
+set -e
+
+CONFIG_FILE="$HOME/.config/herdr/start_dir"
+
+# herdr server が起動していなければ中断 (tmux と違い自動起動はしない)
+if ! herdr status server 2>/dev/null | grep -q '^status: running'; then
+  echo "Error: herdr server is not running"
+  echo "Start it first with: herdr"
+  exit 1
+fi
+
+# label が一致する workspace の ID を出力 (無ければ空)
+find_workspace() {
+  herdr workspace list \
+    | jq -r --arg label "$1" \
+        '[.result.workspaces[] | select(.label == $label)][0].workspace_id // empty'
+}
+
+# workspace 作成関数
+create_workspace() {
+  local dir="$1"
+  local name
+  name=$(basename "$dir")
+
+  # 既存 workspace があればスキップ
+  if [ -n "$(find_workspace "$name")" ]; then
+    echo "Workspace '$name' already exists"
+    return 0
+  fi
+
+  # 新規 workspace 作成。root tab を editor に改名し、生まれつきの shell pane に
+  # nvim を打ち込む (pane run = tmux send-keys 相当)
+  local created ws_id root_tab root_pane
+  created=$(herdr workspace create --cwd "$dir" --label "$name" --no-focus)
+  ws_id=$(jq -r '.result.workspace.workspace_id' <<< "$created")
+  root_tab=$(jq -r '.result.root_pane.tab_id' <<< "$created")
+  root_pane=$(jq -r '.result.root_pane.pane_id' <<< "$created")
+
+  herdr tab rename "$root_tab" "editor" > /dev/null
+  herdr pane run "$root_pane" "nvim"
+
+  herdr tab create --workspace "$ws_id" --cwd "$dir" --label "terminal" --no-focus > /dev/null
+  herdr tab create --workspace "$ws_id" --cwd "$dir" --label "server" --no-focus > /dev/null
+
+  echo "Created workspace '$name' ($ws_id)"
+}
+
+# tmux attach 相当。workspace を focus し、herdr の外なら client を起動して繋ぐ
+attach_workspace() {
+  local ws_id="$1"
+  herdr workspace focus "$ws_id" > /dev/null
+  if [ -z "${HERDR_ENV:-}" ]; then
+    exec herdr
+  fi
+}
+
+# 単一ディレクトリモード
+if [ $# -ge 1 ]; then
+  dir=$(cd "$1" && pwd)
+  name=$(basename "$dir")
+
+  ws_id=$(find_workspace "$name")
+  if [ -z "$ws_id" ]; then
+    create_workspace "$dir"
+    ws_id=$(find_workspace "$name")
+  fi
+
+  attach_workspace "$ws_id"
+  exit 0
+fi
+
+# 設定ファイルモード
+if [ ! -f "$CONFIG_FILE" ]; then
+  echo "Error: $CONFIG_FILE not found"
+  echo ""
+  echo "Or specify a directory: herdr-start ~/projects/myapp"
+  exit 1
+fi
+
+first_workspace=""
+
+while IFS= read -r line || [ -n "$line" ]; do
+  # 空行とコメント行をスキップ
+  [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
+
+  # ~ を展開
+  pattern="${line/#\~/$HOME}"
+
+  # グロブ展開（マッチしなければ空配列）
+  shopt -s nullglob
+  eval "dirs=($pattern)"
+  shopt -u nullglob
+
+  # 展開結果がなければスキップ
+  if [ ${#dirs[@]} -eq 0 ]; then
+    echo "Warning: No match for pattern: $line"
+    continue
+  fi
+
+  for dir in "${dirs[@]}"; do
+    # ディレクトリのみ対象
+    [ ! -d "$dir" ] && continue
+
+    create_workspace "$dir"
+
+    # 最初の workspace 名を記録
+    if [ -z "$first_workspace" ]; then
+      first_workspace=$(basename "$dir")
+    fi
+  done
+done < "$CONFIG_FILE"
+
+# 最初の workspace にフォーカス
+if [ -n "$first_workspace" ]; then
+  echo ""
+  echo "Focusing first workspace: $first_workspace"
+  attach_workspace "$(find_workspace "$first_workspace")"
+else
+  echo "No workspaces created"
+fi
