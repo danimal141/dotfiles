@@ -27,6 +27,7 @@
     ./programs/ctags.nix
     ./programs/vscode.nix
     ./programs/google-ime.nix
+    ./programs/session-picker.nix
   ];
 
   # nixpkgs unstable に対応する home-manager リリース。

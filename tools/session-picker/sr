@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+# sr: Claude Code / Codex のセッションをタイトルで検索して resume する fzf picker
+#
+#   sr      現在のディレクトリのセッションのみ表示
+#   sr -a   全プロジェクトのセッションを表示
+#
+# 索引は session-indexer.py が作る ~/.local/share/session-picker/index.jsonl。
+# 起動時に未索引セッションの catch-up をバックグラウンドで開始する
+# (新規分のタイトルは次回起動から反映される)。
+set -euo pipefail
+
+INDEX="$HOME/.local/share/session-picker/index.jsonl"
+
+all=0
+case "${1:-}" in
+-a | --all) all=1 ;;
+-h | --help)
+  sed -n '2,9p' "$0" | sed 's/^# \{0,1\}//'
+  exit 0
+  ;;
+"") ;;
+*)
+  echo "usage: sr [-a]" >&2
+  exit 1
+  ;;
+esac
+
+indexer=$(command -v session-indexer.py || true)
+if [[ -z "$indexer" ]]; then
+  indexer="$(cd "$(dirname "$0")" && pwd)/session-indexer.py"
+fi
+if [[ -x "$indexer" ]]; then
+  ("$indexer" --catch-up >/dev/null 2>&1 &)
+fi
+
+if [[ ! -f "$INDEX" ]]; then
+  echo "sr: 索引がまだありません。session-indexer.py --catch-up の完了を待って再実行してください" >&2
+  exit 1
+fi
+
+# id \t tool \t cwd \t 日付 \t dir名 \t タイトル (同一 id は最終行が勝つ)
+rows=$(jq -rs '
+  map(select(.id and .title))
+  | group_by(.id) | map(last)
+  | sort_by(.started) | reverse | .[]
+  | [.id, .tool, .cwd, (.started[:10] // "-"), ((.cwd // "") | split("/") | last // "-"), .title]
+  | @tsv' "$INDEX")
+
+if [[ "$all" -eq 0 ]]; then
+  rows=$(awk -F'\t' -v pwd="$PWD" '$3 == pwd' <<<"$rows")
+  if [[ -z "$rows" ]]; then
+    echo "sr: このディレクトリのセッションが索引にありません (-a で全プロジェクト表示)" >&2
+    exit 1
+  fi
+fi
+
+selected=$(fzf --delimiter='\t' --with-nth=4,2,5,6 --no-multi --reverse \
+  --header='enter: resume' \
+  --preview "jq -rs --arg id {1} 'map(select(.id == \$id)) | last | .cwd + \"\n\n\" + .preview' \"$INDEX\"" \
+  --preview-window=down,30%,wrap <<<"$rows") || exit 0
+
+id=$(cut -f1 <<<"$selected")
+tool=$(cut -f2 <<<"$selected")
+cwd=$(cut -f3 <<<"$selected")
+
+if [[ -d "$cwd" ]]; then
+  cd "$cwd"
+fi
+case "$tool" in
+claude) exec claude --resume "$id" ;;
+codex) exec codex resume "$id" ;;
+*)
+  echo "sr: unknown tool: $tool" >&2
+  exit 1
+  ;;
+esac

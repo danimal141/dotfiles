@@ -1,4 +1,27 @@
 {
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.claude/hooks/userpromptsubmit-session-title.sh\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "ExitPlanMode",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.claude/hooks/posttooluse-plan-title.sh\""
+          }
+        ]
+      }
+    ]
+  },
   "enabledPlugins": {
     "gog@gog-skills": true,
     "gws@gws-skills": true,
