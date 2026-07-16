@@ -65,6 +65,10 @@
     # * Ruby ecosystem            — ruby-build (mise 経由 Ruby のビルド helper)
     # * cloud / automation CLI     — googleworkspace-cli, ansible, azure-cli
     # * build dependency           — readline
+    # * nixpkgs 未収載             — herdr (AI coding agent 向け terminal workspace
+    #                              manager)。更新は `brew upgrade herdr` を使う。
+    #                              内蔵の `herdr update` は brew の Cellar を直接
+    #                              上書きして manifest と drift するため使わない
     #
     # codex は OpenAI 公式 native installer (~/.local/bin/codex) に移行したため
     # brews から外した (詳細は nix/home/programs/codex.nix)。cleanup="none" の
@@ -78,6 +82,7 @@
       "ffmpeg"
       "fujiwara/tap/tfstate-lookup"
       "googleworkspace-cli"
+      "herdr"
       "im-select"
       "imagemagick"
       "k1LoW/tap/tbls"
