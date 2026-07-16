@@ -66,9 +66,9 @@
     # * cloud / automation CLI     — googleworkspace-cli, ansible, azure-cli
     # * build dependency           — readline
     # * nixpkgs 未収載             — herdr (AI coding agent 向け terminal workspace
-    #                              manager)。更新は `brew upgrade herdr` を使う。
-    #                              内蔵の `herdr update` は brew の Cellar を直接
-    #                              上書きして manifest と drift するため使わない
+    #                              manager)。更新は `brew upgrade herdr`
+    #                              (herdr は Homebrew 管理下の binary を検出して
+    #                              self-update を拒否し brew へ誘導する)
     #
     # codex は OpenAI 公式 native installer (~/.local/bin/codex) に移行したため
     # brews から外した (詳細は nix/home/programs/codex.nix)。cleanup="none" の

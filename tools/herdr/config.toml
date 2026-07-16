@@ -1,5 +1,7 @@
 # herdr の設定。default から変える分だけを置く。
-# 全 key の解説付き default は `herdr --default-config`、検証は `herdr config check`。
+# 全 key の解説付き default は `herdr --default-config` で出る。key を足すときは
+# 必ずその出力と突き合わせること。`herdr config check` は TOML の構文しか見ず、
+# 未知の key も不正な theme 名も素通りさせるので検証には使えない。
 # 反映は `herdr server reload-config` か prefix+shift+r (switch 不要)。
 #
 # このファイルは repo の実ファイルへの out-of-store symlink で、herdr 自身が

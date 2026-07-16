@@ -42,8 +42,8 @@ raw symlink vs declarative module (`programs.<tool>.{enable,settings}`)
   (`~/.config/herdr/config.toml` へ symlink)。live reload されるので switch は
   不要 (`herdr server reload-config` か prefix+shift+r)。`herdr channel set` /
   `herdr config reset-keys` は config.toml を書き換えて repo を直接汚すので
-  使わない。更新は `brew upgrade herdr` (内蔵の `herdr update` は brew の
-  Cellar を上書きして drift する)。なお `herdr config check` は TOML の構文しか
+  使わない。更新は `brew upgrade herdr` (herdr は Homebrew 管理下の binary を
+  検出して self-update を拒否する)。なお `herdr config check` は TOML の構文しか
   見ず未知キーや不正な theme 名を検出しないため、キー追加時は
   `herdr --default-config` と突き合わせる
 * herdr の agent-state 連携は `herdr integration install claude` / `... codex`

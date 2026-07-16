@@ -1,43 +1,43 @@
 {
-  "advisorModel": "fable",
-  "enabledPlugins": {
-    "gog@gog-skills": true,
-    "gopls-lsp@claude-plugins-official": true,
-    "gws@gws-skills": true,
-    "pyright-lsp@claude-plugins-official": true,
-    "ruby-lsp@claude-plugins-official": true,
-    "rust-analyzer-lsp@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true
-  },
   "env": {
     "CLAUDE_CODE_ENABLE_EXPERIMENTAL_ADVISOR_TOOL": "1"
-  },
-  "extraKnownMarketplaces": {
-    "gog-skills": {
-      "source": {
-        "path": "/Library/Application Support/ClaudeCode/marketplace/gog-skills",
-        "source": "directory"
-      }
-    },
-    "gws-skills": {
-      "source": {
-        "path": "/Library/Application Support/ClaudeCode/marketplace/gws-skills",
-        "source": "directory"
-      }
-    }
   },
   "hooks": {
     "SessionStart": [
       {
+        "matcher": "*",
         "hooks": [
           {
+            "type": "command",
             "command": "bash \"$HOME/.claude/hooks/herdr-agent-state.sh\" session",
-            "timeout": 10,
-            "type": "command"
+            "timeout": 10
           }
-        ],
-        "matcher": "*"
+        ]
       }
     ]
-  }
+  },
+  "enabledPlugins": {
+    "gog@gog-skills": true,
+    "gws@gws-skills": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "gopls-lsp@claude-plugins-official": true,
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true,
+    "ruby-lsp@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "gws-skills": {
+      "source": {
+        "source": "directory",
+        "path": "/Library/Application Support/ClaudeCode/marketplace/gws-skills"
+      }
+    },
+    "gog-skills": {
+      "source": {
+        "source": "directory",
+        "path": "/Library/Application Support/ClaudeCode/marketplace/gog-skills"
+      }
+    }
+  },
+  "advisorModel": "fable"
 }

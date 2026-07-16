@@ -462,17 +462,24 @@ herdr integration install codex
 
 # symlink が実ファイルに置き換わっていないか (置き換わると git diff が何も出さず、
 # 次の switch が clobber エラーで止まる)
-ls -la ~/.claude/settings.json ~/.codex/hooks.json
+ls -la ~/.claude/settings.json ~/.codex/hooks.json ~/.codex/herdr-agent-state.sh
 
-# codex の hook script は ~/.codex 直下 (mutable 領域) に落ちるので repo へ移す
-mv ~/.codex/herdr-agent-state.sh tools/codex/herdr-agent-state.sh
-chmod +x tools/codex/herdr-agent-state.sh
-
-git status
+git diff
 git add -A && git commit -m "feat(herdr): agent-state 統合の hook を更新"
 ```
 
-installer は command に絶対パス (`/Users/<user>/...`) を書くので、work と personal
-で user 名が違う以上そのままでは片方で壊れる。各ファイルの既存表記に合わせて
-`settings.json` は `"$HOME/..."`、`hooks.json` は `~/...` へ正規化する
-(installer が使う単一引用符は shell が展開しないので使わない)。
+hook script を repo へ `mv` する必要は無い。installer は書込先を open するだけで
+symlink を辿るため、script も登録先 JSON も symlink 越しに repo の実ファイルへ
+直接着地する。`~/.codex/herdr-agent-state.sh` は symlink のまま残るので、これを
+`mv` すると repo のファイルを symlink 自身で上書きして自己ループを作ってしまう。
+
+commit 前に 2 点を手で直す。
+
+* installer は command に絶対パス (`/Users/<user>/...`) を単一引用符付きで書く。
+  work と personal で user 名が違うのでそのままでは片方で hook が解決できない。
+  各ファイルの既存表記に合わせて `settings.json` は `"$HOME/..."`、`hooks.json`
+  は `~/...` へ正規化する (単一引用符のままだと shell が展開しない)。
+* installer の既存 entry 判定は command 文字列の完全一致なので、正規化済みの
+  entry は認識されず SessionStart entry が 2 個に増える。古い方 (絶対パスの
+  entry) を消す。同じ理由で `herdr integration uninstall` も正規化済み entry を
+  除去できないため、外すときは手で消す。
