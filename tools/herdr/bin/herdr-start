@@ -10,7 +10,7 @@
 #   コメント行（#で始まる）と空行は無視されます
 #   グロブパターン対応: ~/dev/* で dev配下の全ディレクトリが対象
 #
-# 各 workspace は tab 3 つで作成: editor (nvim 起動済) / terminal / server
+# 各 workspace は terminal tab 1 つで作成
 
 set -e
 
@@ -42,19 +42,14 @@ create_workspace() {
     return 0
   fi
 
-  # 新規 workspace 作成。root tab を editor に改名し、生まれつきの shell pane に
-  # nvim を打ち込む (pane run = tmux send-keys 相当)
-  local created ws_id root_tab root_pane
+  # 新規 workspace 作成。生まれつきの root tab をそのまま唯一の terminal とし、
+  # 意味のある label を残すため terminal に改名するだけ
+  local created ws_id root_tab
   created=$(herdr workspace create --cwd "$dir" --label "$name" --no-focus)
   ws_id=$(jq -r '.result.workspace.workspace_id' <<< "$created")
   root_tab=$(jq -r '.result.root_pane.tab_id' <<< "$created")
-  root_pane=$(jq -r '.result.root_pane.pane_id' <<< "$created")
 
-  herdr tab rename "$root_tab" "editor" > /dev/null
-  herdr pane run "$root_pane" "nvim"
-
-  herdr tab create --workspace "$ws_id" --cwd "$dir" --label "terminal" --no-focus > /dev/null
-  herdr tab create --workspace "$ws_id" --cwd "$dir" --label "server" --no-focus > /dev/null
+  herdr tab rename "$root_tab" "terminal" > /dev/null
 
   echo "Created workspace '$name' ($ws_id)"
 }
