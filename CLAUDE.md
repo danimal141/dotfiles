@@ -38,6 +38,20 @@ raw symlink vs declarative module (`programs.<tool>.{enable,settings}`)
   config1.db = binary protobuf に keymap を畳み込むため watch path 無し)
 * `tools/apm/apm.yml` を編集したら `nix run .#switch` で sha256 比較
   hook が発火 (冪等)
+* herdr の設定は `tools/herdr/config.toml` が source of truth
+  (`~/.config/herdr/config.toml` へ symlink)。live reload されるので switch は
+  不要 (`herdr server reload-config` か prefix+shift+r)。`herdr channel set` /
+  `herdr config reset-keys` は config.toml を書き換えて repo を直接汚すので
+  使わない。更新は `brew upgrade herdr` (内蔵の `herdr update` は brew の
+  Cellar を上書きして drift する)。なお `herdr config check` は TOML の構文しか
+  見ず未知キーや不正な theme 名を検出しないため、キー追加時は
+  `herdr --default-config` と突き合わせる
+* herdr の agent-state 連携は `herdr integration install claude` / `... codex`
+  の手動 bootstrap。Claude Code を全終了してから実行し、`git diff` で確認して
+  即 commit する (起動中の Claude Code は settings.json を書き戻して外部追加の
+  hook を落とす)。生成物は tools/claude/hooks/ と tools/codex/ に落ちて tracked
+  になる。installer は絶対パスを書くので `$HOME` / `~` に正規化する (work と
+  personal で user 名が違う)。追随は `herdr integration status`
 * Neovim の LSP は各 server に `cmd` を明示し、PATH 上に binary が無い
   場合は enable を skip する設計 (`tools/nvim/lua/plugins/lsp.lua`)
 

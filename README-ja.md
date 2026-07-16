@@ -331,8 +331,8 @@ LocalHostName` では新 host を検出できない。`setup.sh` は
 * nix-darwin (system 層、`flake.lock` で pin、`nix/darwin/` 配下に集約):
   * `nix/darwin/packages.nix` — Nix store 供給の CLI バイナリ (git / tmux /
     neovim / fzf / ripgrep / jq / gh / kubectl 系 / apm など)
-  * `nix/darwin/homebrew.nix` — tap-only formulae / GUI cask / macOS 統合
-    の強い formulae
+  * `nix/darwin/homebrew.nix` — tap-only formulae / nixpkgs 未収載の formulae
+    (herdr) / GUI cask / macOS 統合の強い formulae
   * `nix/darwin/macos-defaults.nix` — `system.defaults.*` (Dock / Finder /
     NSGlobalDomain (KeyRepeat / 自動補完 OFF 等) / trackpad / WindowManager
     / menuExtraClock / CustomUserPreferences で Kotoeri / 言語等)
@@ -369,6 +369,7 @@ LocalHostName` では新 host を検出できない。`setup.sh` は
     動的領域)
   * `~/.codex/{sessions,log.json}` (codex 動的領域)
   * `~/.apm/{apm_modules,config.json,.claude,.github}` (APM 動的領域)
+  * `~/.herdr/` (herdr の session persist / worktree checkout 動的領域)
   * `~/.local/share/nvim/{lazy,site/parser}/` (lazy.nvim と nvim-treesitter 動的領域)
   * `~/.gitconfig.local`, `~/.gitconfig.work` (secrets / org 名、user 手書き)
 
@@ -442,3 +443,36 @@ apm install --target claude,codex --global
 
 依存スキルを追加・削除する場合は `tools/apm/apm.yml` (repo 内、= `~/.apm/apm.yml`
 への symlink 元) を編集して `nix run .#switch`。
+
+## herdr の agent 連携 bootstrap
+
+`setup-mcp.sh` や Google IME の keymap import と同じく、`nix run .#switch` では
+自動実行されない手動 bootstrap。新しいマシンでは既に commit 済みの成果物が
+symlink 経由で渡るので、必要になるのは herdr 側の hook が更新されたとき
+(`herdr integration status` が古い version を報告したとき) だけ。
+
+生成物が `~/.claude/settings.json` に届くため、起動中の Claude Code に書き戻され
+て hook が消えないよう、Claude Code を全終了してから実行して即 commit する。
+
+```shell
+cd ~/Documents/dev/dotfiles
+
+herdr integration install claude
+herdr integration install codex
+
+# symlink が実ファイルに置き換わっていないか (置き換わると git diff が何も出さず、
+# 次の switch が clobber エラーで止まる)
+ls -la ~/.claude/settings.json ~/.codex/hooks.json
+
+# codex の hook script は ~/.codex 直下 (mutable 領域) に落ちるので repo へ移す
+mv ~/.codex/herdr-agent-state.sh tools/codex/herdr-agent-state.sh
+chmod +x tools/codex/herdr-agent-state.sh
+
+git status
+git add -A && git commit -m "feat(herdr): agent-state 統合の hook を更新"
+```
+
+installer は command に絶対パス (`/Users/<user>/...`) を書くので、work と personal
+で user 名が違う以上そのままでは片方で壊れる。各ファイルの既存表記に合わせて
+`settings.json` は `"$HOME/..."`、`hooks.json` は `~/...` へ正規化する
+(installer が使う単一引用符は shell が展開しないので使わない)。
