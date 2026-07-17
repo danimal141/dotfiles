@@ -56,7 +56,7 @@ raw symlink vs declarative module (`programs.<tool>.{enable,settings}`)
   場合は enable を skip する設計 (`tools/nvim/lua/plugins/lsp.lua`)
 * セッション自動命名 hook (`tools/claude/hooks/session-namer.py` /
   `tools/codex/hooks/session-namer.py`) は Claude の transcript jsonl
-  (`agent-name` レコード) と Codex の `~/.codex/state_N.sqlite`
+  (`ai-title` レコード) と Codex の `~/.codex/state_N.sqlite`
   (`threads.title`) という内部フォーマットに依存する (公式 API 無し、
   fail-open)。ツール更新で命名されなくなったら書き込み先を再調査する。
   タイトル生成コマンドは env `SESSION_NAMER_CMD` で差し替え可能
