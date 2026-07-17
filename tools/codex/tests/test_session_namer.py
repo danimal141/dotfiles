@@ -141,6 +141,14 @@ class ClaudeTranscriptTest(unittest.TestCase):
         ]
         self.assertIsNone(self.namer.build_context(lines))
 
+    def test_title_record_is_native_ai_title_format(self):
+        line = self.namer.title_record("sid", "タイトル")
+        self.assertEqual(
+            json.loads(line),
+            {"type": "ai-title", "aiTitle": "タイトル", "sessionId": "sid"},
+        )
+        self.assertIn('"type":"ai-title"', line)
+
     def test_has_agent_name(self):
         named = [claude_user("x"), '{"type":"agent-name","agentName":"n","sessionId":"s"}']
         self.assertTrue(self.namer.has_agent_name(named))

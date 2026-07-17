@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """SessionEnd hook: transcript を要約した日本語タイトルをセッション名として付ける。
 
-Claude Code はセッション名を transcript jsonl 内の
-{"type":"agent-name","agentName":...,"sessionId":...} レコードで永続化する
-(内部フォーマット、公式 API 無し)。壊れた場合は名前が付かなくなるだけに
-なるよう、全経路 fail-open にする。
+resume picker のタイトルは transcript jsonl 内の
+{"type":"ai-title","aiTitle":...,"sessionId":...} レコード (最後のものが有効)。
+/rename や plan 承認による明示的な名前は agent-name レコードに残るため、
+それがあるセッションは上書きしない (内部フォーマット、公式 API 無し)。
+壊れた場合は名前が付かなくなるだけになるよう、全経路 fail-open にする。
 """
 
 import json
@@ -65,6 +66,11 @@ def _iter_texts(lines):
         text = _message_text(obj).strip()
         if text:
             yield obj["type"], text
+
+
+def title_record(session_id, title):
+    record = {"type": "ai-title", "aiTitle": title, "sessionId": session_id}
+    return json.dumps(record, ensure_ascii=False, separators=(",", ":"))
 
 
 def has_agent_name(lines):
@@ -152,10 +158,9 @@ def main():
         return 0
     title = generate_title(context)
     if title:
-        record = {"type": "agent-name", "agentName": title, "sessionId": session_id}
         try:
             with open(transcript_path, "a", encoding="utf-8") as f:
-                f.write(json.dumps(record, ensure_ascii=False) + "\n")
+                f.write(title_record(session_id, title) + "\n")
         except OSError:
             pass
     os._exit(0)
