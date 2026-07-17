@@ -22,6 +22,17 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "command": "python3 ~/.codex/hooks/session-namer.py",
+            "timeout": 10,
+            "type": "command"
+          }
+        ]
+      }
     ]
   }
 }

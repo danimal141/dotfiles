@@ -14,6 +14,18 @@
           }
         ]
       }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "clear|logout|other",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$HOME/.claude/hooks/session-namer.py\"",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   },
   "enabledPlugins": {
@@ -39,5 +51,6 @@
       }
     }
   },
-  "advisorModel": "fable"
+  "advisorModel": "fable",
+  "model": "fable"
 }

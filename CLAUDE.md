@@ -54,6 +54,12 @@ raw symlink vs declarative module (`programs.<tool>.{enable,settings}`)
   personal で user 名が違う)。追随は `herdr integration status`
 * Neovim の LSP は各 server に `cmd` を明示し、PATH 上に binary が無い
   場合は enable を skip する設計 (`tools/nvim/lua/plugins/lsp.lua`)
+* セッション自動命名 hook (`tools/claude/hooks/session-namer.py` /
+  `tools/codex/hooks/session-namer.py`) は Claude の transcript jsonl
+  (`agent-name` レコード) と Codex の `~/.codex/state_N.sqlite`
+  (`threads.title`) という内部フォーマットに依存する (公式 API 無し、
+  fail-open)。ツール更新で命名されなくなったら書き込み先を再調査する。
+  タイトル生成コマンドは env `SESSION_NAMER_CMD` で差し替え可能
 
 ## ドキュメント
 
