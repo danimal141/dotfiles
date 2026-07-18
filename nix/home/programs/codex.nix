@@ -60,11 +60,11 @@ let
   # codexConfig hook が mutable な実ファイルとして配置する。ベースは
   # ryoppippi/dotfiles の codex.nix。
   settings = {
-    model = "gpt-5.6-sol medium";
+    model = "gpt-5.6-sol";
     approval_policy = "on-request";
     approvals_reviewer = "auto_review";
     allow_login_shell = true;
-    model_reasoning_effort = "high";
+    model_reasoning_effort = "medium";
     web_search_request = true;
     personality = "pragmatic";
     service_tier = "standard";
@@ -107,6 +107,8 @@ in
     config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/codex/hooks.json";
   home.file.".codex/hooks".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/codex/hooks";
+  home.file.".codex/scripts".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/codex/scripts";
   home.file.".codex/herdr-agent-state.sh".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/codex/herdr-agent-state.sh";
   home.file.".codex/rules/destructive.rules".source =
