@@ -138,10 +138,15 @@ flowchart LR
 ### Activation firing order at apply time
 
 Firing order and scope of the hooks that run during
-`darwin-rebuild`'s activation phase. Note that `launchd.user.agents` is
-not an activation hook — apply only drops a plist under
-`~/Library/LaunchAgents/`, and the actual command fires at the next
-login (an asynchronous path).
+`darwin-rebuild`'s activation phase. `launchd.user.agents` is not the
+activation hook itself, but apply drops a plist under
+`~/Library/LaunchAgents/` and nix-darwin immediately `launchctl`-loads it.
+An agent with `RunAtLoad = true` starts at switch time, not the next login
+(e.g. `herdr-server` brings the server up the moment you switch, so a
+pre-existing server holding the socket can collide). An agent without a
+start condition (`RunAtLoad` / `KeepAlive` / a socket, etc.) does not run
+when loaded — login only reads the plist — and stays dormant until the
+trigger declared in its plist is met.
 
 ```mermaid
 flowchart TB
@@ -162,7 +167,7 @@ flowchart TB
 
     Sys --> SysHook["postActivation:<br/>AppleSymbolicHotKeys dict-add"]
     Home --> HomeHook["installers / generated config copies /<br/>hash-gated sync hooks"]
-    LA -.->|"fires at next login"| LAHook["remap-caps-lock:<br/>reapply CapsLock→Control via hidutil"]
+    LA -.->|"RunAtLoad: at switch; else next login"| LAHook["remap-caps-lock:<br/>reapply CapsLock→Control via hidutil"]
 ```
 
 ## Directory layout
@@ -173,7 +178,7 @@ dotfiles/
 ├── flake.lock
 ├── nix/
 │   ├── darwin/                    # nix-darwin (system layer)
-│   │   ├── default.nix            # imports the 6 files below
+│   │   ├── default.nix            # imports the 7 files below
 │   │   ├── macos-defaults.nix     # system.defaults.* (Dock / Finder /
 │   │   │                           # NSGlobalDomain / trackpad / WindowManager
 │   │   │                           # / menuExtraClock / CustomUserPreferences)
@@ -182,6 +187,8 @@ dotfiles/
 │   │   │                           # reapply at login) / system.activationScripts.
 │   │   │                           # postActivation (targeted update of
 │   │   │                           # AppleSymbolicHotKeys)
+│   │   ├── herdr.nix              # launchd.user.agents.herdr-server
+│   │   │                           # (server kept alive: KeepAlive + RunAtLoad)
 │   │   ├── nix-daemon.nix         # nix.settings + nix.gc +
 │   │   │                           # environment.variables (SSL CA bundle etc.)
 │   │   ├── system.nix             # primaryUser / users.users / programs.zsh

@@ -483,3 +483,21 @@ commit 前に 2 点を手で直す。
   entry は認識されず SessionStart entry が 2 個に増える。古い方 (絶対パスの
   entry) を消す。同じ理由で `herdr integration uninstall` も正規化済み entry を
   除去できないため、外すときは手で消す。
+
+## herdr server の常駐 (LaunchAgent)
+
+herdr server は `nix/darwin/herdr.nix` の `launchd.user.agents.herdr-server` で
+login 時常駐 (KeepAlive + RunAtLoad)。boot 直後に server が居らず初回
+`herdr-start` が `detached from server` を出す問題への対処。
+
+* `brew services start herdr` は使わない。launchd plist が二重化して同じ socket
+  を奪い合い server が二重起動する。常駐は上記 agent に一本化する。
+* 初回だけ手動 bootstrap が要る。既に `herdr` / `herdr-start` が立てた ad-hoc の
+  server が socket を握っていると、switch 時に agent 側 server が bind 失敗して
+  KeepAlive で再起動ループになる。先に `herdr server stop` で止めてから
+  `nix run .#switch` する (nix-darwin は switch 時に agent を即 load するため、
+  次回 login を待たず server が上がる)。
+* 更新は `brew upgrade herdr` の後に `herdr server stop` まで行う。upgrade は
+  binary を差し替えるだけで実行中の旧 server は残り、新 CLI と protocol 非互換に
+  なりうる。stop すると KeepAlive が新 binary で server を上げ直すので、
+  `herdr status server` の version で反映を確認する。

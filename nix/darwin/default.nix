@@ -10,6 +10,8 @@
 #     CustomUserPreferences)
 #   * `keyboard.nix` — `system.keyboard` の HID remap、login 時に再適用する
 #     LaunchAgent、`AppleSymbolicHotKeys` の targeted update
+#   * `herdr.nix` — herdr server を常駐させる `launchd.user.agents.herdr-server`
+#     (boot 直後の `detached from server` を防ぐ。`brew services` 併用禁止)
 #   * `nix-daemon.nix` — `nix.settings` / `nix.gc` / Nix daemon が見える
 #     `environment.variables` (HOMEBREW_FORBIDDEN_FORMULAE / NIX_SSL_CERT_FILE)
 #   * `system.nix` — `system.primaryUser` / `users.users` / `programs.zsh.enable
@@ -25,6 +27,7 @@
   imports = [
     ./macos-defaults.nix
     ./keyboard.nix
+    ./herdr.nix
     ./nix-daemon.nix
     ./system.nix
     ./packages.nix

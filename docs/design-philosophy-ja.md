@@ -127,9 +127,13 @@ flowchart LR
 ### apply 時の activation 発火順
 
 `darwin-rebuild` の activation phase で走る hook の発火順とスコープ。
-LaunchAgent (`launchd.user.agents`) は activation hook ではなく、apply 時に
-`~/Library/LaunchAgents/` 配下に plist を配置するだけで、実際の発火は
-次回 login 時という非同期経路である点に注意。
+LaunchAgent (`launchd.user.agents`) は activation hook 本体ではないが、apply 時に
+`~/Library/LaunchAgents/` 配下へ plist を配置したうえで nix-darwin が `launchctl`
+で即 load する。`RunAtLoad = true` の agent は次回 login を待たず switch 時点で
+起動する (例: `herdr-server` は switch した瞬間に server が上がる。このため
+socket を握る既存 server がいると衝突しうる点に注意)。`RunAtLoad` / `KeepAlive` /
+socket などの起動条件を持たない agent は、load されても (login でも plist が
+読まれるだけで) 実行されず、plist に書いたトリガが満たされるまで発火しない。
 
 ```mermaid
 flowchart TB
@@ -150,7 +154,7 @@ flowchart TB
 
     Sys --> SysHook["postActivation:<br/>AppleSymbolicHotKeys dict-add"]
     Home --> HomeHook["installer / generated config copy /<br/>hash-gated sync hook"]
-    LA -.->|"次回 login 時に発火"| LAHook["remap-caps-lock:<br/>hidutil で CapsLock→Control 再適用"]
+    LA -.->|"RunAtLoad: switch 時 / それ以外: 次回 login"| LAHook["remap-caps-lock:<br/>hidutil で CapsLock→Control 再適用"]
 ```
 
 ## ディレクトリ構造
@@ -161,7 +165,7 @@ dotfiles/
 ├── flake.lock
 ├── nix/
 │   ├── darwin/                    # nix-darwin (system 層)
-│   │   ├── default.nix            # 配下の 6 ファイルを imports
+│   │   ├── default.nix            # 配下の 7 ファイルを imports
 │   │   ├── macos-defaults.nix     # system.defaults.* (Dock / Finder /
 │   │   │                           # NSGlobalDomain / trackpad / WindowManager
 │   │   │                           # / menuExtraClock / CustomUserPreferences)
@@ -170,6 +174,8 @@ dotfiles/
 │   │   │                           # hidutil 再適用) / system.activationScripts.
 │   │   │                           # postActivation (AppleSymbolicHotKeys の
 │   │   │                           # targeted update)
+│   │   ├── herdr.nix              # launchd.user.agents.herdr-server
+│   │   │                           # (KeepAlive + RunAtLoad で server 常駐)
 │   │   ├── nix-daemon.nix         # nix.settings + nix.gc +
 │   │   │                           # environment.variables (SSL CA bundle 等)
 │   │   ├── system.nix             # primaryUser / users.users / programs.zsh
