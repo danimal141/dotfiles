@@ -1,7 +1,4 @@
 {
-  "env": {
-    "CLAUDE_CODE_ENABLE_EXPERIMENTAL_ADVISOR_TOOL": "1"
-  },
   "hooks": {
     "SessionStart": [
       {
@@ -51,6 +48,5 @@
       }
     }
   },
-  "advisorModel": "fable",
-  "model": "fable"
+  "model": "opus"
 }
