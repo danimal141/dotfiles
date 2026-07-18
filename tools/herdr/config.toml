@@ -31,6 +31,10 @@ detach = "prefix+d"                # herdr default: prefix+q
 rename_tab = "prefix+comma"        # herdr default: prefix+shift+t
 # close tab/window: tmux は prefix &
 close_tab = "prefix+ampersand"     # herdr default: prefix+shift+x
+# navigate mode (prefix+w) での workspace 上下移動に ctrl+p/n を追加。
+# 矢印キーは常に有効なので併用できる。
+navigate_workspace_up = "ctrl+p"
+navigate_workspace_down = "ctrl+n"
 
 [theme]
 # ghostty (tools/ghostty/config の `theme = tokyonight`) と系統を揃える。
