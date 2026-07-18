@@ -11,17 +11,50 @@
 #   グロブパターン対応: ~/dev/* で dev配下の全ディレクトリが対象
 #
 # 各 workspace は terminal tab 1 つで作成
+#
+# named session "herdr-start" を使用。default session とは独立した workspace 群を管理する。
 
 set -e
 
+SESSION_NAME="herdr-start"
 CONFIG_FILE="$HOME/.config/herdr/start_dir"
 
-# herdr server が起動していなければ中断 (tmux と違い自動起動はしない)
-if ! herdr status server 2>/dev/null | grep -q '^status: running'; then
-  echo "Error: herdr server is not running"
-  echo "Start it first with: herdr"
+# named session のサーバーを確保し、HERDR_SOCKET_PATH を export する
+ensure_session_server() {
+  local socket_path
+  socket_path=$(herdr session list --json 2>/dev/null \
+    | jq -r --arg name "$SESSION_NAME" \
+        '.sessions[] | select(.name == $name and .running) | .socket_path // empty')
+
+  if [ -n "$socket_path" ]; then
+    export HERDR_SOCKET_PATH="$socket_path"
+    return 0
+  fi
+
+  # session server が居ない場合、headless で起動して socket を待つ
+  HERDR_SESSION="$SESSION_NAME" herdr server &
+  local server_pid=$!
+
+  # socket が現れるまで最大 5 秒待つ
+  local tries=0
+  while [ $tries -lt 50 ]; do
+    socket_path=$(herdr session list --json 2>/dev/null \
+      | jq -r --arg name "$SESSION_NAME" \
+          '.sessions[] | select(.name == $name and .running) | .socket_path // empty')
+    if [ -n "$socket_path" ]; then
+      export HERDR_SOCKET_PATH="$socket_path"
+      return 0
+    fi
+    sleep 0.1
+    tries=$((tries + 1))
+  done
+
+  echo "Error: failed to start herdr session '$SESSION_NAME'"
+  kill "$server_pid" 2>/dev/null || true
   exit 1
-fi
+}
+
+ensure_session_server
 
 # label が一致する workspace の ID を出力 (無ければ空)
 find_workspace() {
@@ -59,7 +92,7 @@ attach_workspace() {
   local ws_id="$1"
   herdr workspace focus "$ws_id" > /dev/null
   if [ -z "${HERDR_ENV:-}" ]; then
-    exec herdr
+    exec herdr --session "$SESSION_NAME"
   fi
 }
 
