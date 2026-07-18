@@ -68,9 +68,14 @@ def _iter_texts(lines):
             yield obj["type"], text
 
 
-def title_record(session_id, title):
-    record = {"type": "ai-title", "aiTitle": title, "sessionId": session_id}
-    return json.dumps(record, ensure_ascii=False, separators=(",", ":"))
+def title_records(session_id, title):
+    return "\n".join(
+        json.dumps(r, ensure_ascii=False, separators=(",", ":"))
+        for r in [
+            {"type": "agent-name", "agentName": title, "sessionId": session_id},
+            {"type": "ai-title", "aiTitle": title, "sessionId": session_id},
+        ]
+    )
 
 
 def has_agent_name(lines):
@@ -160,7 +165,7 @@ def main():
     if title:
         try:
             with open(transcript_path, "a", encoding="utf-8") as f:
-                f.write(title_record(session_id, title) + "\n")
+                f.write(title_records(session_id, title) + "\n")
         except OSError:
             pass
     os._exit(0)

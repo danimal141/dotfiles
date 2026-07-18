@@ -10,6 +10,7 @@ from unittest import mock
 
 HOOKS_DIR = Path(__file__).parent.parent / "hooks"
 CLAUDE_HOOKS_DIR = Path(__file__).parent.parent.parent / "claude" / "hooks"
+CODEX_SCRIPTS_DIR = Path(__file__).parent.parent / "scripts"
 
 
 def load_module(name, path):
@@ -25,6 +26,10 @@ def load_codex_namer():
 
 def load_claude_namer():
     return load_module("claude_session_namer", CLAUDE_HOOKS_DIR / "session-namer.py")
+
+
+def load_codex_renamer():
+    return load_module("codex_session_renamer", CODEX_SCRIPTS_DIR / "session-renamer.py")
 
 
 def claude_user(text, sidechain=False):
@@ -141,13 +146,18 @@ class ClaudeTranscriptTest(unittest.TestCase):
         ]
         self.assertIsNone(self.namer.build_context(lines))
 
-    def test_title_record_is_native_ai_title_format(self):
-        line = self.namer.title_record("sid", "タイトル")
+    def test_title_records_contain_agent_name_and_ai_title(self):
+        block = self.namer.title_records("sid", "タイトル")
+        lines = block.strip().split("\n")
+        self.assertEqual(len(lines), 2)
         self.assertEqual(
-            json.loads(line),
+            json.loads(lines[0]),
+            {"type": "agent-name", "agentName": "タイトル", "sessionId": "sid"},
+        )
+        self.assertEqual(
+            json.loads(lines[1]),
             {"type": "ai-title", "aiTitle": "タイトル", "sessionId": "sid"},
         )
-        self.assertIn('"type":"ai-title"', line)
 
     def test_has_agent_name(self):
         named = [claude_user("x"), '{"type":"agent-name","agentName":"n","sessionId":"s"}']
@@ -193,6 +203,44 @@ class CodexRolloutTest(unittest.TestCase):
     def test_find_state_db_none_when_missing(self):
         with tempfile.TemporaryDirectory() as tmp:
             self.assertIsNone(self.namer.find_state_db(Path(tmp)))
+
+
+class CodexRenamerTest(unittest.TestCase):
+    def setUp(self):
+        self.renamer = load_codex_renamer()
+
+    def test_japanese_first_message_is_rename_target(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            rollout = root / "rollout.jsonl"
+            rollout.write_text(
+                "\n".join(
+                    [
+                        codex_event("user_message", "未コミット差分をレビューして"),
+                        codex_event("agent_message", "確認します"),
+                        codex_event("user_message", "変更対応して"),
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            db_path = root / "state_1.sqlite"
+            conn = self.renamer.sqlite3.connect(db_path)
+            conn.execute(
+                "CREATE TABLE threads (id TEXT, rollout_path TEXT, title TEXT, "
+                "first_user_message TEXT, archived INTEGER, source TEXT)"
+            )
+            first_message = "未コミット差分をレビューして"
+            conn.execute(
+                "INSERT INTO threads VALUES (?, ?, ?, ?, 0, 'cli')",
+                ("thread-id", str(rollout), first_message, first_message),
+            )
+            conn.commit()
+            conn.close()
+
+            targets = self.renamer.fetch_targets(db_path)
+
+        self.assertEqual(len(targets), 1)
+        self.assertEqual(targets[0][0], "thread-id")
 
 
 class ValidSessionIdTest(unittest.TestCase):

@@ -107,6 +107,8 @@ in
     config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/codex/hooks.json";
   home.file.".codex/hooks".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/codex/hooks";
+  home.file.".codex/scripts".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/codex/scripts";
   home.file.".codex/herdr-agent-state.sh".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/codex/herdr-agent-state.sh";
   home.file.".codex/rules/destructive.rules".source =

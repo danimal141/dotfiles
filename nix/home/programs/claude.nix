@@ -41,6 +41,7 @@ in
 
     ".claude/hooks".source = config.lib.file.mkOutOfStoreSymlink "${claudeDir}/hooks";
     ".claude/rules".source = config.lib.file.mkOutOfStoreSymlink "${claudeDir}/rules";
+    ".claude/scripts".source = config.lib.file.mkOutOfStoreSymlink "${claudeDir}/scripts";
 
     ".claude/skills/.gitignore".source =
       config.lib.file.mkOutOfStoreSymlink "${claudeDir}/skills/.gitignore";
