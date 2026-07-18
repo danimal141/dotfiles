@@ -52,6 +52,11 @@ raw symlink vs declarative module (`programs.<tool>.{enable,settings}`)
   hook を落とす)。生成物は tools/claude/hooks/ と tools/codex/ に落ちて tracked
   になる。installer は絶対パスを書くので `$HOME` / `~` に正規化する (work と
   personal で user 名が違う)。追随は `herdr integration status`
+* herdr server は `nix/darwin/herdr.nix` の `launchd.user.agents.herdr-server`
+  で login 時常駐 (KeepAlive)。boot 直後に server が居らず初回 `herdr-start` が
+  `detached from server` を出す問題への対処。`brew services start herdr` は
+  併用禁止 (launchd plist が二重化し socket 衝突)。初回だけ既存 ad-hoc server を
+  `herdr server stop` で止めてから `nix run .#switch` する
 * Neovim の LSP は各 server に `cmd` を明示し、PATH 上に binary が無い
   場合は enable を skip する設計 (`tools/nvim/lua/plugins/lsp.lua`)
 * セッション自動命名 hook (`tools/claude/hooks/session-namer.py` /
