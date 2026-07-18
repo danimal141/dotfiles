@@ -49,3 +49,6 @@ reveal_hidden_cursor_for_cjk_ime = true
 # 上の露出を agent pane に限定する。空配列 (default) だと cursor を隠す TUI 全般
 # (vim の normal mode 等) で余計な cursor が二重に見える。
 cjk_ime_agents = ["claude", "codex"]
+
+[ui.sidebar.agents]
+rows = [["state_icon", "workspace"], ["state_text", "agent", "terminal_title_stripped"]]
