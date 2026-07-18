@@ -1,4 +1,8 @@
 {
+  "env": {
+    "CLAUDE_CODE_ENABLE_EXPERIMENTAL_ADVISOR_TOOL": "1"
+  },
+  "model": "claude-opus-4-6",
   "hooks": {
     "SessionStart": [
       {
@@ -47,6 +51,5 @@
         "path": "/Library/Application Support/ClaudeCode/marketplace/gog-skills"
       }
     }
-  },
-  "model": "opus"
+  }
 }
