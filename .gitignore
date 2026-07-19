@@ -18,6 +18,9 @@ tools/vscode/settings.bak.json
 # Node modules (pre-commit + secretlint)
 node_modules/
 
+# Python bytecode caches (unittest 実行時に生成)
+__pycache__/
+
 # pre-commit cache
 .pre-commit-cache/
 
