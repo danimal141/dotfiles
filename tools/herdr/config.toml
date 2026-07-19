@@ -35,6 +35,11 @@ close_tab = "prefix+ampersand"     # herdr default: prefix+shift+x
 # 矢印キーは常に有効なので併用できる。
 navigate_workspace_up = "ctrl+p"
 navigate_workspace_down = "ctrl+n"
+# sidebar の agent 行を順送り / 逆送りで移動 (herdr default: 未割当)。
+# prefix+a / prefix+shift+a は default で未使用なので衝突しない。
+# 素の ctrl+p/n は herdr が常時横取りし zsh history / vim 操作が壊れるので不採用。
+next_agent = "prefix+a"
+previous_agent = "prefix+shift+a"
 
 [theme]
 # ghostty (tools/ghostty/config の `theme = tokyonight`) と系統を揃える。
