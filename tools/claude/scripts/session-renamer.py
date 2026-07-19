@@ -2,7 +2,11 @@
 """セッション日本語リネーム: 日本語タイトルがないセッションに agent-name を付ける。
 
 agent-name は ai-title より picker で優先されるため、Claude Code の
-built-in 命名に上書きされない。内部フォーマット依存、fail-open。
+built-in 命名に上書きされない。ただし plan 承認時に built-in が kebab slug
+(例: enforce-gws-google-workspace) の agent-name を書くケースがあり、
+これはフラグでは区別できないため slug パターンで auto 命名とみなして
+リネーム対象にする。手動 /rename の名前 (非 slug) は上書きしない。
+内部フォーマット依存、fail-open。
 
 Usage:
   ~/.claude/scripts/session-renamer.py                # dry-run (対象一覧)
@@ -34,6 +38,7 @@ PROMPT = (
 )
 
 JP_RE = re.compile(r"[　-鿿]")
+AUTO_SLUG_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)+$")
 SESSION_ID_RE = re.compile(
     r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
 )
@@ -67,7 +72,7 @@ def get_titles(lines):
 def needs_rename(lines):
     agent_name, ai_title = get_titles(lines)
     if agent_name:
-        return False, agent_name
+        return bool(AUTO_SLUG_RE.match(agent_name)), agent_name
     if has_japanese(ai_title):
         return False, ai_title
     return True, ai_title

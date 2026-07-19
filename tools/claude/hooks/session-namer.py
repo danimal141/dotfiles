@@ -3,8 +3,11 @@
 
 resume picker のタイトルは transcript jsonl 内の
 {"type":"ai-title","aiTitle":...,"sessionId":...} レコード (最後のものが有効)。
-/rename や plan 承認による明示的な名前は agent-name レコードに残るため、
-それがあるセッションは上書きしない (内部フォーマット、公式 API 無し)。
+agent-name レコードは /rename の明示的な名前のほか、plan 承認時に built-in が
+kebab slug (例: enforce-gws-google-workspace) を書くケースがある。全レコードが
+同一構造でフラグでは区別できないため、最後の agent-name が slug パターンなら
+auto 命名とみなして上書きし、それ以外 (手動 /rename や本 hook の日本語名) は
+スキップする (内部フォーマット、公式 API 無し)。
 壊れた場合は名前が付かなくなるだけになるよう、全経路 fail-open にする。
 """
 
@@ -30,6 +33,7 @@ PROMPT = (
 )
 
 SESSION_ID_RE = re.compile(r"^[0-9a-zA-Z-]{1,64}$")
+AUTO_SLUG_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)+$")
 
 
 def valid_session_id(session_id):
@@ -78,15 +82,20 @@ def title_records(session_id, title):
     )
 
 
-def has_agent_name(lines):
+def last_agent_name(lines):
+    name = ""
     for line in lines:
         try:
             obj = json.loads(line)
         except (json.JSONDecodeError, TypeError):
             continue
         if obj.get("type") == "agent-name" and obj.get("agentName"):
-            return True
-    return False
+            name = obj["agentName"]
+    return name
+
+
+def is_auto_slug(name):
+    return bool(AUTO_SLUG_RE.match(name or ""))
 
 
 def build_context(lines):
@@ -152,7 +161,8 @@ def main():
             lines = f.readlines()
     except OSError:
         return 0
-    if has_agent_name(lines):
+    name = last_agent_name(lines)
+    if name and not is_auto_slug(name):
         return 0
     context = build_context(lines)
     if not context:

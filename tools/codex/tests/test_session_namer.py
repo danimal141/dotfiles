@@ -10,6 +10,7 @@ from unittest import mock
 
 HOOKS_DIR = Path(__file__).parent.parent / "hooks"
 CLAUDE_HOOKS_DIR = Path(__file__).parent.parent.parent / "claude" / "hooks"
+CLAUDE_SCRIPTS_DIR = Path(__file__).parent.parent.parent / "claude" / "scripts"
 CODEX_SCRIPTS_DIR = Path(__file__).parent.parent / "scripts"
 
 
@@ -30,6 +31,26 @@ def load_claude_namer():
 
 def load_codex_renamer():
     return load_module("codex_session_renamer", CODEX_SCRIPTS_DIR / "session-renamer.py")
+
+
+def load_claude_renamer():
+    return load_module(
+        "claude_session_renamer", CLAUDE_SCRIPTS_DIR / "session-renamer.py"
+    )
+
+
+def agent_name_record(name):
+    return json.dumps(
+        {"type": "agent-name", "agentName": name, "sessionId": "sid"},
+        ensure_ascii=False,
+    )
+
+
+def ai_title_record(title):
+    return json.dumps(
+        {"type": "ai-title", "aiTitle": title, "sessionId": "sid"},
+        ensure_ascii=False,
+    )
 
 
 def claude_user(text, sidechain=False):
@@ -159,10 +180,22 @@ class ClaudeTranscriptTest(unittest.TestCase):
             {"type": "ai-title", "aiTitle": "タイトル", "sessionId": "sid"},
         )
 
-    def test_has_agent_name(self):
-        named = [claude_user("x"), '{"type":"agent-name","agentName":"n","sessionId":"s"}']
-        self.assertTrue(self.namer.has_agent_name(named))
-        self.assertFalse(self.namer.has_agent_name([claude_user("x")]))
+    def test_last_agent_name_returns_last(self):
+        lines = [
+            claude_user("x"),
+            agent_name_record("herdr 設定の調査"),
+            agent_name_record("enforce-gws-google-workspace"),
+        ]
+        self.assertEqual(
+            self.namer.last_agent_name(lines), "enforce-gws-google-workspace"
+        )
+        self.assertEqual(self.namer.last_agent_name([claude_user("x")]), "")
+
+    def test_is_auto_slug(self):
+        self.assertTrue(self.namer.is_auto_slug("enforce-gws-google-workspace"))
+        self.assertFalse(self.namer.is_auto_slug("herdr 設定の調査"))
+        self.assertFalse(self.namer.is_auto_slug("My Session"))
+        self.assertFalse(self.namer.is_auto_slug(""))
 
     def test_context_is_truncated(self):
         lines = [claude_user("あ" * 10000), claude_user("い" * 10000)]
@@ -203,6 +236,40 @@ class CodexRolloutTest(unittest.TestCase):
     def test_find_state_db_none_when_missing(self):
         with tempfile.TemporaryDirectory() as tmp:
             self.assertIsNone(self.namer.find_state_db(Path(tmp)))
+
+
+class ClaudeRenamerTest(unittest.TestCase):
+    def setUp(self):
+        self.renamer = load_claude_renamer()
+
+    def test_auto_slug_agent_name_is_rename_target(self):
+        lines = [agent_name_record("enforce-gws-google-workspace")]
+        needed, current = self.renamer.needs_rename(lines)
+        self.assertTrue(needed)
+        self.assertEqual(current, "enforce-gws-google-workspace")
+
+    def test_manual_agent_name_is_skipped(self):
+        for name in ("herdr 設定の調査", "My Session"):
+            needed, _ = self.renamer.needs_rename([agent_name_record(name)])
+            self.assertFalse(needed)
+
+    def test_auto_slug_after_manual_name_is_rename_target(self):
+        lines = [
+            agent_name_record("herdr 設定の調査"),
+            agent_name_record("enforce-gws-google-workspace"),
+        ]
+        needed, _ = self.renamer.needs_rename(lines)
+        self.assertTrue(needed)
+
+    def test_japanese_ai_title_without_agent_name_is_skipped(self):
+        needed, _ = self.renamer.needs_rename([ai_title_record("herdr 設定の調査")])
+        self.assertFalse(needed)
+
+    def test_english_ai_title_without_agent_name_is_rename_target(self):
+        needed, _ = self.renamer.needs_rename(
+            [ai_title_record("Move agents with prefix w in herdr")]
+        )
+        self.assertTrue(needed)
 
 
 class CodexRenamerTest(unittest.TestCase):
