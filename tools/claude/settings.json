@@ -18,7 +18,7 @@
     ],
     "SessionEnd": [
       {
-        "matcher": "clear|logout|other",
+        "matcher": "*",
         "hooks": [
           {
             "type": "command",
