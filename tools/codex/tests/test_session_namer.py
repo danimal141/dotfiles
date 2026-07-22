@@ -207,12 +207,13 @@ class CodexRolloutTest(unittest.TestCase):
     def setUp(self):
         self.namer = load_codex_namer()
 
-    def test_context_requires_two_user_messages(self):
+    def test_context_with_single_user_message(self):
         lines = [
             codex_event("user_message", "最初の依頼"),
             codex_event("agent_message", "回答"),
         ]
-        self.assertIsNone(self.namer.build_context(lines))
+        context = self.namer.build_context(lines)
+        self.assertIn("最初の依頼", context)
 
     def test_context_includes_messages(self):
         lines = [

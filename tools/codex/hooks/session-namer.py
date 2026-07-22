@@ -18,7 +18,7 @@ from pathlib import Path
 
 MAX_TITLE_LEN = 50
 MAX_CONTEXT_CHARS = 6000
-MIN_USER_MESSAGES = 2
+MIN_USER_MESSAGES = 1
 RECENT_MESSAGES = 3
 LLM_TIMEOUT_SEC = 120
 DEFAULT_NAMER_CMD = "claude -p --model haiku --no-session-persistence"
