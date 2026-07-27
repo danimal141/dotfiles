@@ -3,6 +3,7 @@
     "CLAUDE_CODE_ENABLE_EXPERIMENTAL_ADVISOR_TOOL": "1"
   },
   "model": "claude-opus-5",
+  "fallbackModel": [],
   "hooks": {
     "SessionStart": [
       {
@@ -51,5 +52,6 @@
         "path": "/Library/Application Support/ClaudeCode/marketplace/gog-skills"
       }
     }
-  }
+  },
+  "effortLevel": "high"
 }
