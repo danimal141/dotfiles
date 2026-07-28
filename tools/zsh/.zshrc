@@ -7,6 +7,13 @@ export LC_ALL=en_US.UTF-8
 export EDITOR=nvim
 export VISUAL=nvim
 
+# gws (Google Workspace CLI) の credentials.enc を暗号化する鍵の保管先。
+# Claude Code は managed-settings で file backend を強制するため、ここを
+# 揃えないと Keychain 鍵で暗号化した credentials を Claude Code 側が復号
+# できず、壊れたとみなして破棄する (= 毎日 gws auth login をやり直す羽目
+# になる)。鍵の実体は ~/.config/gws/.encryption_key。
+export GOOGLE_WORKSPACE_CLI_KEYRING_BACKEND=file
+
 # Nix の OpenSSL curl は macOS Keychain を直接参照しない。社内 VPN の SSL
 # inspection CA を含む Keychain 由来 bundle を、codex update 等の子プロセスへ
 # 継承させる。
