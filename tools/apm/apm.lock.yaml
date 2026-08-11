@@ -1,22 +1,22 @@
 lockfile_version: '1'
-generated_at: '2026-07-27T07:00:57.672373+00:00'
+generated_at: '2026-08-11T01:36:12.093816+00:00'
 apm_version: 0.12.4
 dependencies:
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: 643400723130898c8fa77d049d81376c75c5e7fc
-  resolved_ref: v0.16.0
+  resolved_commit: 41a0e097b5bdfb34e156c3fcfca96080924b72d3
+  resolved_ref: v0.17.0
   virtual_path: skills/chrome-cdp
   is_virtual: true
   package_type: claude_skill
   deployed_files:
   - .agents/skills/chrome-cdp
   - .claude/skills/chrome-cdp
-  content_hash: sha256:4d0beaa4df609ba1f505bb682c90820c60efb330e2d1a4df657ecb7e85387198
+  content_hash: sha256:c010f7192f1dd2dd2676819b62cdb9702c0781db41422926a31fb110d99fb3b1
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: 643400723130898c8fa77d049d81376c75c5e7fc
-  resolved_ref: v0.16.0
+  resolved_commit: 41a0e097b5bdfb34e156c3fcfca96080924b72d3
+  resolved_ref: v0.17.0
   virtual_path: skills/codebase-analyzer
   is_virtual: true
   package_type: claude_skill
@@ -26,8 +26,8 @@ dependencies:
   content_hash: sha256:df661288f05bd55245bd67478dc0046914285b6a78483eb6730c110c60bc0495
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: 643400723130898c8fa77d049d81376c75c5e7fc
-  resolved_ref: v0.16.0
+  resolved_commit: 41a0e097b5bdfb34e156c3fcfca96080924b72d3
+  resolved_ref: v0.17.0
   virtual_path: skills/compact-prep
   is_virtual: true
   package_type: claude_skill
@@ -37,8 +37,8 @@ dependencies:
   content_hash: sha256:bfda271ead73f40f5cb437ed91ccb03f4fe23081b33873f3cd9a78ace8ed4d54
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: 643400723130898c8fa77d049d81376c75c5e7fc
-  resolved_ref: v0.16.0
+  resolved_commit: 41a0e097b5bdfb34e156c3fcfca96080924b72d3
+  resolved_ref: v0.17.0
   virtual_path: skills/create-pr
   is_virtual: true
   package_type: claude_skill
@@ -48,8 +48,8 @@ dependencies:
   content_hash: sha256:0a0daad929706da9a50748dbd8d683f4f0370265330723ea928fe6824d2e34d3
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: 643400723130898c8fa77d049d81376c75c5e7fc
-  resolved_ref: v0.16.0
+  resolved_commit: 41a0e097b5bdfb34e156c3fcfca96080924b72d3
+  resolved_ref: v0.17.0
   virtual_path: skills/dig
   is_virtual: true
   package_type: claude_skill
@@ -59,8 +59,8 @@ dependencies:
   content_hash: sha256:4d68f165b2477d7615257f3434d0957226e511aa0b4b39b6599af987a330a09f
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: 643400723130898c8fa77d049d81376c75c5e7fc
-  resolved_ref: v0.16.0
+  resolved_commit: 41a0e097b5bdfb34e156c3fcfca96080924b72d3
+  resolved_ref: v0.17.0
   virtual_path: skills/git-commit
   is_virtual: true
   package_type: claude_skill
@@ -70,8 +70,8 @@ dependencies:
   content_hash: sha256:46e2f905ff61634f3e0eca3b18451ccfedce8d223dc56e6777a72070299f171d
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: 643400723130898c8fa77d049d81376c75c5e7fc
-  resolved_ref: v0.16.0
+  resolved_commit: 41a0e097b5bdfb34e156c3fcfca96080924b72d3
+  resolved_ref: v0.17.0
   virtual_path: skills/infra-codebase-analyzer
   is_virtual: true
   package_type: claude_skill
@@ -81,8 +81,8 @@ dependencies:
   content_hash: sha256:0e04135254bd8b35f2d8ed3c095199862581c735a92e6296b0926c525a80c6be
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: 643400723130898c8fa77d049d81376c75c5e7fc
-  resolved_ref: v0.16.0
+  resolved_commit: 41a0e097b5bdfb34e156c3fcfca96080924b72d3
+  resolved_ref: v0.17.0
   virtual_path: skills/japanese-tech-writing
   is_virtual: true
   package_type: claude_skill
@@ -92,8 +92,8 @@ dependencies:
   content_hash: sha256:91a977aab27e7a2471617b0d04ddf10a6369b25c125fc86efb5d68a1c8f1ced0
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: 643400723130898c8fa77d049d81376c75c5e7fc
-  resolved_ref: v0.16.0
+  resolved_commit: 41a0e097b5bdfb34e156c3fcfca96080924b72d3
+  resolved_ref: v0.17.0
   virtual_path: skills/review-screen
   is_virtual: true
   package_type: claude_skill
