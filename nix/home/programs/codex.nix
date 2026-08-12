@@ -60,11 +60,11 @@ let
   # codexConfig hook が mutable な実ファイルとして配置する。ベースは
   # ryoppippi/dotfiles の codex.nix。
   settings = {
-    model = "gpt-5.6-luna";
+    model = "gpt-5.6-sol";
     approval_policy = "on-request";
     approvals_reviewer = "auto_review";
     allow_login_shell = true;
-    model_reasoning_effort = "max";
+    model_reasoning_effort = "high";
     web_search_request = true;
     personality = "pragmatic";
     service_tier = "standard";
@@ -73,6 +73,16 @@ let
       "python3"
       "${dotfilesPath}/tools/codex/hooks/notify.py"
     ];
+
+    # subagent (multi-agent) の既定値。main は sol / high で回し、delegate 先の
+    # subagent だけ luna / max に振る。[agents] は既知フィールド以外を
+    # AgentRoleToml (custom agent 定義) として解釈するので、key 名を間違えると
+    # parse error になる (`codex exec --strict-config` で検証済み)。
+    agents = {
+      max_concurrent_threads_per_session = 100;
+      default_subagent_model = "gpt-5.6-luna";
+      default_subagent_reasoning_effort = "max";
+    };
 
     shell_environment_policy = {
       "inherit" = "all";
