@@ -13,6 +13,8 @@
 #     ので、~/.codex/AGENTS.md → tools/codex/AGENTS.md → tools/claude/CLAUDE.md
 #     の 2 段で解決する。CLAUDE.md 編集が ~/.claude/CLAUDE.md と
 #     ~/.codex/AGENTS.md の両方に即反映される (同じ system instruction を共有)。
+#   * agents/ は repo の tools/codex/agents/ を指す out-of-store symlink。
+#     Codex 固有の custom agent を Claude Code と分離して管理する。
 #   * hooks.json / hooks/ は repo の tools/codex/ を指す out-of-store symlink。
 #     破壊コマンド遮断ポリシーは tools/claude/hooks/ と symlink で共有し、
 #     sandbox / approval の補助 guardrail として使う。
@@ -68,6 +70,22 @@ let
     web_search_request = true;
     personality = "pragmatic";
     project_doc_fallback_filenames = [ "CLAUDE.md" ];
+    developer_instructions = ''
+      Sol を要件・設計・方針判断に集中させ、それ以外の作業では Luna を最大限活用する。
+
+      * メインエージェントは要件整理、設計、トレードオフ、成功条件、計画変更、
+        agent から返された不明点の判断、最終判断を担当する
+      * 設計と成功条件が確定した実装は、原則として `worker` agent に委譲する
+      * コード探索、参照追跡、調査、ログ解析は、原則として `explorer` agent に委譲する
+      * テスト、lint、diff 確認、受け入れ条件の検証は、原則として `verifier` agent に委譲する
+      * メインエージェントが直接実行するのは、設計・方針判断そのものか、
+        agent への委譲が不可能な作業に限る
+      * 独立した作業は Luna agent に並列委譲する。ただし、同じファイルを複数 agent に
+        同時編集させない
+      * agent は新しい設計判断を行わない。曖昧さ、計画変更、スコープ拡大が必要になったら、
+        勝手に選択せずメインエージェントへ返す
+      * メインエージェントは agent の報告と diff を確認し、計画との整合性を最終判断する
+    '';
     notify = [
       "python3"
       "${dotfilesPath}/tools/codex/hooks/notify.py"
@@ -78,7 +96,7 @@ let
     # AgentRoleToml (custom agent 定義) として解釈するので、key 名を間違えると
     # parse error になる (`codex exec --strict-config` で検証済み)。
     agents = {
-      max_concurrent_threads_per_session = 100;
+      max_concurrent_threads_per_session = 30;
       default_subagent_model = "gpt-5.6-luna";
       default_subagent_reasoning_effort = "max";
     };
@@ -123,6 +141,8 @@ in
 {
   home.file.".codex/AGENTS.md".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/codex/AGENTS.md";
+  home.file.".codex/agents".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/codex/agents";
   home.file.".codex/hooks.json".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/codex/hooks.json";
   home.file.".codex/hooks".source =
