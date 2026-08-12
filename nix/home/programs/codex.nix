@@ -67,7 +67,6 @@ let
     model_reasoning_effort = "high";
     web_search_request = true;
     personality = "pragmatic";
-    service_tier = "standard";
     project_doc_fallback_filenames = [ "CLAUDE.md" ];
     notify = [
       "python3"
