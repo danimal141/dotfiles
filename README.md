@@ -449,9 +449,9 @@ declaration alone does not uninstall because
 MCP server configuration (`tools/claude/setup-mcp.sh`) is driven through
 `claude mcp add` and is independent of the install path.
 
-## Claude Code skills via APM
+## Agent skills via APM
 
-Claude Code skills live in
+Reusable skills live in
 [skilltree](https://github.com/danimal141/skilltree), pulled in via
 [APM (Agent Package Manager)](https://github.com/microsoft/apm).
 
@@ -460,7 +460,9 @@ the sha256 of `~/.apm/apm.yml` (plus the deploy targets) and fires
 `apm install --target claude,codex` only when it changed (idempotent; a
 target change also re-deploys). Skills go to `~/.claude/skills/` for claude
 and to the cross-agent `~/.agents/skills/` for codex (which auto-discovers
-it). To rerun manually:
+it). When company MDM has already deployed the GWS skills for Claude Code,
+`home.activation.codexGwsSkills` links them into `~/.agents/skills/` so Codex
+can reuse the same files without copying them. To rerun manually:
 
 ```shell
 cd ~/.apm

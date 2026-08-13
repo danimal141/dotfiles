@@ -139,7 +139,9 @@ For APM's install hook and the skill ingestion procedure, see
 * Skills are deployed to the cross-agent `~/.agents/skills/` via
   `apm install --target claude,codex --global` in `apm.nix`, and codex
   auto-discovers them there (`~/.codex/skills/` holds only codex's built-in
-  `.system` skills; `~/.agents/` is managed entirely by apm).
+  `.system` skills). When company MDM has already deployed the GWS skills for
+  Claude Code, the `codexGwsSkills` activation hook exposes each one in the
+  same directory through a symlink. It does nothing when that source is absent.
 * `~/.codex/AGENTS.md` is an out-of-store symlink to `tools/codex/AGENTS.md`,
   which is itself an in-repo symlink to `../claude/CLAUDE.md`, so both tools
   share the same system instruction in a single file.

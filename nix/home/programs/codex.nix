@@ -15,6 +15,9 @@
 #     ~/.codex/AGENTS.md の両方に即反映される (同じ system instruction を共有)。
 #   * agents/ は repo の tools/codex/agents/ を指す out-of-store symlink。
 #     Codex 固有の custom agent を Claude Code と分離して管理する。
+#   * Claude Code 向けに MDM 配布済みの gws skill は、codexGwsSkills activation
+#     hook が ~/.agents/skills/ へ個別 symlink を張り Codex からも再利用する。
+#     skill 本体は複製せず、配布元が無い環境では何もせず skip する。
 #   * hooks.json / hooks/ は repo の tools/codex/ を指す out-of-store symlink。
 #     破壊コマンド遮断ポリシーは tools/claude/hooks/ と symlink で共有し、
 #     sandbox / approval の補助 guardrail として使う。
@@ -70,6 +73,8 @@ let
     web_search_request = true;
     personality = "pragmatic";
     project_doc_fallback_filenames = [ "CLAUDE.md" ];
+    # Codex 専用の全セッション共通指示。公式設定は inline string のみで外部
+    # instruction file を受けないため、flake から確実に評価できるここを SSoT にする。
     developer_instructions = ''
       Sol を要件・設計・方針判断に集中させ、それ以外の作業では Luna を最大限活用する。
 
@@ -156,8 +161,35 @@ in
 
   # apm (--target claude,codex) の skill は ~/.codex/skills/ ではなく cross-agent
   # 標準の ~/.agents/skills/ に配布され、codex がそこを auto-discover する
-  # (~/.codex/skills/ は codex 内蔵の .system 専用)。~/.agents/ は apm が全面管理
-  # するため home-manager では何も配置しない。
+  # (~/.codex/skills/ は codex 内蔵の .system 専用)。通常の skill は apm が管理し、
+  # MDM 配布済みの gws skill だけは下の activation hook で同じ場所へ追加する。
+
+  # Claude Code 用 marketplace に MDM 配布済みの gws skill を Codex からも使える
+  # よう ~/.agents/skills/ へ個別 symlink する。Codex は user-scope skill directory
+  # と symlinked skill folder の両方を公式にサポートしている。apm install の後に
+  # 実行し、apm が ~/.agents/skills/ を更新しても最終状態に link が残るようにする。
+  # 配布元が無い個人端末では skip し、同名の実 directory がある場合は上書きしない。
+  home.activation.codexGwsSkills = lib.hm.dag.entryAfter [ "apmInstall" ] ''
+    GWS_SKILLS_SOURCE="/Library/Application Support/ClaudeCode/marketplace/gws-skills/plugins/gws/skills"
+    CODEX_SKILLS_TARGET="$HOME/.agents/skills"
+
+    if [ ! -d "$GWS_SKILLS_SOURCE" ]; then
+      echo "[codexGwsSkills] skip (managed gws skills not found)"
+    else
+      $DRY_RUN_CMD ${pkgs.coreutils}/bin/mkdir -p "$CODEX_SKILLS_TARGET"
+      for GWS_SKILL_SOURCE in "$GWS_SKILLS_SOURCE"/gws-*; do
+        [ -d "$GWS_SKILL_SOURCE" ] || continue
+        GWS_SKILL_NAME="''${GWS_SKILL_SOURCE##*/}"
+        GWS_SKILL_TARGET="$CODEX_SKILLS_TARGET/$GWS_SKILL_NAME"
+
+        if [ -e "$GWS_SKILL_TARGET" ] && [ ! -L "$GWS_SKILL_TARGET" ]; then
+          echo "[codexGwsSkills] skip $GWS_SKILL_NAME (non-symlink target exists)" >&2
+          continue
+        fi
+        $DRY_RUN_CMD ${pkgs.coreutils}/bin/ln -sfn "$GWS_SKILL_SOURCE" "$GWS_SKILL_TARGET"
+      done
+    fi
+  '';
 
   # config.toml を mutable な実ファイルとして毎回上書き配置する (read-only
   # symlink だと codex の trust 書込が code -32603 で失敗する。冒頭コメント

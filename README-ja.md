@@ -423,7 +423,7 @@ brew cask `claude-code` も `nix/darwin/homebrew.nix` で宣言上は残して�
 MCP server 設定 (`tools/claude/setup-mcp.sh`) は `claude mcp add` 経由で動くため
 install 経路の変更とは独立。
 
-## Claude Code skills via APM
+## Agent skills via APM
 
 Claude Code のスキル群は [skilltree](https://github.com/danimal141/skilltree)
 にまとめ、[APM (Agent Package Manager)](https://github.com/microsoft/apm)
@@ -434,6 +434,9 @@ apm.yml` の sha256 を比較し、差分があるときだけ `apm install --ta
 claude,codex` を発火する (冪等。hash は target も含むので target 変更時も
 再配布される)。skill は claude が `~/.claude/skills/`、codex が cross-agent
 標準の `~/.agents/skills/` (codex がそこを auto-discover) に配布される。
+加えて、社内 MDM が Claude Code 用に配布した GWS Skill が存在する場合は、
+`home.activation.codexGwsSkills` が同じ `~/.agents/skills/` へ symlink し、
+Skill 本体を複製せず Codex からも利用可能にする。
 手動で再実行する場合:
 
 ```shell

@@ -128,8 +128,10 @@ APM の install hook / skill 取り込み手順は
   現状は `context7` / `terraform` のみ
 * skill は `apm.nix` の `apm install --target claude,codex --global` で
   cross-agent 標準の `~/.agents/skills/` に配布され、codex がそこを
-  auto-discover する (`~/.codex/skills/` は codex 内蔵の `.system` 専用。
-  `~/.agents/` は apm が全面管理するため home-manager では何も配置しない)
+  auto-discover する (`~/.codex/skills/` は codex 内蔵の `.system` 専用)。
+  社内 MDM が Claude Code 用に配布した GWS Skill は、`codexGwsSkills`
+  activation hook が同じ場所へ個別 symlink して再利用する。配布元が無い
+  環境では何もしない
 * `~/.codex/AGENTS.md` は `tools/codex/AGENTS.md` への out-of-store symlink。
   `tools/codex/AGENTS.md` 自体が `../claude/CLAUDE.md` への in-repo symlink な
   ので、claude と同じ system instruction を 1 ファイルで共有する
