@@ -35,11 +35,14 @@
     # モジュールとして扱う。`autoMigrate = true` で既存の手動 brew インストールも
     # 引き継げる。
     #
-    # Fork commit に pin。nix-homebrew 側の Homebrew/brew 追従が遅れると
-    # cask metadata の schema 変更で fetch が壊れることがあるため、
-    # lock 更新時は upstream main へ戻せるか確認する。
+    # nix-homebrew 側の Homebrew/brew 追従が遅れると cask 側の新しい stanza
+    # (例: command_wrapper) を古い brew が解釈できず `brew bundle` が
+    # 「definition is invalid: undefined method '...'」で落ちる。cask の
+    # metadata は API JSON から常に最新が降ってくるため、brew 本体だけが
+    # 古いとこの不整合が起きる。詰まったら `nix flake update nix-homebrew`
+    # で brew-src を進める。
     nix-homebrew = {
-      url = "github:matinzd/nix-homebrew/a3b7269392d2b8379434fc3d4d3694c92e9e2278";
+      url = "github:zhaofengli/nix-homebrew";
     };
 
     # APM (microsoft/apm) は本家 nixpkgs に未収録。numtide が提供する
