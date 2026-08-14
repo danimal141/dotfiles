@@ -1,4 +1,10 @@
-{ ... }:
+{
+  config,
+  lib,
+  pkgs,
+  user,
+  ...
+}:
 
 # nix-darwin が管理する Homebrew (tap / brew / cask) の宣言。
 #
@@ -11,6 +17,33 @@
 #     未宣言 package を検出する。
 #   * Homebrew の実体 version は上流 tap と `brew update` に依存するため、
 #     Nix store CLI ほど強い rollback 再現性は期待しない。
+let
+  # 完全修飾名 (`<user>/<tap>/<name>`) から供給元の tap 参照だけを取り出す。
+  # 3 要素でないもの (= 公式 tap の短い名前) は空リストを返す。
+  tapOfFullName =
+    name:
+    let
+      parts = lib.splitString "/" name;
+    in
+    lib.optional (builtins.length parts == 3) (lib.concatStringsSep "/" (lib.take 2 parts));
+
+  # brew 6.x は非公式 tap の formula / cask / command を trust 済みでないと
+  # load せず、`brew bundle` が
+  # `Refusing to load formula ... from untrusted tap` で abort する。
+  # 信頼するのは「宣言済みの taps」と「完全修飾名で書いた brews / casks の
+  # 供給元」だけ (= 下のリストに書いてある = git diff でレビュー済みのもの)。
+  # brew 側は entry を小文字化して比較するので、ここでも小文字に揃える。
+  trustedTaps = lib.unique (
+    lib.sort (a: b: a < b) (
+      map lib.toLower (
+        map (tap: tap.name) config.homebrew.taps
+        ++ lib.concatMap (pkg: tapOfFullName pkg.name) (config.homebrew.brews ++ config.homebrew.casks)
+      )
+    )
+  );
+
+  trustStore = pkgs.writeText "homebrew-trust.json" (builtins.toJSON { trustedtaps = trustedTaps; });
+in
 {
   homebrew = {
     enable = true;
@@ -138,4 +171,20 @@
       "zoom"
     ];
   };
+
+  # trust store (`~/.homebrew/trust.json`) を宣言から書き出す。
+  #
+  # * activation の順序は preActivation -> ... -> homebrew (brew bundle) ->
+  #   home-manager。home-manager の `home.file` で置くと、新規マシンの初回
+  #   switch では bundle が先に落ちて到達できないので preActivation に置く。
+  # * root で走るため install(1) で user 所有にする。brew は trust store が
+  #   自分の所有でない / group | world writable だと書き込みを拒否するので
+  #   directory 0700 / file 0600 に揃える。
+  # * 手動 `brew trust` の追加分は次の switch で上書きされる。tap を増やす
+  #   ときは上の taps / brews に書く (= ここが source of truth)。
+  system.activationScripts.preActivation.text = lib.mkAfter ''
+    echo "setting up Homebrew tap trust store..." >&2
+    ${pkgs.coreutils}/bin/install -d -o ${user} -g staff -m 0700 /Users/${user}/.homebrew
+    ${pkgs.coreutils}/bin/install -o ${user} -g staff -m 0600 ${trustStore} /Users/${user}/.homebrew/trust.json
+  '';
 }
