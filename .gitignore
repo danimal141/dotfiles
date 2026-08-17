@@ -34,3 +34,6 @@ result-*
 # APM dependencies
 apm_modules/
 tools/apm/.claude/
+
+# Codex harness plugin (dx-platform-workspace) の session 状態
+.claude-tmp/
