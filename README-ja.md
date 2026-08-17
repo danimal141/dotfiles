@@ -423,6 +423,21 @@ brew cask `claude-code` も `nix/darwin/homebrew.nix` で宣言上は残して�
 MCP server 設定 (`tools/claude/setup-mcp.sh`) は `claude mcp add` 経由で動くため
 install 経路の変更とは独立。
 
+## Codex のモデル運用 (Luna root + Sol advisor)
+
+Codex は「日常 = Luna、設計 = Sol」で使い分ける。
+
+* 通常の `codex` は `gpt-5.6-luna` / max で起動し、実装・調査・検証を root が
+  直接行う
+* 設計判断が必要になったら root が custom agent `architect`
+  (gpt-5.6-sol / high / read-only) に相談する
+* タスク全体が設計検討のときは `codex -p sol` (advisor モード) を使う。
+  Sol / high + read-only sandbox で起動する相談専用セッションで、Claude Code の
+  opusplan に相当する役割分離になる。例外的に Sol で編集したいときは
+  `codex -p sol -s workspace-write` で明示 override する
+* 効果測定は `python3 tools/codex/scripts/codex-usage-report.py`。モデル別
+  トークンと委譲状況を rollout jsonl から集計する (`--days` で期間指定)
+
 ## Agent skills via APM
 
 Claude Code のスキル群は [skilltree](https://github.com/danimal141/skilltree)

@@ -65,6 +65,11 @@ raw symlink vs declarative module (`programs.<tool>.{enable,settings}`)
   (`threads.title`) という内部フォーマットに依存する (公式 API 無し、
   fail-open)。ツール更新で命名されなくなったら書き込み先を再調査する。
   タイトル生成コマンドは env `SESSION_NAMER_CMD` で差し替え可能
+* `tools/codex/scripts/codex-usage-report.py` も Codex rollout jsonl の内部
+  フォーマット (`session_meta.payload.source` / `token_count` / `turn_context`
+  等) に依存する (公式 API 無し、fail-open)。集計が急に 0 になったら
+  フォーマット変化を疑う。Codex のモデル運用 (Luna root + Sol advisor) は
+  README-ja.md 参照
 
 ## ドキュメント
 

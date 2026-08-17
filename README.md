@@ -449,6 +449,22 @@ declaration alone does not uninstall because
 MCP server configuration (`tools/claude/setup-mcp.sh`) is driven through
 `claude mcp add` and is independent of the install path.
 
+## Codex model usage (Luna root + Sol advisor)
+
+Codex splits model usage into "daily work = Luna, design = Sol".
+
+* A plain `codex` starts on `gpt-5.6-luna` / max, and the root agent
+  implements, explores, and verifies directly.
+* When a design decision is needed, the root consults the custom agent
+  `architect` (gpt-5.6-sol / high / read-only).
+* When the whole task is a design discussion, use `codex -p sol` (advisor
+  mode): a consultation-only session on Sol / high with a read-only sandbox,
+  the equivalent of Claude Code's opusplan role split. To exceptionally edit
+  with Sol, override explicitly with `codex -p sol -s workspace-write`.
+* Measure the effect with `python3 tools/codex/scripts/codex-usage-report.py`,
+  which aggregates per-model tokens and delegation stats from the rollout
+  jsonl (`--days` selects the period).
+
 ## Agent skills via APM
 
 Reusable skills live in

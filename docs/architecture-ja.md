@@ -123,6 +123,22 @@ APM の install hook / skill 取り込み手順は
   実ファイルとして毎回上書き配置する。codex 自身が起動時に `[projects]`
   trust を config.toml へ追記するため read-only symlink にはできない
   (書込が code -32603 で失敗する)。設定の編集後は `nix run .#switch` 必須
+* モデル運用は「日常 = Luna root、設計 = Sol」に分離する。デフォルトは
+  `gpt-5.6-luna` / max で、実装・調査・検証は root が直接行う。設計判断が
+  必要になったら custom agent `architect` (gpt-5.6-sol / high / read-only) に
+  相談し、タスク全体が設計検討なら `codex -p sol` (advisor モード) を使う
+* `~/.codex/sol.config.toml` は advisor モード用の profile (model = sol /
+  read-only sandbox)。現行 codex の profile v2 は config.toml 内の
+  `[profiles.<name>]` (legacy) を拒否し `<name>.config.toml` の別ファイルを
+  要求する。codex は profile ファイルにも trust 等の状態を追記するため、
+  config.toml と同じく `codexConfig` hook が mutable 実ファイルとして毎回
+  上書きする
+* `~/.codex/agents/` は `tools/codex/agents/` への out-of-store symlink。
+  worker / explorer / verifier (luna / max) と architect (sol / high) の
+  custom agent を管理する
+* `tools/codex/scripts/codex-usage-report.py` は rollout jsonl からモデル別
+  トークンと委譲状況を集計する (Sol の消費が設計相談に限定されているかの
+  検証用。`--days` で期間指定)
 * MCP server は claude と共有する `tools/mcp/servers.json` を `codex.nix` が
   `builtins.fromJSON` で読み `mcp_servers` に展開する (single source of truth)。
   現状は `context7` / `terraform` のみ

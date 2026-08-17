@@ -133,6 +133,23 @@ For APM's install hook and the skill ingestion procedure, see
   appends `[projects]` trust to config.toml at startup, so it cannot be a
   read-only symlink (the write fails with code -32603). After editing the
   settings you must `nix run .#switch`.
+* Model usage is split into "daily work = Luna root, design = Sol". The default
+  is `gpt-5.6-luna` / max, and the root agent implements, explores, and
+  verifies directly. When a design decision is needed it consults the custom
+  agent `architect` (gpt-5.6-sol / high / read-only), and when the whole task
+  is a design discussion, use `codex -p sol` (advisor mode).
+* `~/.codex/sol.config.toml` is the profile for advisor mode (model = sol /
+  read-only sandbox). Current codex's profile v2 rejects the legacy
+  `[profiles.<name>]` table in config.toml and requires a separate
+  `<name>.config.toml` file. Codex also appends state such as trust to profile
+  files, so the `codexConfig` hook overwrites it as a mutable real file on
+  every switch, same as config.toml.
+* `~/.codex/agents/` is an out-of-store symlink to `tools/codex/agents/`,
+  which manages the worker / explorer / verifier (luna / max) and architect
+  (sol / high) custom agents.
+* `tools/codex/scripts/codex-usage-report.py` aggregates per-model tokens and
+  delegation stats from the rollout jsonl (to verify Sol consumption stays
+  limited to design consultation; `--days` selects the period).
 * MCP servers are read from `tools/mcp/servers.json` (shared with claude) by
   `codex.nix` via `builtins.fromJSON` and expanded into `mcp_servers` (single
   source of truth): `context7` and `terraform` only.

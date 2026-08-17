@@ -65,41 +65,39 @@ let
   # codexConfig hook が mutable な実ファイルとして配置する。ベースは
   # ryoppippi/dotfiles の codex.nix。
   settings = {
-    model = "gpt-5.6-sol";
+    model = "gpt-5.6-luna";
     approval_policy = "on-request";
     approvals_reviewer = "auto_review";
     allow_login_shell = true;
-    model_reasoning_effort = "high";
+    model_reasoning_effort = "max";
     web_search_request = true;
     personality = "pragmatic";
     project_doc_fallback_filenames = [ "CLAUDE.md" ];
     # Codex 専用の全セッション共通指示。公式設定は inline string のみで外部
     # instruction file を受けないため、flake から確実に評価できるここを SSoT にする。
     developer_instructions = ''
-      Sol を要件・設計・方針判断に集中させ、それ以外の作業では Luna を最大限活用する。
+      メインエージェント (Luna) が実装・調査・検証を直接実行し、設計判断が必要に
+      なった時だけ Sol の `architect` agent に相談する。
 
-      * メインエージェントは要件整理、設計、トレードオフ、成功条件、計画変更、
-        agent から返された不明点の判断、最終判断を担当する
-      * 設計と成功条件が確定した実装は、原則として `worker` agent に委譲する
-      * コード探索、参照追跡、調査、ログ解析は、原則として `explorer` agent に委譲する
-      * テスト、lint、diff 確認、受け入れ条件の検証は、原則として `verifier` agent に委譲する
-      * メインエージェントが直接実行するのは、設計・方針判断そのものか、
-        agent への委譲が不可能な作業に限る
-      * 独立した作業は Luna agent に並列委譲する。ただし、同じファイルを複数 agent に
-        同時編集させない
-      * agent は新しい設計判断を行わない。曖昧さ、計画変更、スコープ拡大が必要になったら、
-        勝手に選択せずメインエージェントへ返す
-      * メインエージェントは agent の報告と diff を確認し、計画との整合性を最終判断する
+      * 実装、コード探索、テスト、lint、diff 確認はメインエージェントが直接実行してよい
+      * アーキテクチャ選択、トレードオフ、要件の曖昧さ解消、分解方針、レビュー観点など
+        設計判断が必要になったら `architect` agent (Sol) に相談し、回答を踏まえて進める
+      * 設計判断を自分で推測して先に進まない。architect の回答でも解消しない曖昧さは
+        ユーザーに質問する
+      * 並列化できる独立作業は `worker` / `explorer` / `verifier` agent に委譲してよい。
+        ただし、同じファイルを複数 agent に同時編集させない
+      * タスク全体が設計検討そのものである場合は、`codex -p sol` (advisor モード) の
+        利用をユーザーに提案する
     '';
     notify = [
       "python3"
       "${dotfilesPath}/tools/codex/hooks/notify.py"
     ];
 
-    # subagent (multi-agent) の既定値。main は sol / high で回し、delegate 先の
-    # subagent だけ luna / max に振る。[agents] は既知フィールド以外を
-    # AgentRoleToml (custom agent 定義) として解釈するので、key 名を間違えると
-    # parse error になる (`codex exec --strict-config` で検証済み)。
+    # subagent (multi-agent) の既定値。main / subagent とも luna / max で回し、
+    # 設計相談だけ architect agent (sol / high) に逆向き委譲する。[agents] は
+    # 既知フィールド以外を AgentRoleToml (custom agent 定義) として解釈するので、
+    # key 名を間違えると parse error になる (`codex exec --strict-config` で検証済み)。
     agents = {
       max_concurrent_threads_per_session = 30;
       default_subagent_model = "gpt-5.6-luna";
@@ -141,6 +139,21 @@ let
     # MCP server は claude (setup-mcp.sh) と共有する tools/mcp/servers.json を
     # single source of truth として読み込む (上の mcpServers / mkCodexMcp 参照)。
     mcp_servers = lib.mapAttrs mkCodexMcp mcpServers;
+  };
+
+  # 設計・相談専用の advisor モード (`codex -p sol`)。Claude Code の opusplan
+  # (Plan=Opus / 実行=Sonnet) に相当する役割分離を profile で再現する。
+  # read-only sandbox により Sol セッションが実装にトークンを使わないことを
+  # 構造で保証する。例外的に Sol で編集したいときは
+  # `codex -p sol -s workspace-write` で明示 override する。
+  # 現行 codex の profile v2 は config.toml 内の [profiles.<name>] (legacy) を
+  # 拒否し、$CODEX_HOME/<name>.config.toml という別ファイルを要求する。codex は
+  # profile ファイルにも [projects] trust 等の状態を追記するため、config.toml と
+  # 同じく codexConfig hook で mutable な実ファイルとして毎回上書き配置する。
+  solProfile = {
+    model = "gpt-5.6-sol";
+    model_reasoning_effort = "high";
+    sandbox_mode = "read-only";
   };
 in
 {
@@ -201,6 +214,9 @@ in
     $DRY_RUN_CMD ${pkgs.coreutils}/bin/rm -f "$HOME/.codex/config.toml"
     $DRY_RUN_CMD ${pkgs.coreutils}/bin/install -m 644 \
       ${tomlFormat.generate "codex-config.toml" settings} "$HOME/.codex/config.toml"
+    $DRY_RUN_CMD ${pkgs.coreutils}/bin/rm -f "$HOME/.codex/sol.config.toml"
+    $DRY_RUN_CMD ${pkgs.coreutils}/bin/install -m 644 \
+      ${tomlFormat.generate "codex-sol-profile.toml" solProfile} "$HOME/.codex/sol.config.toml"
   '';
 
   home.activation.codexInstall = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
