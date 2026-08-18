@@ -160,7 +160,9 @@ class CollectAggregateTest(unittest.TestCase):
         self.assertEqual(summary["sessions_by_source"]["root (cli)"], 1)
         self.assertEqual(summary["sessions_by_source"]["subagent (architect)"], 1)
         self.assertNotIn("rollout-old", summary["sessions_by_source"])
-        self.assertEqual(summary["tokens_by_model"]["gpt-5.6-sol"]["input_tokens"], 7)
+        self.assertEqual(
+            summary["tokens_by_model"]["gpt-5.6-sol / subagent (architect)"]["input_tokens"], 7
+        )
         self.assertEqual(summary["root_file_changes"], 1)
 
     def test_format_report_smoke(self):

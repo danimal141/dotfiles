@@ -123,11 +123,14 @@ def aggregate(records):
     for record in records:
         label = record["source"]
         summary["sessions_by_source"][label] += 1
-        model = record["model"] or "unknown"
+        # model 単体でなく model × 実行元で分ける。gpt-5.6-sol が
+        # advisor セッション (root) 由来か architect 相談 (subagent) 由来かを
+        # 見分けるため
+        key = f"{record['model'] or 'unknown'} / {label}"
         if record["tokens"]:
-            summary["sessions_by_model"][model] += 1
+            summary["sessions_by_model"][key] += 1
             for field in TOKEN_FIELDS:
-                summary["tokens_by_model"][model][field] += record["tokens"].get(field, 0) or 0
+                summary["tokens_by_model"][key][field] += record["tokens"].get(field, 0) or 0
         if is_root(label):
             summary["root_file_changes"] += record["file_changes"]
             summary["root_exec_calls"] += record["exec_calls"]
@@ -142,16 +145,16 @@ def format_report(summary, days):
         lines.append(f"  {label:<28} {count:>5}")
     lines.append("")
 
-    lines.append("## Tokens by model (sessions with usage)")
-    header = f"  {'model':<24} {'sess':>5} {'input':>12} {'cached':>12} {'output':>10} {'reasoning':>10}"
+    lines.append("## Tokens by model / source (sessions with usage)")
+    header = f"  {'model / source':<40} {'sess':>5} {'input':>12} {'cached':>12} {'output':>10} {'reasoning':>10}"
     lines.append(header)
     ordered = sorted(
         summary["tokens_by_model"].items(),
         key=lambda x: -x[1]["total_tokens"],
     )
-    for model, tokens in ordered:
+    for key, tokens in ordered:
         lines.append(
-            f"  {model:<24} {summary['sessions_by_model'][model]:>5}"
+            f"  {key:<40} {summary['sessions_by_model'][key]:>5}"
             f" {tokens['input_tokens']:>12,} {tokens['cached_input_tokens']:>12,}"
             f" {tokens['output_tokens']:>10,} {tokens['reasoning_output_tokens']:>10,}"
         )
