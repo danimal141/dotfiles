@@ -208,6 +208,7 @@ dotfiles/
 │           ├── claude.nix         # ~/.claude/* (excluding dynamic areas) + claudeCodeInstall hook (~/.local/bin/claude)
 │           ├── codex.nix          # ~/.codex/* (config.toml generated via pkgs.formats.toml, mutable-copied by codexConfig hook /
 │           │                        # AGENTS.md symlinks tools/codex/AGENTS.md (→ tools/claude/CLAUDE.md) / mcp_servers read from tools/mcp/servers.json. apm skills go to ~/.agents/skills/) + codexInstall hook (~/.local/bin/codex)
+│           ├── grok.nix           # personal-only Grok Build installer + ~/.grok/managed_config.toml
 │           ├── apm.nix            # ~/.apm/* + home.activation.apmInstall hook
 │           ├── mise.nix           # programs.mise + ~/.config/mise/config.toml + miseTrust hook
 │           ├── markdownlint.nix   # ~/.markdownlint.jsonc symlink
@@ -261,7 +262,8 @@ into the Nix store, and `~/<path>` becomes a symlink there.
   via Nix `${user}` and friends, and the tool does not rewrite the config
   itself. codex `config.toml` used to live here, but since codex appends
   trust at startup it moved to a mutable copy via an activation hook (from
-  a `pkgs.formats.toml` output)
+  a `pkgs.formats.toml` output). Grok Build's `managed_config.toml` uses
+  this pattern.
 * **Trade-off**: editing means rewriting `text = ''...''` inside
   `nix/home/programs/<tool>.nix` → `nix run .#switch` required
 
@@ -286,9 +288,10 @@ module and emits the file at the right path.
 Areas that tools rewrite on their own (Claude Code's
 `~/.claude/projects/`, codex's `~/.codex/sessions/`, lazy.nvim's
 `~/.local/share/nvim/lazy/`, nvim-treesitter's
-`~/.local/share/nvim/site/parser/`, apm's `~/.apm/apm_modules/`) are
-**out of home.file's scope** — they stay under `~/` as plain mutable
-directories. home-manager does not touch their placement.
+`~/.local/share/nvim/site/parser/`, apm's `~/.apm/apm_modules/`, and Grok
+Build's `~/.grok/config.toml`, auth, sessions, and downloads are **out of
+home.file's scope**. They stay under `~/` as plain mutable directories or
+files. home-manager does not touch their placement.
 
 This ensures:
 
@@ -347,6 +350,8 @@ one more entry.
 `networking.hostName` is enforced by `nix/darwin/hosts/<hostname>.nix`
 (overriding whatever the IT department assigned), and
 `scutil --get LocalHostName` is the source of truth for the flake host.
+`hostname` is passed to every module, and Grok Build is enabled only when it is
+exactly `personal`.
 
 ## Declarative side-effects at apply time
 

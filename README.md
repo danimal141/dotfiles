@@ -402,8 +402,8 @@ PATH resolution order (`tools/zsh/.zshrc`):
 2. `/run/current-system/sw/{bin,sbin}` — nix-darwin system profile
 3. `/opt/homebrew/opt/{llvm,libpq,mysql@8.4}/bin` — keg-only Homebrew
 4. `$HOME/bin`, `$HOME/.local/bin` — local-installer destinations
-   (Claude Code / Codex native binaries live here; placed before Homebrew so
-   that `which claude` / `which codex` resolve to the native installs)
+   (Claude Code / Codex / Grok Build native binaries live here; placed before
+   Homebrew so `which claude` / `which codex` / `which grok` resolve to native installs)
 5. `/usr/local/bin` — Docker Desktop / VSCode / Cursor shim location
 6. `/opt/homebrew/{bin,sbin}` — Homebrew (formulae / casks outside the
    Nix migration)
@@ -448,6 +448,54 @@ declaration alone does not uninstall because
 
 MCP server configuration (`tools/claude/setup-mcp.sh`) is driven through
 `claude mcp add` and is independent of the install path.
+
+## Grok Build CLI
+
+[Grok Build](https://docs.x.ai/build/overview) is xAI's official CLI. The
+`nix/home/programs/grok.nix` module is enabled only when
+`hostname == "personal"`, so the `work` configuration adds no Grok binary,
+config, or activation hook.
+
+On the personal Mac, complete the first-time setup with:
+
+```shell
+nix run .#switch
+grok login
+grok inspect
+grok
+```
+
+`grok login` starts browser authentication. Whether X Premium is entitled to
+use Grok Build is checked by the service for the logged-in X / xAI account.
+This repository does not change the subscription or store credentials, so
+follow the X or xAI account guidance if login reports that the plan is not
+eligible.
+
+The official installer places the binary at `~/.grok/bin/grok`, and the
+activation hook creates a `~/.local/bin/grok` symlink for the existing PATH.
+It passes `SHELL=/bin/sh` to prevent the installer from editing the raw
+`~/.zshrc` symlink. `~/.grok/config.toml` remains a mutable user file because
+the installer and Grok update it. Settings changed through `/settings`, auth,
+sessions, and downloads stay outside the repository.
+
+Grok's Claude compatibility layer reuses the existing `~/.claude/CLAUDE.md`,
+rules, skills, agents, and MCP sources. Skills deployed by
+[APM](https://docs.x.ai/build/features/skills-plugins-marketplaces) to
+`~/.claude/skills/` and `~/.agents/skills/`, plus MCP servers registered by
+`tools/claude/setup-mcp.sh` in `~/.claude.json`, are therefore available to
+Grok. Check the merged sources with `grok inspect`; use `grok mcp list` for
+Grok-native MCP configuration.
+
+Claude hooks are intentionally not reused. The current hooks depend on
+Claude-specific stdin schemas and transcript internals, so
+`~/.grok/managed_config.toml` sets `[compat.claude] hooks = false`. Codex-only
+`~/.codex/config.toml`, profiles, custom agents, and hooks are also not copied
+because their formats and execution models differ. Shared instructions,
+rules, skills, and MCP are the reuse boundary.
+
+See [Grok Build Settings](https://docs.x.ai/build/settings) and
+[MCP Servers](https://docs.x.ai/build/features/mcp-servers) for the upstream
+configuration details.
 
 ## Codex model usage (Luna root + Sol advisor)
 

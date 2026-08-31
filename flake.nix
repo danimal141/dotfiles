@@ -103,7 +103,7 @@
       # specialArgs で `user` / `hostname` / `gitName` / `gitEmail` /
       # `dotfilesPath` / `inputs` を全モジュールに渡す:
       #   `user`         — `nix/system.nix` が primaryUser に使う
-      #   `hostname`     — モジュール内で host 別判定したい場合の保険 (現状未使用)
+      #   `hostname`     — モジュール内の host 別判定に使う
       #   `gitName` / `gitEmail` — `nix/home/programs/git.nix` の identity に使う
       #   `dotfilesPath` — repo の絶対 path。`nix/home/programs/*.nix` が
       #     `mkOutOfStoreSymlink` の引数や `builtins.readFile` の引数に使う。
@@ -172,6 +172,7 @@
               home-manager.extraSpecialArgs = {
                 inherit
                   user
+                  hostname
                   gitName
                   gitEmail
                   dotfilesPath

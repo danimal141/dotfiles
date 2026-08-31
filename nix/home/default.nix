@@ -20,6 +20,7 @@
     ./programs/nvim.nix
     ./programs/claude.nix
     ./programs/codex.nix
+    ./programs/grok.nix
     ./programs/apm.nix
     ./programs/mise.nix
     ./programs/markdownlint.nix

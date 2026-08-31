@@ -18,6 +18,8 @@ This doc focuses mostly on per-tool internals.
   `gitEmail`, and `mkHost` derives
   `dotfilesPath = "/Users/${user}/Documents/dev/dotfiles"` and threads it
   through `specialArgs` to every module (no per-module duplication).
+  `hostname` is passed to both system and home-manager modules for the
+  personal-only Grok Build gate.
 * `nix/darwin/` — nix-darwin (system layer). `default.nix` imports the
   whole directory; `flake.nix` only needs to import `./nix/darwin` once.
 * `nix/home/` — home-manager (user layer). `default.nix` is the entry
@@ -43,6 +45,9 @@ Files that home-manager places via `home.file`:
   mutable-copied by activation / AGENTS.md → tools/codex/AGENTS.md
   (→ tools/claude/CLAUDE.md) symlink + dynamic areas sessions/ log.json;
   apm skills land in ~/.agents/skills/ instead)
+* `.grok/managed_config.toml` (static config disabling Claude-compatible hooks).
+  `~/.grok/config.toml`, auth, sessions, and downloads remain mutable Grok-owned
+  data outside `home.file`.
 * `.apm/` (apm.yml / apm.lock.yaml / .gitignore + dynamic areas
   apm_modules/ config.json / .claude/ / .github/)
 * `.local/bin/tmux-start` (executable)
@@ -121,6 +126,19 @@ left outside `home.file` as mutable directories under `~/`. See
 
 For APM's install hook and the skill ingestion procedure, see
 [README.md#claude-code-skills-via-apm](../README.md#claude-code-skills-via-apm).
+
+## Grok Build
+
+* `nix/home/programs/grok.nix` is enabled only when `hostname == "personal"`.
+  Its activation hook runs the xAI official installer only for a missing
+  binary, using `~/.grok/bin/grok` as the canonical path and a
+  `~/.local/bin/grok` symlink for the existing PATH.
+* `~/.grok/config.toml` is not managed because the installer and Grok update
+  it. Home-manager places only the static `~/.grok/managed_config.toml`, which
+  disables Claude Code hooks with `compat.claude.hooks = false`.
+* Grok's Claude compatibility layer reuses `~/.claude/CLAUDE.md`, rules,
+  skills, agents, and MCP. Codex config, profiles, custom agents, and hooks
+  are not copied because their formats differ.
 
 ## Codex
 

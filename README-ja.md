@@ -379,8 +379,8 @@ PATH 解決順 (`tools/zsh/.zshrc`):
 2. `/run/current-system/sw/{bin,sbin}` — nix-darwin の system プロファイル
 3. `/opt/homebrew/opt/{llvm,libpq,mysql@8.4}/bin` — keg-only Homebrew
 4. `$HOME/bin`, `$HOME/.local/bin` — ユーザローカル installer の置き場
-   (Claude Code / Codex native binary がここで、brew cask より前に置くことで
-   `which claude` / `which codex` を native に寄せている)
+   (Claude Code / Codex / Grok Build native binary がここで、brew cask より前に
+   置くことで `which claude` / `which codex` / `which grok` を native に寄せている)
 5. `/usr/local/bin` — Docker Desktop / VSCode / Cursor 等の shim
 6. `/opt/homebrew/{bin,sbin}` — Homebrew 通常 prefix (Nix 移行外の formulae / cask)
 7. mise activate がこの後で言語ランタイム shim を PATH 先頭に差し込む
@@ -422,6 +422,48 @@ brew cask `claude-code` も `nix/darwin/homebrew.nix` で宣言上は残して�
 
 MCP server 設定 (`tools/claude/setup-mcp.sh`) は `claude mcp add` 経由で動くため
 install 経路の変更とは独立。
+
+## Grok Build CLI
+
+[Grok Build](https://docs.x.ai/build/overview) は xAI 公式の CLI で、
+`hostname == "personal"` のときだけ `nix/home/programs/grok.nix` が有効になる。
+そのため `work` 用の構成では binary、設定、activation hook のいずれも追加しない。
+
+personal Mac での初回手順は次のとおり。
+
+```shell
+nix run .#switch
+grok login
+grok inspect
+grok
+```
+
+`grok login` はブラウザ認証を開始する。X Premium での利用可否はログインした
+X / xAI アカウントの契約状態をサービス側で判定する。この repo は契約や認証情報を
+変更しないため、ログイン後に利用対象外と表示された場合は X または xAI 側の契約案内を
+確認する。
+
+binary は公式 installer で `~/.grok/bin/grok` に配置し、既存の PATH に合わせて
+`~/.local/bin/grok` の symlink を作る。installer が `~/.zshrc` を編集しないように
+activation では `SHELL=/bin/sh` を渡す。`~/.grok/config.toml` は installer と
+Grok が更新する mutable file なので repo では管理しない。`/settings` の変更、認証情報、
+セッション、ダウンロードは user 側に残る。
+
+Grok の Claude 互換機能により、既存の `~/.claude/CLAUDE.md`、rules、skills、agents、
+MCP を再利用する。[APM](https://docs.x.ai/build/features/skills-plugins-marketplaces)
+で `~/.claude/skills/` と `~/.agents/skills/` に配置される skill と、
+`tools/claude/setup-mcp.sh` が `~/.claude.json` に登録する MCP はそのまま利用できる。
+互換 source を含む統合状態の確認には `grok inspect` を使う。
+Grok 固有の MCP 設定を確認する場合は `grok mcp list` を使う。
+
+Claude Code の hooks だけは再利用しない。既存 hooks は Claude 固有の stdin schema と
+transcript 内部形式に依存するため、`~/.grok/managed_config.toml` で
+`[compat.claude] hooks = false` を設定している。Codex 固有の
+`~/.codex/config.toml`、profile、custom agent、hooks も形式と実行モデルが異なるため
+コピーしない。共有の instruction、rules、skills、MCP を再利用の境界とする。
+
+詳細は [Grok Build Settings](https://docs.x.ai/build/settings)、
+[MCP Servers](https://docs.x.ai/build/features/mcp-servers) を参照。
 
 ## Codex のモデル運用 (Luna root + Sol advisor)
 

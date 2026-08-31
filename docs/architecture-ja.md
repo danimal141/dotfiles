@@ -15,7 +15,8 @@
 * `flake.nix` — `darwinConfigurations.<host>` を `mkHost` で宣言。`hosts`
   attrset の各 entry に `user` (macOS account) / `gitName` / `gitEmail` を
   持ち、`mkHost` で `dotfilesPath = "/Users/${user}/Documents/dev/dotfiles"`
-  を派生させて `specialArgs` 経由で全モジュールに流す (各 .nix で重複定義しない)
+  を派生させて `specialArgs` 経由で全モジュールに流す (各 .nix で重複定義しない)。
+  `hostname` は system と home-manager の両方へ渡し、Grok Build の personal 限定判定に使う
 * `nix/darwin/` — nix-darwin (system 層)。`default.nix` が配下を一括 imports。
   flake.nix からは `./nix/darwin` 1 つを import するだけ
 * `nix/home/` — home-manager (user 層)。`default.nix` が entry point、
@@ -40,6 +41,9 @@
 * `.codex/` (config.toml は pkgs.formats.toml 生成物を activation で mutable
   コピー / AGENTS.md → tools/codex/AGENTS.md (→ tools/claude/CLAUDE.md) symlink
   * 動的領域 sessions/ log.json。apm skill は ~/.agents/skills/ 側に入る)
+* `.grok/managed_config.toml` (Claude 互換 hooks を無効化する静的設定)。
+  `~/.grok/config.toml`、認証、セッション、ダウンロードは Grok Build が管理する
+  mutable 領域として home.file の対象外にする
 * `.apm/` (apm.yml / apm.lock.yaml / .gitignore + 動的領域 apm_modules/
   config.json / .claude/ / .github/)
 * `.local/bin/tmux-start` (executable)
@@ -112,6 +116,18 @@
 APM の install hook / skill 取り込み手順は
 [README-ja.md#claude-code-skills-via-apm](../README-ja.md#claude-code-skills-via-apm)
 参照。
+
+## Grok Build
+
+* `nix/home/programs/grok.nix` は `hostname == "personal"` のときだけ有効。
+  xAI 公式 installer を activation hook から初回だけ実行し、
+  `~/.grok/bin/grok` を canonical path、`~/.local/bin/grok` を PATH 用 symlink とする
+* `~/.grok/config.toml` は installer と Grok が更新するため管理対象にしない。
+  `~/.grok/managed_config.toml` だけを home-manager の静的 text として配置し、
+  Claude Code hooks を `compat.claude.hooks = false` で無効化する
+* Grok の Claude 互換機能を通じて `~/.claude/CLAUDE.md`、rules、skills、agents、
+  MCP を再利用する。Codex の config、profile、custom agent、hooks は形式が異なるため
+  直接コピーしない
 
 ## Codex
 

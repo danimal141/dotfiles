@@ -195,6 +195,7 @@ dotfiles/
 │           ├── claude.nix         # ~/.claude/* (動的領域除く) + claudeCodeInstall hook (~/.local/bin/claude)
 │           ├── codex.nix          # ~/.codex/* (config.toml は pkgs.formats.toml 生成物を codexConfig hook で mutable コピー /
 │           │                        # AGENTS.md は tools/codex/AGENTS.md (→ tools/claude/CLAUDE.md) への symlink / mcp_servers は tools/mcp/servers.json を読込。apm skill は ~/.agents/skills/ 側) + codexInstall hook (~/.local/bin/codex)
+│           ├── grok.nix           # personal 限定の Grok Build installer + ~/.grok/managed_config.toml
 │           ├── apm.nix            # ~/.apm/* + home.activation.apmInstall hook
 │           ├── mise.nix           # programs.mise + ~/.config/mise/config.toml + miseTrust hook
 │           ├── markdownlint.nix   # ~/.markdownlint.jsonc symlink
@@ -244,7 +245,8 @@ repo の絶対 path を user 変数 (`/Users/${user}/Documents/dev/dotfiles`) �
 * **使い所**: Nix の `${user}` などで内容を user/host 別にレンダリングし、
   かつツールが自走で書き換えない静的 config に向く。codex `config.toml` は
   以前この方式だったが、codex が起動時に trust を追記するため activation hook
-  での mutable コピー (`pkgs.formats.toml` 生成物) に移行した
+  での mutable コピー (`pkgs.formats.toml` 生成物) に移行した。Grok Build の
+  `managed_config.toml` はこの方式で配置する
 * **トレードオフ**: 編集には `nix/home/programs/<tool>.nix` の `text = ''...''` を書き換え
   → `nix run .#switch` が必要
 
@@ -266,7 +268,8 @@ repo の絶対 path を user 変数 (`/Users/${user}/Documents/dev/dotfiles`) �
 ツールが自走で書き換える領域 (Claude Code の `~/.claude/projects/`, codex の
 `~/.codex/sessions/`, lazy.nvim の `~/.local/share/nvim/lazy/`,
 nvim-treesitter の `~/.local/share/nvim/site/parser/`,
-apm の `~/.apm/apm_modules/`) は **home.file 対象外**として ~/ 配下に
+apm の `~/.apm/apm_modules/`, Grok Build の `~/.grok/config.toml` と
+認証、セッション、ダウンロード) は **home.file 対象外**として ~/ 配下に
 普通の mutable directory として残す。home-manager は配置に介入しない。
 
 これにより:
@@ -317,7 +320,8 @@ hosts/<hostname>.nix) に流す。マシン追加は 1 entry 足すだけ。
 
 `networking.hostName` は `nix/darwin/hosts/<hostname>.nix` で強制 (IT 部門が
 払い出す hostname を上書き)、`scutil --get LocalHostName` を flake host の
-真実源にする。
+真実源にする。`hostname` は全モジュールへ渡し、Grok Build は
+`hostname == "personal"` のときだけ有効にする。
 
 ## apply 時の declarative 副作用
 
