@@ -467,23 +467,35 @@ transcript 内部形式に依存するため、`~/.grok/managed_config.toml` で
 
 ## Codex のモデル運用 (Luna / Sol / Astra)
 
-Codex は設計・方針策定を Astra / Sol、実装・調査・検証を Luna に分ける。
+Codex は実装を Luna、設計・方針策定とレビューを Sol、難しい end-to-end の統合を
+Astra に分ける。
 
 * 通常の `codex` は `gpt-5.6-luna` / max で起動し、実装・調査・検証を root が
   直接行う
+* custom agent は用途ごとに推論量を分ける。`worker` は Luna / max、軽量な
+  コード探索・ログ確認の `explorer` は Luna / medium、`verifier` は Sol / high、
+  設計相談の `architect` も Sol / high とする。未指定の subagent は Luna / high。
+  built-in の `/review` は `review_model` で Sol を使う
 * 設計判断が必要になったら root が custom agent `architect`
   (gpt-5.6-sol / high / read-only) に相談する。既存方針に沿う機械的変更は、
   複数ファイルでも相談不要
 * 複数段階で不確実性や失敗コストが高い実装・調査は `codex -p astra` で起動する。
   `gpt-6-astra` / high の root が設計・方針策定・統合を担当し、実働は Luna の
-  `worker` / `explorer` / `verifier` にまとまった単位で渡す。Sol への相談は
-  未解決の論点や別視点での評価が必要な場合に絞る
+  `worker` / `explorer` と Sol の `verifier` にまとまった単位で渡す。Sol への
+  相談は未解決の論点や別視点での評価が必要な場合に絞る
 * 最難関の作業だけは `codex -p astra -c model_reasoning_effort=max` で昇格する。
   既定の profile は high とし、毎回 max にして token 消費を増やさない
 * タスク全体が設計検討のときは `codex -p sol` (advisor モード) を使う。
   Sol / high + read-only sandbox で起動する相談専用セッションで、Claude Code の
   opusplan に相当する役割分離になる。例外的に Sol で編集したいときは
   `codex -p sol -s workspace-write` で明示 override する
+* base config は `on-request` + `workspace-write`。repo 内の操作は進め、sandbox
+  外の操作だけ承認を求める。herdr の自動起動は CLI の `--ask-for-approval never`
+  と `--sandbox workspace-write` が優先されるため、完全自動運転の例外として扱う
+* Fast mode は速度と引き換えにクレジット消費が増えるため既定有効にしない。
+  必要なセッションだけ `/fast on`、状態確認は `/fast status`、終了は `/fast off`
+* subagent の同時実行上限は 8。環境変数は `inherit=all` を維持するが、Codex の
+  secret-like な既定除外を有効にして、秘密らしい値を subagent の shell へ渡さない
 * 複数ファイルにまたがる振る舞い、高リスク、実行時設定・データ・互換性の変更では、
   実装後に `verifier` agent を起動し、成功条件ごとの証拠と `PASS / FAIL / INCONCLUSIVE` を
   受け取ってから完了扱いにする。文書・コメントだけの変更や自明な機械的変更は、
@@ -507,7 +519,7 @@ Codex は設計・方針策定を Astra / Sol、実装・調査・検証を Luna
 明示的に役割分担を依頼する起動例:
 
 ```sh
-codex -p astra '<タスク内容>。設計・方針策定を担当し、実装・調査・検証は Luna に委譲して進めてください。'
+codex -p astra '<タスク内容>。設計・方針策定を担当し、実装・調査は Luna、検証は Sol に委譲して進めてください。'
 ```
 
 ## Agent skills via APM

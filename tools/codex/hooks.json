@@ -30,6 +30,12 @@
             "command": "python3 ~/.codex/hooks/session-namer.py",
             "timeout": 10,
             "type": "command"
+          },
+          {
+            "async": true,
+            "command": "python3 ~/.codex/hooks/notify.py",
+            "timeout": 10,
+            "type": "command"
           }
         ]
       }

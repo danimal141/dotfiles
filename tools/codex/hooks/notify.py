@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Send a non-blocking macOS notification when a Codex turn completes."""
+"""Send a macOS notification for a Codex Stop hook event."""
 
 import json
 import shutil
@@ -7,16 +7,22 @@ import subprocess
 import sys
 
 
-def main(args):
-    if not args:
-        return 0
-
+def main():
     try:
-        event = json.loads(args[0])
-    except json.JSONDecodeError:
+        event = json.load(sys.stdin)
+    except (json.JSONDecodeError, ValueError):
         return 0
 
-    if event.get("type") != "agent-turn-complete":
+    if not isinstance(event, dict):
+        return 0
+
+    if event.get("hook_event_name") != "Stop":
+        return 0
+
+    if not all(
+        isinstance(event.get(field), str) and event[field]
+        for field in ("session_id", "turn_id")
+    ):
         return 0
 
     notifier = shutil.which("terminal-notifier")
@@ -44,4 +50,4 @@ def main(args):
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv[1:]))
+    sys.exit(main())

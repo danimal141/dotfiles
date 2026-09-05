@@ -71,7 +71,12 @@ let
     approval_policy = "on-request";
     approvals_reviewer = "auto_review";
     allow_login_shell = true;
+    # approval_policy と組み合わせ、repo 内は自動実行しつつ sandbox 外だけ
+    # 承認を求める。CLI の明示指定 (herdr など) がある場合はそちらを優先する。
+    sandbox_mode = "workspace-write";
     model_reasoning_effort = "max";
+    # /review は、実装用 Luna と別視点の Sol に分ける。
+    review_model = "gpt-5.6-sol";
     web_search = "live";
     personality = "pragmatic";
     project_doc_fallback_filenames = [ "CLAUDE.md" ];
@@ -108,23 +113,23 @@ let
       * 成功条件を満たしたら依頼外へ広げず終了する。最終回答には変更点、検証
         コマンドと結果、未検証事項または残存リスクを含める
     '';
-    notify = [
-      "python3"
-      "${dotfilesPath}/tools/codex/hooks/notify.py"
-    ];
-
-    # subagent (multi-agent) の既定値。main / subagent とも luna / max で回し、
-    # 設計相談だけ architect agent (sol / high) に逆向き委譲する。[agents] は
+    # subagent (multi-agent) の既定値。実装 worker は custom agent で luna / max、
+    # 軽量な探索は explorer で luna / medium、設計・レビューは sol / high に分ける。
+    # 未指定の subagent は luna / high とし、設計相談だけ architect agent (sol / high)
+    # に委譲する。[agents] は
     # 既知フィールド以外を AgentRoleToml (custom agent 定義) として解釈するので、
     # key 名を間違えると parse error になる (`codex exec --strict-config` で検証済み)。
     agents = {
-      max_concurrent_threads_per_session = 30;
+      max_concurrent_threads_per_session = 8;
       default_subagent_model = "gpt-5.6-luna";
-      default_subagent_reasoning_effort = "max";
+      default_subagent_reasoning_effort = "high";
     };
 
     shell_environment_policy = {
       "inherit" = "all";
+      # inherit=all のままでも、Codex が定める secret-like な環境変数は
+      # subagent の shell に渡さない。必要な値は対象コマンドへ明示的に渡す。
+      ignore_default_excludes = false;
       experimental_use_profile = false;
     };
 
@@ -132,7 +137,6 @@ let
       goals = true;
       hooks = true;
       multi_agent = true;
-      terminal_resize_reflow = true;
     };
 
     tui = {
@@ -202,7 +206,8 @@ let
     model_reasoning_effort = "high";
     developer_instructions = ''
       このセッションは gpt-6-astra を使う難しい実装・調査の root モード。
-      Astra が設計・方針策定・統合・最終判断を担当し、実働は Luna に委譲する。
+      Astra が設計・方針策定・統合・最終判断を担当し、実装・調査は Luna、
+      検証は Sol に委譲する。
 
       * 作業開始時に、依頼を目的、検証可能な成功条件、スコープ外事項に分ける。
         自明な小変更では明示的な計画を省略してよい
@@ -211,8 +216,8 @@ let
       * root が設計判断を行い、未解決のトレードオフや別視点での評価が必要な場合に
         `architect` (Sol) へ論点を絞って相談する。既存方針に沿う機械的変更は、
         複数ファイルでも相談不要。結果を左右する要件の曖昧さはユーザーに質問する
-      * 委譲が許可されている場合は、実装を `worker`、調査を `explorer`、検証を
-        `verifier` (いずれも Luna) に渡す。方針と成功条件が決まったまとまりで依頼し、
+      * 委譲が許可されている場合は、実装を `worker`、調査を `explorer` (Luna)、
+        検証を `verifier` (Sol) に渡す。方針と成功条件が決まったまとまりで依頼し、
         小さな操作ごとに agent を増やさない。同じ調査を親子で重複させない
       * 並列化は独立した作業だけにし、同じファイルを同時編集させない。依存する
         作業は前の結果を統合してから渡す。委譲した結果はすべて統合して完了する

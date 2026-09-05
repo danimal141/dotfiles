@@ -139,13 +139,16 @@ APM の install hook / skill 取り込み手順は
   実ファイルとして毎回上書き配置する。codex 自身が起動時に `[projects]`
   trust を config.toml へ追記するため read-only symlink にはできない
   (書込が code -32603 で失敗する)。設定の編集後は `nix run .#switch` 必須
-* モデル運用は設計・方針策定を Astra / Sol、実装・調査・検証を Luna に分ける。
-  デフォルトは `gpt-5.6-luna` / max で、実装・調査・検証は root が直接行う。
+* モデル運用は実装を Luna、設計・方針策定とレビューを Sol、難しい end-to-end の
+  統合を Astra に分ける。デフォルトは `gpt-5.6-luna` / max で、root の実装は
+  max を維持する。custom agent は `worker` が Luna / max、`explorer` が Luna /
+  medium、`verifier` と `architect` が Sol / high、未指定の subagent は Luna /
+  high とする。built-in の `/review` も Sol を使う
   不確実性や失敗コストが高い複数段階の作業は `codex -p astra`
   (`gpt-6-astra` / high) を使い、最難関だけ `-c model_reasoning_effort=max` へ
   明示的に昇格する。Astra profile は base の承認、sandbox、MCP、hooks、agent 設定を
-  継承し、実働を Luna の worker / explorer / verifier にまとまった単位で渡す。
-  委譲時は自己完結した指示を渡し、不要な会話履歴の引き継ぎや重複調査を避ける
+  継承し、実働を Luna の worker / explorer と Sol の verifier にまとまった単位で
+  渡す。委譲時は自己完結した指示を渡し、不要な会話履歴の引き継ぎや重複調査を避ける
 * Luna で設計判断が必要になったら custom agent `architect`
   (gpt-5.6-sol / high / read-only) に相談し、タスク全体が設計検討なら
   `codex -p sol` (advisor モード) を使う。Astra は設計を担当し、未解決の論点だけ
@@ -162,11 +165,18 @@ APM の install hook / skill 取り込み手順は
   上書きする
 * `~/.codex/astra.config.toml` は難しい end-to-end 作業用の profile
   (`model = gpt-6-astra` / `high`)。`codex -p astra` で起動し、最難関だけ
-  `-c model_reasoning_effort=max` を追加する。通常のサブエージェントは Luna の
-  ままにして、Astra root の推論を設計・方針策定・統合へ集中させる
+  `-c model_reasoning_effort=max` を追加する。worker / explorer は Luna のまま、
+  verifier は Sol とし、Astra root の推論を設計・方針策定・統合へ集中させる
 * `~/.codex/agents/` は `tools/codex/agents/` への out-of-store symlink。
-  worker / explorer / verifier (luna / max) と architect (sol / high) の
-  custom agent を管理する
+  worker (luna / max)、explorer (luna / medium)、verifier / architect (sol /
+  high) の custom agent を管理する。subagent の同時実行上限は 8
+* base config は `approval_policy=on-request` と `sandbox_mode=workspace-write`。
+  repo 内の操作は進め、sandbox 外だけ承認を求める。herdr の launcher は CLI で
+  `--ask-for-approval never` と `--sandbox workspace-write` を明示するため、
+  自動運転の例外として別に扱う。環境変数は `inherit=all` を維持しつつ、Codex
+  の secret-like な既定除外を有効にして subagent への漏えい範囲を抑える
+* Fast mode は既定有効にしない。速度向上はクレジット消費を増やすため、必要な
+  セッションだけ `/fast on` を使い、`/fast status` で確認する
 * `tools/codex/scripts/codex-usage-report.py` は rollout jsonl からモデル別
   トークンと委譲状況を集計する (Sol の消費が設計相談に限定されているかの
   検証用。`--days` で期間指定)
@@ -192,10 +202,11 @@ APM の install hook / skill 取り込み手順は
   確定する操作は `forbidden`、`git push` のような広い変更操作は承認必須にする。
   exec policy は sandbox 外実行の可否を制御する。Codex が `default.rules` を
   更新できるよう、親の `~/.codex/rules/` は mutable のままにする
-* turn 完了通知は Codex の top-level `notify`、承認待ち通知は terminal が
-  unfocused のときの `tui.notifications` を使う。Claude の markdown 自動修正と
-  PR 作成前レビューゲートは、Codex に同等の信頼できる hook 入力・イベントが
-  ないため移植しない
+* turn 完了通知は `Stop` の非同期 hook (`tools/codex/hooks/notify.py`) を使い、
+  承認待ち通知は terminal が unfocused のときの `tui.notifications` を使う。
+  top-level `notify` はセッション復元時に過去の完了を再通知し得るため使わない。
+  Claude の markdown 自動修正と PR 作成前レビューゲートは、Codex に同等の
+  信頼できる hook 入力・イベントがないため移植しない
 
 secrets 注入経路全体の設計は
 [design-philosophy-ja.md#secrets-設計](design-philosophy-ja.md#secrets-設計)

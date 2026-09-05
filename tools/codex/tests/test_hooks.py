@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import importlib.util
+import io
 import json
 import subprocess
 import sys
@@ -10,6 +11,7 @@ from unittest import mock
 
 
 HOOKS_DIR = Path(__file__).parent.parent / "hooks"
+HOOKS_CONFIG = HOOKS_DIR.parent / "hooks.json"
 
 
 def load_notify_module():
@@ -54,10 +56,18 @@ class NotifyTest(unittest.TestCase):
     def setUp(self):
         self.notify = load_notify_module()
 
+    def run_notify(self, event):
+        with mock.patch.object(
+            self.notify.sys, "stdin", io.StringIO(json.dumps(event))
+        ):
+            return self.notify.main()
+
     @mock.patch("shutil.which", return_value="/opt/homebrew/bin/terminal-notifier")
     @mock.patch("subprocess.run")
-    def test_notifies_on_agent_turn_complete(self, run, _which):
-        result = self.notify.main([json.dumps({"type": "agent-turn-complete"})])
+    def test_notifies_on_stop(self, run, _which):
+        result = self.run_notify(
+            {"hook_event_name": "Stop", "session_id": "session-1", "turn_id": "turn-1"}
+        )
 
         self.assertEqual(result, 0)
         run.assert_called_once()
@@ -65,18 +75,69 @@ class NotifyTest(unittest.TestCase):
         self.assertIn("タスク完了です", run.call_args.args[0])
 
     @mock.patch("subprocess.run")
-    def test_ignores_unknown_event(self, run):
-        result = self.notify.main([json.dumps({"type": "unknown"})])
+    def test_ignores_non_stop_event(self, run):
+        result = self.run_notify({"hook_event_name": "SessionStart", "source": "startup"})
 
         self.assertEqual(result, 0)
+        run.assert_not_called()
+
+    @mock.patch("subprocess.run")
+    def test_ignores_legacy_notify_event(self, run):
+        result = self.run_notify(
+            {
+                "type": "agent-turn-complete",
+                "thread-id": "thread-1",
+                "turn-id": "turn-1",
+            }
+        )
+
+        self.assertEqual(result, 0)
+        run.assert_not_called()
+
+    @mock.patch("subprocess.run")
+    def test_ignores_stop_without_session_or_turn_id(self, run):
+        for event in (
+            {"hook_event_name": "Stop", "turn_id": "turn-1"},
+            {"hook_event_name": "Stop", "session_id": "session-1"},
+            {"hook_event_name": "Stop", "session_id": "", "turn_id": "turn-1"},
+        ):
+            with self.subTest(event=event):
+                result = self.run_notify(event)
+
+                self.assertEqual(result, 0)
         run.assert_not_called()
 
     @mock.patch("shutil.which", return_value="/opt/homebrew/bin/terminal-notifier")
     @mock.patch("subprocess.run", side_effect=OSError)
     def test_ignores_notifier_launch_failure(self, _run, _which):
-        result = self.notify.main([json.dumps({"type": "agent-turn-complete"})])
+        result = self.run_notify(
+            {"hook_event_name": "Stop", "session_id": "session-1", "turn_id": "turn-1"}
+        )
 
         self.assertEqual(result, 0)
+
+
+class HookConfigTest(unittest.TestCase):
+    def test_completion_notification_is_only_a_stop_hook(self):
+        config = json.loads(HOOKS_CONFIG.read_text(encoding="utf-8"))
+        hooks = config["hooks"]
+
+        stop_handlers = [handler for group in hooks["Stop"] for handler in group["hooks"]]
+        notify_handlers = [
+            handler for handler in stop_handlers if handler["command"].endswith("notify.py")
+        ]
+
+        self.assertEqual(len(notify_handlers), 1)
+        self.assertTrue(notify_handlers[0]["async"])
+        self.assertFalse(
+            any(
+                handler["command"].endswith("notify.py")
+                for event_name, groups in hooks.items()
+                if event_name != "Stop"
+                for group in groups
+                for handler in group["hooks"]
+            )
+        )
 
 
 if __name__ == "__main__":

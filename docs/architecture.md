@@ -151,16 +151,19 @@ For APM's install hook and the skill ingestion procedure, see
   appends `[projects]` trust to config.toml at startup, so it cannot be a
   read-only symlink (the write fails with code -32603). After editing the
   settings you must `nix run .#switch`.
-* Model usage is split into design and planning with Astra / Sol, and
-  implementation, exploration, and verification with Luna. The default is
-  `gpt-5.6-luna` / max, and the root
-  agent implements, explores, and verifies directly. For multi-step work with
+* Model usage uses Luna for implementation, Sol for design, planning, and review,
+  and Astra for difficult end-to-end integration. The default is
+  `gpt-5.6-luna` / max, and the root agent keeps max for implementation. Custom
+  agents use worker (Luna / max), explorer (Luna / medium), verifier and
+  architect (Sol / high), while unspecified subagents default to Luna / high.
+  Built-in `/review` also uses Sol. For multi-step work with
   substantial uncertainty or failure cost, use `codex -p astra`
   (`gpt-6-astra` / high), escalating only the hardest tasks with
   `-c model_reasoning_effort=max`. The Astra profile inherits the base approval,
   sandbox, MCP, hooks, and agent settings, and delegates bounded execution to
-  Luna worker / explorer / verifier agents with self-contained instructions,
-  avoiding unnecessary conversation inheritance and duplicate research.
+  Luna worker / explorer agents and the Sol verifier with self-contained
+  instructions, avoiding unnecessary conversation inheritance and duplicate
+  research.
 * When Luna needs a design decision it consults the custom agent `architect`
   (gpt-5.6-sol / high / read-only), and when the whole task is a design
   discussion, use `codex -p sol` (advisor mode). Astra owns design and consults
@@ -181,11 +184,20 @@ For APM's install hook and the skill ingestion procedure, see
 * `~/.codex/astra.config.toml` is the profile for difficult end-to-end work
   (`model = gpt-6-astra` / `high`). Start it with `codex -p astra`, and add
   `-c model_reasoning_effort=max` only for the hardest tasks. Its subagents
-  remain on Luna so Astra's reasoning is spent on design, planning,
-  and integration.
+  worker / explorer remain on Luna while verifier uses Sol, so Astra's reasoning
+  is spent on design, planning, and integration.
 * `~/.codex/agents/` is an out-of-store symlink to `tools/codex/agents/`,
-  which manages the worker / explorer / verifier (luna / max) and architect
-  (sol / high) custom agents.
+  which manages worker (Luna / max), explorer (Luna / medium), and verifier /
+  architect (Sol / high) custom agents. The subagent concurrency limit is 8.
+  The base config uses `approval_policy=on-request` and
+  `sandbox_mode=workspace-write`: work inside the repository proceeds, while
+  sandbox escapes require approval. The herdr launcher explicitly passes
+  `--ask-for-approval never` and `--sandbox workspace-write`, so it is treated
+  as an intentional unattended exception. Environment inheritance remains
+  `all`, but Codex's default secret-like exclusions are enabled.
+* Fast mode is not enabled by default because it increases credit consumption.
+  Use `/fast on` only for latency-sensitive sessions and check it with
+  `/fast status`.
 * `tools/codex/scripts/codex-usage-report.py` aggregates per-model tokens and
   delegation stats from the rollout jsonl (to verify Sol consumption stays
   limited to design consultation; `--days` selects the period).
@@ -213,11 +225,13 @@ For APM's install hook and the skill ingestion procedure, see
   These rules govern commands that request sandbox escape. The surrounding
   `~/.codex/rules/` directory remains mutable so Codex can maintain
   `default.rules`.
-* Turn completion notifications use Codex's top-level `notify` command, while
-  approval requests use `tui.notifications` when the terminal is unfocused.
-  Claude's markdown auto-fix and pre-PR review gate are intentionally not
-  mirrored because Codex does not expose equivalent reliable hook inputs and
-  lifecycle events.
+* Turn completion notifications use the asynchronous `Stop` hook
+  (`tools/codex/hooks/notify.py`), while approval requests use
+  `tui.notifications` when the terminal is unfocused. The top-level `notify`
+  command is intentionally unused because session restore can replay an old
+  completion and trigger a stale notification. Claude's markdown auto-fix and
+  pre-PR review gate are intentionally not mirrored because Codex does not
+  expose equivalent reliable hook inputs and lifecycle events.
 
 For the full secret-injection design, see
 [design-philosophy.md#secrets-design](design-philosophy.md#secrets-design)

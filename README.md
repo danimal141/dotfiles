@@ -499,19 +499,23 @@ configuration details.
 
 ## Codex model usage (Luna / Sol / Astra)
 
-Codex uses Astra / Sol for design and planning, and Luna for implementation,
-exploration, and verification.
+Codex uses Luna for implementation, Sol for design, planning, and review, and
+Astra for difficult end-to-end integration.
 
 * A plain `codex` starts on `gpt-5.6-luna` / max, and the root agent
   implements, explores, and verifies directly.
+* Custom agents use different reasoning budgets by role: `worker` stays on Luna /
+  max, the read-heavy `explorer` uses Luna / medium, `verifier` uses Sol / high,
+  and `architect` also uses Sol / high. Unspecified subagents default to Luna /
+  high. Built-in `/review` uses Sol through `review_model`.
 * When a design decision is needed, the root consults the custom agent
   `architect` (gpt-5.6-sol / high / read-only). Mechanical changes following an
   established approach need no consultation, even across multiple files.
 * For multi-step implementation or research with substantial uncertainty or
   failure cost, start `codex -p astra`. The `gpt-6-astra` / high root owns
   design, planning, and integration, and delegates bounded work to Luna
-  `worker` / `explorer` / `verifier` agents. Consult Sol only for unresolved
-  decisions or a useful second perspective.
+  `worker` / `explorer` agents and to the Sol `verifier`. Consult Sol only for
+  unresolved decisions or a useful second perspective.
 * Escalate only the hardest tasks with
   `codex -p astra -c model_reasoning_effort=max`. The profile defaults to high
   to avoid paying the maximum reasoning cost on every task.
@@ -519,6 +523,16 @@ exploration, and verification.
   mode): a consultation-only session on Sol / high with a read-only sandbox,
   the equivalent of Claude Code's opusplan role split. To exceptionally edit
   with Sol, override explicitly with `codex -p sol -s workspace-write`.
+* The base config is `on-request` plus `workspace-write`: work inside the repo
+  proceeds, while sandbox escapes require approval. The herdr launcher explicitly
+  passes `--ask-for-approval never` and `--sandbox workspace-write`, so it is an
+  intentional unattended exception.
+* Fast mode is not enabled by default because it increases credit consumption.
+  Use `/fast on` for a session that needs lower latency, `/fast status` to check,
+  and `/fast off` to disable it.
+* The subagent concurrency limit is 8. Environment inheritance remains `all`, but
+  Codex's default secret-like exclusions are enabled so those values are not passed
+  to subagent shells.
 * For behavior spanning multiple files, high-risk changes, or runtime
   configuration, data, or compatibility changes, run
   the `verifier` agent after implementation and require evidence for each
@@ -548,7 +562,7 @@ and [Subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents).
 Example with an explicit delegation request:
 
 ```sh
-codex -p astra '<task>. Own design and planning; delegate implementation, exploration, and verification to Luna.'
+codex -p astra '<task>. Own design and planning; delegate implementation and exploration to Luna, and verification to Sol.'
 ```
 
 ## Agent skills via APM
