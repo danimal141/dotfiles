@@ -139,16 +139,31 @@ APM の install hook / skill 取り込み手順は
   実ファイルとして毎回上書き配置する。codex 自身が起動時に `[projects]`
   trust を config.toml へ追記するため read-only symlink にはできない
   (書込が code -32603 で失敗する)。設定の編集後は `nix run .#switch` 必須
-* モデル運用は「日常 = Luna root、設計 = Sol」に分離する。デフォルトは
-  `gpt-5.6-luna` / max で、実装・調査・検証は root が直接行う。設計判断が
-  必要になったら custom agent `architect` (gpt-5.6-sol / high / read-only) に
-  相談し、タスク全体が設計検討なら `codex -p sol` (advisor モード) を使う
+* モデル運用は設計・方針策定を Astra / Sol、実装・調査・検証を Luna に分ける。
+  デフォルトは `gpt-5.6-luna` / max で、実装・調査・検証は root が直接行う。
+  不確実性や失敗コストが高い複数段階の作業は `codex -p astra`
+  (`gpt-6-astra` / high) を使い、最難関だけ `-c model_reasoning_effort=max` へ
+  明示的に昇格する。Astra profile は base の承認、sandbox、MCP、hooks、agent 設定を
+  継承し、実働を Luna の worker / explorer / verifier にまとまった単位で渡す。
+  委譲時は自己完結した指示を渡し、不要な会話履歴の引き継ぎや重複調査を避ける
+* Luna で設計判断が必要になったら custom agent `architect`
+  (gpt-5.6-sol / high / read-only) に相談し、タスク全体が設計検討なら
+  `codex -p sol` (advisor モード) を使う。Astra は設計を担当し、未解決の論点だけ
+  Sol に相談する。複数ファイルにまたがる振る舞い、高リスク、実行時設定・データ・
+  互換性の変更は、実装後に `verifier` agent が成功条件ごとの証拠と
+  `PASS / FAIL / INCONCLUSIVE` を返すまで完了扱いにしない。文書・コメントだけの
+  変更や自明な機械的変更は直接検証でよい。委譲には明示的な user / project / skill
+  指示が必要で、利用できない場合は root が必要な検証を直接行う
 * `~/.codex/sol.config.toml` は advisor モード用の profile (model = sol /
   read-only sandbox)。現行 codex の profile v2 は config.toml 内の
   `[profiles.<name>]` (legacy) を拒否し `<name>.config.toml` の別ファイルを
   要求する。codex は profile ファイルにも trust 等の状態を追記するため、
   config.toml と同じく `codexConfig` hook が mutable 実ファイルとして毎回
   上書きする
+* `~/.codex/astra.config.toml` は難しい end-to-end 作業用の profile
+  (`model = gpt-6-astra` / `high`)。`codex -p astra` で起動し、最難関だけ
+  `-c model_reasoning_effort=max` を追加する。通常のサブエージェントは Luna の
+  ままにして、Astra root の推論を設計・方針策定・統合へ集中させる
 * `~/.codex/agents/` は `tools/codex/agents/` への out-of-store symlink。
   worker / explorer / verifier (luna / max) と architect (sol / high) の
   custom agent を管理する

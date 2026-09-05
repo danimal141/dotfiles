@@ -465,20 +465,50 @@ transcript 内部形式に依存するため、`~/.grok/managed_config.toml` で
 詳細は [Grok Build Settings](https://docs.x.ai/build/settings)、
 [MCP Servers](https://docs.x.ai/build/features/mcp-servers) を参照。
 
-## Codex のモデル運用 (Luna root + Sol advisor)
+## Codex のモデル運用 (Luna / Sol / Astra)
 
-Codex は「日常 = Luna、設計 = Sol」で使い分ける。
+Codex は設計・方針策定を Astra / Sol、実装・調査・検証を Luna に分ける。
 
 * 通常の `codex` は `gpt-5.6-luna` / max で起動し、実装・調査・検証を root が
   直接行う
 * 設計判断が必要になったら root が custom agent `architect`
-  (gpt-5.6-sol / high / read-only) に相談する
+  (gpt-5.6-sol / high / read-only) に相談する。既存方針に沿う機械的変更は、
+  複数ファイルでも相談不要
+* 複数段階で不確実性や失敗コストが高い実装・調査は `codex -p astra` で起動する。
+  `gpt-6-astra` / high の root が設計・方針策定・統合を担当し、実働は Luna の
+  `worker` / `explorer` / `verifier` にまとまった単位で渡す。Sol への相談は
+  未解決の論点や別視点での評価が必要な場合に絞る
+* 最難関の作業だけは `codex -p astra -c model_reasoning_effort=max` で昇格する。
+  既定の profile は high とし、毎回 max にして token 消費を増やさない
 * タスク全体が設計検討のときは `codex -p sol` (advisor モード) を使う。
   Sol / high + read-only sandbox で起動する相談専用セッションで、Claude Code の
   opusplan に相当する役割分離になる。例外的に Sol で編集したいときは
   `codex -p sol -s workspace-write` で明示 override する
+* 複数ファイルにまたがる振る舞い、高リスク、実行時設定・データ・互換性の変更では、
+  実装後に `verifier` agent を起動し、成功条件ごとの証拠と `PASS / FAIL / INCONCLUSIVE` を
+  受け取ってから完了扱いにする。文書・コメントだけの変更や自明な機械的変更は、
+  ファイル数によらず直接検証でよい
+* 委譲時は役割と対象範囲を指定し、目的・成功条件・必要な制約を自己完結して渡す。
+  `fork_turns` が使える場合は原則 `none` とし、必要な場合だけ会話履歴を引き継ぐ。
+  親子で調査を重複させず、結果は結論・根拠の場所・未解決点に絞る。
+  委譲には、ユーザーまたは適用される project / skill 指示からの明示的な依頼が必要。
+  利用できない場合は root が必要な検証を直接行う
+* 大量のコマンド出力はログに保存し、終了コード・要約・失敗箇所を確認する。
+  独立検証済みのチェックは、追加変更や未解決の懸念がなければ繰り返さない
 * 効果測定は `python3 tools/codex/scripts/codex-usage-report.py`。モデル別
   トークンと委譲状況を rollout jsonl から集計する (`--days` で期間指定)
+
+推論量は Luna / max、Sol / high、Astra / high を維持する。トークン削減率や品質の
+優劣は、この集計だけでは判断できない。同種タスクの成功率・手戻りと合わせて比較する。
+出力の verbosity は現行モデルの既定 `low` に任せ、context window やログ保持上限を
+一律に縮める設定は追加しない。設定仕様は [公式リファレンス](https://learn.chatgpt.com/docs/config-file/config-reference)、
+委譲の使い分けは [Subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents) を参照。
+
+明示的に役割分担を依頼する起動例:
+
+```sh
+codex -p astra '<タスク内容>。設計・方針策定を担当し、実装・調査・検証は Luna に委譲して進めてください。'
+```
 
 ## Agent skills via APM
 

@@ -497,21 +497,59 @@ See [Grok Build Settings](https://docs.x.ai/build/settings) and
 [MCP Servers](https://docs.x.ai/build/features/mcp-servers) for the upstream
 configuration details.
 
-## Codex model usage (Luna root + Sol advisor)
+## Codex model usage (Luna / Sol / Astra)
 
-Codex splits model usage into "daily work = Luna, design = Sol".
+Codex uses Astra / Sol for design and planning, and Luna for implementation,
+exploration, and verification.
 
 * A plain `codex` starts on `gpt-5.6-luna` / max, and the root agent
   implements, explores, and verifies directly.
 * When a design decision is needed, the root consults the custom agent
-  `architect` (gpt-5.6-sol / high / read-only).
+  `architect` (gpt-5.6-sol / high / read-only). Mechanical changes following an
+  established approach need no consultation, even across multiple files.
+* For multi-step implementation or research with substantial uncertainty or
+  failure cost, start `codex -p astra`. The `gpt-6-astra` / high root owns
+  design, planning, and integration, and delegates bounded work to Luna
+  `worker` / `explorer` / `verifier` agents. Consult Sol only for unresolved
+  decisions or a useful second perspective.
+* Escalate only the hardest tasks with
+  `codex -p astra -c model_reasoning_effort=max`. The profile defaults to high
+  to avoid paying the maximum reasoning cost on every task.
 * When the whole task is a design discussion, use `codex -p sol` (advisor
   mode): a consultation-only session on Sol / high with a read-only sandbox,
   the equivalent of Claude Code's opusplan role split. To exceptionally edit
   with Sol, override explicitly with `codex -p sol -s workspace-write`.
+* For behavior spanning multiple files, high-risk changes, or runtime
+  configuration, data, or compatibility changes, run
+  the `verifier` agent after implementation and require evidence for each
+  success criterion plus a `PASS / FAIL / INCONCLUSIVE` verdict before treating
+  the task as complete. Documentation, comments, and obvious mechanical changes
+  can be verified directly regardless of file count.
+* Delegate with an explicit role and scope, and a self-contained goal, success
+  criteria, and necessary constraints. When supported, default `fork_turns` to
+  `none`, inheriting conversation history only when needed. Avoid duplicate
+  parent/child research and return conclusions, evidence locations, and open
+  questions. Delegation requires an explicit user request or applicable project
+  or skill instruction; otherwise the root performs necessary checks directly.
+* Save large command outputs to logs and inspect exit codes, summaries, and
+  relevant failures. Do not repeat independently verified checks without new
+  changes or unresolved concerns.
 * Measure the effect with `python3 tools/codex/scripts/codex-usage-report.py`,
   which aggregates per-model tokens and delegation stats from the rollout
   jsonl (`--days` selects the period).
+
+Keep Luna / max, Sol / high, and Astra / high reasoning. Usage totals alone do
+not establish token savings or quality; compare success rates and rework on
+similar tasks too. Use the current models' default `low` verbosity and avoid
+globally shrinking context windows or retained tool output. See the official
+[configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference)
+and [Subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents).
+
+Example with an explicit delegation request:
+
+```sh
+codex -p astra '<task>. Own design and planning; delegate implementation, exploration, and verification to Luna.'
+```
 
 ## Agent skills via APM
 

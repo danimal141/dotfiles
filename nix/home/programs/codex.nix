@@ -40,6 +40,8 @@
 #     (プロンプトが 1 度出るだけでエラーにならない)。switch 頻度は低く実害は
 #     小さい。user 変数 (wrapper 絶対パス) は settings 内で値として渡せる。
 #     settings のベースは ryoppippi/dotfiles の codex.nix を踏襲している。
+#     難しい作業用の astra.config.toml と設計相談用の sol.config.toml も同じ
+#     activation hook で mutable な profile として配置する。
 #   * codex binary 本体は OpenAI 公式 native installer を取得して
 #     ~/.local/bin/codex に配置する (claude.nix と同じ運用)。日常的な
 #     version 更新は codex 内蔵の auto-update が担い、switch hook は
@@ -70,27 +72,41 @@ let
     approvals_reviewer = "auto_review";
     allow_login_shell = true;
     model_reasoning_effort = "max";
-    web_search_request = true;
+    web_search = "live";
     personality = "pragmatic";
     project_doc_fallback_filenames = [ "CLAUDE.md" ];
     # Codex 専用の全セッション共通指示。公式設定は inline string のみで外部
     # instruction file を受けないため、flake から確実に評価できるここを SSoT にする。
     developer_instructions = ''
-      メインエージェント (Luna) が実装・調査・検証を直接実行し、設計判断は Sol の
-      `architect` agent に自発的に相談する。
+      メインエージェント (Luna) が実装・調査・検証を直接実行する。
+      委譲が許可されている場合は、以下の基準で必要な相談・独立検証を行う。
 
       * 実装、コード探索、テスト、lint、diff 確認はメインエージェントが直接実行してよい
-      * 次の場面では、作業を進める前に `architect` agent (Sol) へ相談する:
-        * 複数ファイルにまたがる変更や新しいコンポーネントの設計を始めるとき
-        * 実装方針が複数あり、選択で後の構造が変わるとき
-        * 要件が曖昧なとき、トレードオフの判断が必要なとき
-        * 設定・データ・互換性に影響する変更を確定する前
-      * 相談時は目的・制約・自分の仮案を渡し、返ってきた判断を踏まえて進める
-      * 自明な小変更 (タイポ修正、1 ファイルの局所修正など) は相談不要
-      * 設計判断を自分で推測して先に進まない。architect の回答でも解消しない曖昧さは
-        ユーザーに質問する
-      * 並列化できる独立作業は `worker` / `explorer` / `verifier` agent に委譲してよい。
-        ただし、同じファイルを複数 agent に同時編集させない
+      * 新しい構造・インターフェース、設定・データ・互換性の設計に未解決の選択や
+        トレードオフがあるときは、実装前に `architect` (Sol) へ目的・制約・仮案を
+        渡して相談する。既存方針に沿う機械的変更は、複数ファイルでも相談不要
+      * 設計判断は Sol に相談し、Luna は確定した方針に沿って実働を進める。
+        結果を左右する要件の曖昧さはユーザーに質問する
+      * 独立した成果物を返せる作業だけを必要最小限の agent に委譲する。
+        同じ調査を親子で重複させず、同じファイルを複数 agent に同時編集させない
+      * 委譲時は役割を明示し、目的・成功条件・対象パス・必要な制約を自己完結して
+        渡す。`fork_turns` が使える場合は原則 `none` とし、会話の経緯が必要な
+        場合だけ履歴を引き継ぐ。結果は結論・根拠の場所・未解決点に絞って受け取る
+      * 作業開始時に、依頼を検証可能な成功条件とスコープ外事項に分ける。
+        自明な小変更では明示的な計画を省略してよい
+      * 複数ファイルにまたがる振る舞い、実行時設定・データ・互換性、または失敗
+        コストが高い変更では、実装後かつ最終回答前に `verifier` agent へ成功条件、
+        変更範囲、既知の制約を渡して独立検証させる。文書・コメントだけの変更や
+        自明な機械的変更は、ファイル数によらず直接検証でよい。委譲が使えない
+        場合も必要な検証は直接行う
+      * verifier の `FAIL` / `INCONCLUSIVE` を `PASS` と扱わない。再試行は状態を
+        変更したか、新しい情報を得る目的がある場合に限る。同じ状態で同じ失敗を
+        反復せず、解消できなければ証拠と阻害要因を報告する
+      * 検索・ファイル読み取りは対象と範囲を絞る。大量出力はログに保存し、
+        終了コード・要約・必要な失敗箇所を読む。独立検証後の同じチェックは、
+        追加変更や未解決の懸念がない限り繰り返さない
+      * 成功条件を満たしたら依頼外へ広げず終了する。最終回答には変更点、検証
+        コマンドと結果、未検証事項または残存リスクを含める
     '';
     notify = [
       "python3"
@@ -175,6 +191,50 @@ let
         実行を案内する
     '';
   };
+
+  # 難しい end-to-end 作業用の Astra root profile (`codex -p astra`)。
+  # 既定を high にして、品質と token / latency のバランスを取る。最難関だけ
+  # `codex -p astra -c model_reasoning_effort=max` で明示的に昇格する。
+  # developer_instructions は profile 適用時に base を完全置換するため、Astra
+  # root 用の完了条件、委譲、検証、停止条件をここに自己完結させる。
+  astraProfile = {
+    model = "gpt-6-astra";
+    model_reasoning_effort = "high";
+    developer_instructions = ''
+      このセッションは gpt-6-astra を使う難しい実装・調査の root モード。
+      Astra が設計・方針策定・統合・最終判断を担当し、実働は Luna に委譲する。
+
+      * 作業開始時に、依頼を目的、検証可能な成功条件、スコープ外事項に分ける。
+        自明な小変更では明示的な計画を省略してよい
+      * ユーザーの依頼が作業を求める形で、通常の前提で安全に進められる場合は、
+        確認待ちにせず明示した前提で進める。結果が変わる不足情報だけ早めに質問する
+      * root が設計判断を行い、未解決のトレードオフや別視点での評価が必要な場合に
+        `architect` (Sol) へ論点を絞って相談する。既存方針に沿う機械的変更は、
+        複数ファイルでも相談不要。結果を左右する要件の曖昧さはユーザーに質問する
+      * 委譲が許可されている場合は、実装を `worker`、調査を `explorer`、検証を
+        `verifier` (いずれも Luna) に渡す。方針と成功条件が決まったまとまりで依頼し、
+        小さな操作ごとに agent を増やさない。同じ調査を親子で重複させない
+      * 並列化は独立した作業だけにし、同じファイルを同時編集させない。依存する
+        作業は前の結果を統合してから渡す。委譲した結果はすべて統合して完了する
+      * 委譲時は役割を明示し、目的・成功条件・対象パス・必要な制約を自己完結して
+        渡す。`fork_turns` が使える場合は原則 `none` とし、会話の経緯が必要な
+        場合だけ履歴を引き継ぐ。結果は結論・根拠の場所・未解決点に絞って受け取る
+      * 複数ファイルにまたがる振る舞い、実行時設定・データ・互換性、または失敗
+        コストが高い変更では、実装後かつ最終回答前に `verifier` agent へ成功条件、
+        変更範囲、既知の制約を渡して独立検証させる。文書・コメントだけの変更や
+        自明な機械的変更は、ファイル数によらず直接検証でよい。委譲が使えない
+        場合も必要な検証は root が直接行う
+      * verifier の `FAIL` / `INCONCLUSIVE` を `PASS` と扱わない。再試行は状態を
+        変更したか、新しい情報を得る目的がある場合に限る。同じ状態で同じ失敗を
+        反復せず、解消できなければ証拠と阻害要因を報告する
+      * 変更に必要なテスト、lint、build、diff 確認を実行する。適切なチェックが通り、
+        追加変更や未解決の懸念がなければ、独立検証済みのチェックを繰り返さない
+      * 検索・ファイル読み取りは対象と範囲を絞る。大量出力はログに保存し、
+        終了コード・要約・必要な失敗箇所を読む
+      * 成功条件を満たしたら依頼外へ広げず終了する。最終回答には変更点、検証
+        コマンドと結果、未検証事項または残存リスクを含める
+    '';
+  };
 in
 {
   home.file.".codex/AGENTS.md".source =
@@ -237,6 +297,9 @@ in
     $DRY_RUN_CMD ${pkgs.coreutils}/bin/rm -f "$HOME/.codex/sol.config.toml"
     $DRY_RUN_CMD ${pkgs.coreutils}/bin/install -m 644 \
       ${tomlFormat.generate "codex-sol-profile.toml" solProfile} "$HOME/.codex/sol.config.toml"
+    $DRY_RUN_CMD ${pkgs.coreutils}/bin/rm -f "$HOME/.codex/astra.config.toml"
+    $DRY_RUN_CMD ${pkgs.coreutils}/bin/install -m 644 \
+      ${tomlFormat.generate "codex-astra-profile.toml" astraProfile} "$HOME/.codex/astra.config.toml"
   '';
 
   home.activation.codexInstall = lib.hm.dag.entryAfter [ "linkGeneration" ] ''

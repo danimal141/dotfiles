@@ -151,17 +151,38 @@ For APM's install hook and the skill ingestion procedure, see
   appends `[projects]` trust to config.toml at startup, so it cannot be a
   read-only symlink (the write fails with code -32603). After editing the
   settings you must `nix run .#switch`.
-* Model usage is split into "daily work = Luna root, design = Sol". The default
-  is `gpt-5.6-luna` / max, and the root agent implements, explores, and
-  verifies directly. When a design decision is needed it consults the custom
-  agent `architect` (gpt-5.6-sol / high / read-only), and when the whole task
-  is a design discussion, use `codex -p sol` (advisor mode).
+* Model usage is split into design and planning with Astra / Sol, and
+  implementation, exploration, and verification with Luna. The default is
+  `gpt-5.6-luna` / max, and the root
+  agent implements, explores, and verifies directly. For multi-step work with
+  substantial uncertainty or failure cost, use `codex -p astra`
+  (`gpt-6-astra` / high), escalating only the hardest tasks with
+  `-c model_reasoning_effort=max`. The Astra profile inherits the base approval,
+  sandbox, MCP, hooks, and agent settings, and delegates bounded execution to
+  Luna worker / explorer / verifier agents with self-contained instructions,
+  avoiding unnecessary conversation inheritance and duplicate research.
+* When Luna needs a design decision it consults the custom agent `architect`
+  (gpt-5.6-sol / high / read-only), and when the whole task is a design
+  discussion, use `codex -p sol` (advisor mode). Astra owns design and consults
+  Sol on unresolved decisions. For behavior spanning multiple files, high-risk
+  changes, or runtime configuration, data, or compatibility changes, run the
+  `verifier` agent after
+  implementation and require evidence for every success criterion plus a
+  `PASS / FAIL / INCONCLUSIVE` verdict before treating the task as complete.
+  Documentation, comments, and obvious mechanical changes can be verified
+  directly. Delegation requires an explicit user, project, or skill instruction;
+  otherwise the root performs necessary checks directly.
 * `~/.codex/sol.config.toml` is the profile for advisor mode (model = sol /
   read-only sandbox). Current codex's profile v2 rejects the legacy
   `[profiles.<name>]` table in config.toml and requires a separate
   `<name>.config.toml` file. Codex also appends state such as trust to profile
   files, so the `codexConfig` hook overwrites it as a mutable real file on
   every switch, same as config.toml.
+* `~/.codex/astra.config.toml` is the profile for difficult end-to-end work
+  (`model = gpt-6-astra` / `high`). Start it with `codex -p astra`, and add
+  `-c model_reasoning_effort=max` only for the hardest tasks. Its subagents
+  remain on Luna so Astra's reasoning is spent on design, planning,
+  and integration.
 * `~/.codex/agents/` is an out-of-store symlink to `tools/codex/agents/`,
   which manages the worker / explorer / verifier (luna / max) and architect
   (sol / high) custom agents.
