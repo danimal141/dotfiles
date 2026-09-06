@@ -197,13 +197,14 @@ let
   };
 
   # 難しい end-to-end 作業用の Astra root profile (`codex -p astra`)。
-  # 既定を high にして、品質と token / latency のバランスを取る。最難関だけ
+  # 既定を medium にして、品質と token / latency のバランスを取る。特に難しい
+  # 段階は `codex -p astra -c model_reasoning_effort=high`、最難関だけ
   # `codex -p astra -c model_reasoning_effort=max` で明示的に昇格する。
   # developer_instructions は profile 適用時に base を完全置換するため、Astra
   # root 用の完了条件、委譲、検証、停止条件をここに自己完結させる。
   astraProfile = {
     model = "gpt-6-astra";
-    model_reasoning_effort = "high";
+    model_reasoning_effort = "medium";
     developer_instructions = ''
       このセッションは gpt-6-astra を使う難しい実装・調査の root モード。
       Astra が設計・方針策定・統合・最終判断を担当し、実装・調査は Luna、

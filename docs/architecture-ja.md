@@ -145,7 +145,8 @@ APM の install hook / skill 取り込み手順は
   medium、`verifier` と `architect` が Sol / high、未指定の subagent は Luna /
   high とする。built-in の `/review` も Sol を使う
   不確実性や失敗コストが高い複数段階の作業は `codex -p astra`
-  (`gpt-6-astra` / high) を使い、最難関だけ `-c model_reasoning_effort=max` へ
+  (`gpt-6-astra` / medium) を使う。特に難しい段階は
+  `-c model_reasoning_effort=high`、最難関だけ `-c model_reasoning_effort=max` へ
   明示的に昇格する。Astra profile は base の承認、sandbox、MCP、hooks、agent 設定を
   継承し、実働を Luna の worker / explorer と Sol の verifier にまとまった単位で
   渡す。委譲時は自己完結した指示を渡し、不要な会話履歴の引き継ぎや重複調査を避ける
@@ -164,8 +165,9 @@ APM の install hook / skill 取り込み手順は
   config.toml と同じく `codexConfig` hook が mutable 実ファイルとして毎回
   上書きする
 * `~/.codex/astra.config.toml` は難しい end-to-end 作業用の profile
-  (`model = gpt-6-astra` / `high`)。`codex -p astra` で起動し、最難関だけ
-  `-c model_reasoning_effort=max` を追加する。worker / explorer は Luna のまま、
+  (`model = gpt-6-astra` / `medium`)。`codex -p astra` で起動し、特に難しい段階は
+  `-c model_reasoning_effort=high`、最難関だけ `-c model_reasoning_effort=max` を
+  追加する。worker / explorer は Luna のまま、
   verifier は Sol とし、Astra root の推論を設計・方針策定・統合へ集中させる
 * `~/.codex/agents/` は `tools/codex/agents/` への out-of-store symlink。
   worker (luna / max)、explorer (luna / medium)、verifier / architect (sol /

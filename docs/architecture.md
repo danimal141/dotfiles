@@ -158,7 +158,8 @@ For APM's install hook and the skill ingestion procedure, see
   architect (Sol / high), while unspecified subagents default to Luna / high.
   Built-in `/review` also uses Sol. For multi-step work with
   substantial uncertainty or failure cost, use `codex -p astra`
-  (`gpt-6-astra` / high), escalating only the hardest tasks with
+  (`gpt-6-astra` / medium). Escalate especially difficult stages with
+  `-c model_reasoning_effort=high`, and only the hardest tasks with
   `-c model_reasoning_effort=max`. The Astra profile inherits the base approval,
   sandbox, MCP, hooks, and agent settings, and delegates bounded execution to
   Luna worker / explorer agents and the Sol verifier with self-contained
@@ -182,7 +183,8 @@ For APM's install hook and the skill ingestion procedure, see
   files, so the `codexConfig` hook overwrites it as a mutable real file on
   every switch, same as config.toml.
 * `~/.codex/astra.config.toml` is the profile for difficult end-to-end work
-  (`model = gpt-6-astra` / `high`). Start it with `codex -p astra`, and add
+  (`model = gpt-6-astra` / `medium`). Start it with `codex -p astra`, add
+  `-c model_reasoning_effort=high` for especially difficult stages, and add
   `-c model_reasoning_effort=max` only for the hardest tasks. Its subagents
   worker / explorer remain on Luna while verifier uses Sol, so Astra's reasoning
   is spent on design, planning, and integration.

@@ -512,13 +512,14 @@ Astra for difficult end-to-end integration.
   `architect` (gpt-5.6-sol / high / read-only). Mechanical changes following an
   established approach need no consultation, even across multiple files.
 * For multi-step implementation or research with substantial uncertainty or
-  failure cost, start `codex -p astra`. The `gpt-6-astra` / high root owns
+  failure cost, start `codex -p astra`. The `gpt-6-astra` / medium root owns
   design, planning, and integration, and delegates bounded work to Luna
   `worker` / `explorer` agents and to the Sol `verifier`. Consult Sol only for
   unresolved decisions or a useful second perspective.
-* Escalate only the hardest tasks with
-  `codex -p astra -c model_reasoning_effort=max`. The profile defaults to high
-  to avoid paying the maximum reasoning cost on every task.
+* Escalate especially uncertain or costly stages with
+  `codex -p astra -c model_reasoning_effort=high`, and escalate only the hardest
+  tasks with `codex -p astra -c model_reasoning_effort=max`. The profile defaults
+  to medium to avoid paying the maximum reasoning cost on every task.
 * When the whole task is a design discussion, use `codex -p sol` (advisor
   mode): a consultation-only session on Sol / high with a read-only sandbox,
   the equivalent of Claude Code's opusplan role split. To exceptionally edit
@@ -552,7 +553,8 @@ Astra for difficult end-to-end integration.
   which aggregates per-model tokens and delegation stats from the rollout
   jsonl (`--days` selects the period).
 
-Keep Luna / max, Sol / high, and Astra / high reasoning. Usage totals alone do
+Keep Luna / max and Sol / high as defaults, and use Astra / medium by default,
+raising it to high or max for harder stages. Usage totals alone do
 not establish token savings or quality; compare success rates and rework on
 similar tasks too. Use the current models' default `low` verbosity and avoid
 globally shrinking context windows or retained tool output. See the official
