@@ -55,9 +55,10 @@
     "editor.defaultFormatter": "Shopify.ruby-lsp"
   },
   "rubyLsp.pullDiagnosticsOn": "save",
-  "rubyLsp.rubyVersionManager": "asdf",
+  "rubyLsp.rubyVersionManager": {
+    "identifier": "mise"
+  },
   "rubyLsp.formatter": "auto",
-  "rdbg.rubyVersionManager": "asdf",
 
   // Language Specific
   "[python]": {
