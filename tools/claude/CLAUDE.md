@@ -75,6 +75,17 @@ LLM がコーディング時に陥りがちなミスを減らすための行動�
 テスト駆動開発を基本とする。テストが失敗することを確認してから実装する。
 振る舞いをテストし、実装詳細はテストしない。
 
+## 5. 日本語文書の執筆
+
+成果物が日本語の文章 (レポート・議事録・ガイド・企画書・評価文書・記事) のときは、
+書き始める前に文章スキルを読み込む。コード・コミットメッセージ・短い応答は対象外。
+
+* 仕事の文書全般 → `natural-japanese` (既定はクイック。対外・経営向けや長文はフル)
+* 技術解説・記事・書籍原稿 → `japanese-tech-writing`
+* `.md` の Write / Edit / apply_patch 後は PostToolUse hook が natural-japanese の
+  lint を走らせ finding を返す。Bash 経由で編集したときは hook を通らないので
+  `uv run ~/.claude/skills/natural-japanese/scripts/lint.py --json <file>` を自分で実行する
+
 ## X URL の取得
 
 * URL の host が `x.com` の場合に限り、標準の Web 取得と既存の軽量な

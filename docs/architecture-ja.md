@@ -109,6 +109,11 @@
   PR 作成ゲート (pr-review-gate.sh: `/code-review` 未実行なら `gh pr create` を
   exit 2 でブロック / pr-review-mark.sh が PostToolUse(Skill) で marker 設置)、
   PostToolUse の markdownlint 自動修正を配置
+* `hooks/posttooluse-japanese-lint.py` は PostToolUse (Write / Edit / MultiEdit)
+  で `.md` に natural-japanese の lint.py を走らせ、finding を additionalContext で
+  モデルへ返す (fail-open、日本語を含む文書のみ、エージェント設定ファイルは除外)。
+  Codex とは `tools/codex/hooks/` の symlink で共有し、hooks.json の PostToolUse
+  (`^apply_patch$`) から同じスクリプトを呼ぶ
 * `settings.json` は raw symlink で live-edit 可能。`$schema` (schemastore) を
   持ち、`claudeSettingsValidate` activation hook が switch 時に check-jsonschema で
   非ブロッキング検証する (壊れた設定の早期検知。live-edit は維持)

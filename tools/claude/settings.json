@@ -28,6 +28,18 @@
           }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$HOME/.claude/hooks/posttooluse-japanese-lint.py\"",
+            "timeout": 30
+          }
+        ]
+      }
     ]
   },
   "enabledPlugins": {

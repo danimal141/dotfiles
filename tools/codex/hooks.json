@@ -39,6 +39,19 @@
           }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "python3 ~/.codex/hooks/posttooluse-japanese-lint.py",
+            "statusMessage": "Linting Japanese prose...",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": "^apply_patch$"
+      }
     ]
   }
 }

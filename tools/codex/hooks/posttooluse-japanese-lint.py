@@ -1,0 +1,1 @@
+../../claude/hooks/posttooluse-japanese-lint.py

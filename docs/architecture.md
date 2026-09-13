@@ -119,6 +119,11 @@ left outside `home.file` as mutable directories under `~/`. See
   `gh pr create` with exit 2 unless `/code-review` ran; pr-review-mark.sh
   sets the marker on PostToolUse(Skill)), plus PostToolUse markdownlint
   auto-fix.
+* `hooks/posttooluse-japanese-lint.py` runs natural-japanese's lint.py on `.md`
+  files after Write / Edit / MultiEdit and feeds findings back to the model as
+  additionalContext (fail-open, Japanese prose only, agent config files
+  excluded). Shared with Codex via a symlink in `tools/codex/hooks/`, wired from
+  hooks.json PostToolUse (`^apply_patch$`)
 * `settings.json` stays a raw symlink (live-editable). It carries `$schema`
   (schemastore) and the `claudeSettingsValidate` activation hook validates it
   with check-jsonschema on switch (non-blocking early detection of breakage;
