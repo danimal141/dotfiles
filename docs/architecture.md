@@ -124,6 +124,23 @@ left outside `home.file` as mutable directories under `~/`. See
   additionalContext (fail-open, Japanese prose only, agent config files
   excluded). Shared with Codex via a symlink in `tools/codex/hooks/`, wired from
   hooks.json PostToolUse (`^apply_patch$`)
+* `hooks/posttooluse-textlint-ai-words.py` runs textlint
+  (`textlint-rule-preset-ai-words-ja`) on the same PostToolUse and exits 2 when
+  words typical of AI-written Japanese remain (natural-japanese only raises
+  suspicions; this one blocks). The whole post-edit file is linted (to keep
+  Markdown structure such as code fences), but only diagnostics on lines added
+  by the edit (Write content / Edit new_string / apply_patch `+` lines) block,
+  so pre-existing words elsewhere in the file never block an unrelated edit. File-level target
+  selection is imported from posttooluse-japanese-lint.py. textlint and the
+  preset are pinned in the repo's `package.json`; the `npmCi` activation hook
+  (`nix/home/programs/node-deps.nix`) runs `npm ci` on `nix run .#switch` when
+  the lock hash changes. Config lives in `tools/textlint/.textlintrc.json`; the
+  word list is the repo-owned `tools/textlint/ai-words.json` (`dictionaryMode:
+  override`, so the preset's built-in dictionary is not used).
+  Disable with `TEXTLINT_AI_WORDS_HOOK=0`.
+  Also shared with Codex via symlink from the same hooks.json PostToolUse entry
+  (Codex treats exit 2 + stderr from a sync command hook as Blocked and feeds
+  stderr back to the model)
 * `settings.json` stays a raw symlink (live-editable). It carries `$schema`
   (schemastore) and the `claudeSettingsValidate` activation hook validates it
   with check-jsonschema on switch (non-blocking early detection of breakage;

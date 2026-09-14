@@ -8,7 +8,7 @@
 `nix-darwin` + `home-manager` で macOS の system / Homebrew / dotfile を
 declarative に管理する dotfiles リポジトリ。`nix run .#switch` (内部で
 `darwin-rebuild switch --flake ".#$(scutil --get LocalHostName)"`) で
-適用する単一経路。
+適用する。適用手段はこれ 1 本。
 
 ## 新規 dotfile 追加手順
 

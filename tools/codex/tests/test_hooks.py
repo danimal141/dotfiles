@@ -252,3 +252,95 @@ class JapaneseLintHookTest(unittest.TestCase):
 
         self.assertTrue(any("posttooluse-japanese-lint.py" in c for c in commands))
         self.assertTrue(any(entry.get("matcher") == "^apply_patch$" for entry in post))
+
+
+class TextlintAiWordsHookTest(unittest.TestCase):
+    """posttooluse-textlint-ai-words.py: Codex の apply_patch payload で exit 2 ブロック。
+
+    振る舞いの本体テストは tools/claude/tests/ 側。ここでは Codex 経路
+    (symlink 経由の起動、apply_patch の patch 本文からの path 抽出、hooks.json
+    への登録) だけを見る。textlint が node_modules に無い環境では skip。
+    """
+
+    HOOK = HOOKS_DIR / "posttooluse-textlint-ai-words.py"
+    TEXTLINT_BIN = HOOKS_DIR.parents[2] / "node_modules/.bin/textlint"
+    FILLER = "この文書は検証用の日本語文章で、ある程度の長さを持たせるために同じ説明を繰り返している。" * 3
+    NG_TEXT = "# 検証\n\n" + FILLER + "\n\nこの設計は核心が弱い。注入経路を焼き直して検証したい。\n"
+
+    def setUp(self):
+        import tempfile
+
+        if not self.TEXTLINT_BIN.is_file():
+            self.skipTest("textlint not installed in node_modules (run npm ci)")
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        self.doc = self.root / "doc.md"
+        self.doc.write_text(self.NG_TEXT, encoding="utf-8")
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_apply_patch_added_lines_block(self):
+        self.doc.write_text(self.NG_TEXT + "\n核心を固める。\n", encoding="utf-8")
+        patch = f"*** Begin Patch\n*** Update File: {self.doc}\n@@\n+核心を固める。\n*** End Patch"
+        result = subprocess.run(
+            [sys.executable, self.HOOK],
+            input=json.dumps(
+                {"tool_name": "apply_patch", "cwd": str(self.root), "tool_input": patch},
+                ensure_ascii=False,
+            ),
+            text=True, capture_output=True, check=False,
+        )
+
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("核心", result.stderr)
+        self.assertEqual(result.stdout, "")
+
+    def test_apply_patch_ignores_context_and_removed_lines(self):
+        # 既存文書側の検出語 (context 行 / 削除行) では弾かない
+        patch = (
+            f"*** Begin Patch\n*** Update File: {self.doc}\n@@\n"
+            " 核心が弱い。\n-対策が効く。\n+対策の効果を見る。\n*** End Patch"
+        )
+        result = subprocess.run(
+            [sys.executable, self.HOOK],
+            input=json.dumps(
+                {"tool_name": "apply_patch", "cwd": str(self.root), "tool_input": patch},
+                ensure_ascii=False,
+            ),
+            text=True, capture_output=True, check=False,
+        )
+
+        self.assertEqual(result.returncode, 0)
+
+    def test_apply_patch_follows_move_to(self):
+        # Update File + Move to: 追加行は移動先 (= 編集後に存在する path) で判定する
+        moved = self.root / "moved.md"
+        moved.write_text(self.NG_TEXT + "\n核心を固める。\n", encoding="utf-8")
+        patch = (
+            f"*** Begin Patch\n*** Update File: {self.root / 'gone.md'}\n"
+            f"*** Move to: {moved}\n@@\n+核心を固める。\n*** End Patch"
+        )
+        result = subprocess.run(
+            [sys.executable, self.HOOK],
+            input=json.dumps(
+                {"tool_name": "apply_patch", "cwd": str(self.root), "tool_input": patch},
+                ensure_ascii=False,
+            ),
+            text=True, capture_output=True, check=False,
+        )
+
+        self.assertEqual(result.returncode, 2)
+        self.assertIn(str(moved), result.stderr)
+
+    def test_registered_in_hooks_json(self):
+        config = json.loads(HOOKS_CONFIG.read_text())
+        post = config["hooks"]["PostToolUse"]
+        entries = [
+            h for entry in post if entry.get("matcher") == "^apply_patch$" for h in entry["hooks"]
+        ]
+        mine = [h for h in entries if "posttooluse-textlint-ai-words.py" in h["command"]]
+
+        self.assertEqual(len(mine), 1)
+        # async hook は Codex がブロック効果を適用しない (sync 必須)
+        self.assertFalse(mine[0].get("async", False))

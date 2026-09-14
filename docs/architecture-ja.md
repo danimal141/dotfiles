@@ -17,15 +17,15 @@
   持ち、`mkHost` で `dotfilesPath = "/Users/${user}/Documents/dev/dotfiles"`
   を派生させて `specialArgs` 経由で全モジュールに流す (各 .nix で重複定義しない)。
   `hostname` は system と home-manager の両方へ渡し、Grok Build の personal 限定判定に使う
-* `nix/darwin/` — nix-darwin (system 層)。`default.nix` が配下を一括 imports。
+* `nix/darwin/` — nix-darwin (system レイヤー)。`default.nix` が配下を一括 imports。
   flake.nix からは `./nix/darwin` 1 つを import するだけ
-* `nix/home/` — home-manager (user 層)。`default.nix` が entry point、
+* `nix/home/` — home-manager (user レイヤー)。`default.nix` が entry point、
   `programs/<tool>.nix` で 1 ファイル 1 ツール
 * `tools/<tool>/` — `home.file` で symlink される raw text dotfile の置き場
 * `setup.sh` — 初回 bootstrap (Xcode CLT → Nix → CA bundle → flake host 検証 →
   /etc 退避 → darwin-rebuild → mise install → LSP global → prek)
 
-各モジュールが何を担当するか (system 層 6 ファイルの内訳 / home 層の
+各モジュールが何を担当するか (system レイヤー 6 ファイルの内訳 / home レイヤーの
 責務分担) は [README-ja.md#管理ツールの責務分担](../README-ja.md#管理ツールの責務分担)
 を参照。
 
@@ -114,6 +114,21 @@
   モデルへ返す (fail-open、日本語を含む文書のみ、エージェント設定ファイルは除外)。
   Codex とは `tools/codex/hooks/` の symlink で共有し、hooks.json の PostToolUse
   (`^apply_patch$`) から同じスクリプトを呼ぶ
+* `hooks/posttooluse-textlint-ai-words.py` は同じ PostToolUse で `.md` に textlint
+  (`textlint-rule-preset-ai-words-ja`) を実行し、AI 文章に頻出する語句が残っていれば
+  exit 2 で弾く (natural-japanese 側が「疑いの提示」なのに対しこちらは検出 = ブロック)。
+  lint は編集後のファイル全体に掛け (コードフェンス等の Markdown 構造を保つため)、
+  弾くのは今回の編集で追加した行 (Write の content / Edit の new_string /
+  apply_patch の `+` 行) に当たる検出だけなので、既存文書に残る未修正語で
+  無関係な編集は弾かれない。ファイル単位の対象判定は posttooluse-japanese-lint.py を
+  import して共有。textlint 本体と preset は repo 直下の `package.json` で pin し、
+  `nix run .#switch` の `npmCi` activation hook (`nix/home/programs/node-deps.nix`) が
+  lock の hash 差分で `npm ci` する。設定は `tools/textlint/.textlintrc.json`、NG 語の
+  辞書は `tools/textlint/ai-words.json` (preset 内蔵辞書は使わず `dictionaryMode:
+  override` でこの辞書だけを見る)。
+  無効化は env `TEXTLINT_AI_WORDS_HOOK=0`。
+  Codex も symlink で共有し hooks.json の同じ PostToolUse から呼ぶ (Codex は sync な
+  command hook の exit 2 + stderr を Blocked として扱い、stderr をモデルへ返す)
 * `settings.json` は raw symlink で live-edit 可能。`$schema` (schemastore) を
   持ち、`claudeSettingsValidate` activation hook が switch 時に check-jsonschema で
   非ブロッキング検証する (壊れた設定の早期検知。live-edit は維持)
@@ -215,7 +230,7 @@ APM の install hook / skill 取り込み手順は
   Claude の markdown 自動修正と PR 作成前レビューゲートは、Codex に同等の
   信頼できる hook 入力・イベントがないため移植しない
 
-secrets 注入経路全体の設計は
+secrets 注入の仕組み全体の設計は
 [design-philosophy-ja.md#secrets-設計](design-philosophy-ja.md#secrets-設計)
 と [README-ja.md#シークレット注入](../README-ja.md#シークレット注入) 参照。
 
@@ -227,7 +242,7 @@ tmux prefix は `C-t`、herdr prefix は default の `ctrl+b` なので衝突し
 * binary は nixpkgs 未収載のため Homebrew 供給 (`nix/darwin/homebrew.nix`)。
   更新は `brew upgrade herdr` の後に `herdr server stop` (常駐 server の項参照)。
   herdr は Homebrew 管理下の binary を検出すると self-update を拒否して brew へ
-  誘導するので、経路は 1 本に保たれる
+  誘導するので、更新手段は 1 本に保たれる
 * server は `nix/darwin/herdr.nix` の `launchd.user.agents.herdr-server`
   (KeepAlive + RunAtLoad) で login 時常駐。boot 直後に server が居らず初回
   `herdr-start` が `detached from server` を出す race への対処。formula の
@@ -241,7 +256,7 @@ tmux prefix は `C-t`、herdr prefix は default の `ctrl+b` なので衝突し
 * config.toml は herdr 自身が書き換えうる (onboarding の選択 /
   `herdr channel set` / `herdr config reset-keys`)。symlink 先が repo の実
   ファイルなので書込は repo に届く。config 冒頭の `onboarding = false` で自動
-  発火する経路だけは塞ぎ、残りは「叩かない」で運用する
+  発火だけは塞ぎ、残りは「叩かない」で運用する
 * CJK IME 対策として `[experimental]` の
   `switch_ascii_input_source_in_prefix` (prefix mode 中だけ ASCII 配列へ退避) と
   `reveal_hidden_cursor_for_cjk_ime` + `cjk_ime_agents` (Claude Code / codex の

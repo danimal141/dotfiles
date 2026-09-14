@@ -230,6 +230,10 @@ mise reshim || true
 # を `package-lock.json` から再現性高く install する。`npx -y` 隔離環境では
 # `.secretlintrc.json` が要求する rule package を解決できず hook が落ちるため、
 # ローカル `node_modules/` に固定して `npx secretlint` 経由で参照させる。
+# textlint + textlint-rule-preset-ai-words-ja (Claude Code / Codex の PostToolUse
+# hook posttooluse-textlint-ai-words.py が使う) も同じ lock で入る。2 回目以降の
+# 更新は `nix run .#switch` の npmCi activation hook (nix/home/programs/
+# node-deps.nix) が lock の hash 差分で追随する。
 if [ -f ./package-lock.json ] && command -v npm >/dev/null 2>&1; then
   echo "[setup] Installing secretlint dependencies via npm ci..."
   npm ci || true

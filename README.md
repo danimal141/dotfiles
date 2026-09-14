@@ -158,6 +158,12 @@ prek run --all-files      # run once across all existing files (optional)
 secretlint itself and the rule preset are pinned in `package.json` /
 `package-lock.json`; `setup.sh`'s `npm ci` installs them into
 `node_modules/`, and the hook invokes `npx secretlint` to reference them.
+The same lock also pins textlint and `textlint-rule-preset-ai-words-ja`;
+the Claude Code / Codex PostToolUse hook
+(`tools/claude/hooks/posttooluse-textlint-ai-words.py`) checks the text added
+by each `.md` edit and rejects the words listed in `tools/textlint/ai-words.json`
+(config in `tools/textlint/.textlintrc.json`). Later dependency updates are applied by the
+`npmCi` activation hook on `nix run .#switch` when the lock hash changes.
 
 ### Troubleshooting
 

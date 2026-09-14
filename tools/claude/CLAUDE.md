@@ -85,6 +85,12 @@ LLM がコーディング時に陥りがちなミスを減らすための行動�
 * `.md` の Write / Edit / apply_patch 後は PostToolUse hook が natural-japanese の
   lint を走らせ finding を返す。Bash 経由で編集したときは hook を通らないので
   `uv run ~/.claude/skills/natural-japanese/scripts/lint.py --json <file>` を自分で実行する
+* 同じタイミングで textlint (`preset-ai-words-ja`) も実行され、NG 語
+  (「焼く」「核心」「層」など。一覧は `tools/textlint/ai-words.json`) を
+  今回追加した本文に含むと exit 2 で弾かれる。
+  検出語を機械的に同義語へ置き換えず、文脈に合う具体的な表現に書き直す。
+  Bash 経由で編集したときは
+  `cd ~/Documents/dev/dotfiles && npx textlint --config tools/textlint/.textlintrc.json <file>`
 
 ## X URL の取得
 
@@ -94,7 +100,7 @@ LLM がコーディング時に陥りがちなミスを減らすための行動�
   `grok -p` へその URL の取得を依頼する。Grok が無い場合や
   取得に失敗した場合はそのまま skip する。一般の Web 検索には Grok を使わない。
   Grok にはファイルを編集せず、取得した本文・投稿者・日時・元 URL を返すよう
-  指示する。Grok 経由の内容を回答に使う場合は、取得経路が Grok であることと
+  指示する。Grok 経由の内容を回答に使う場合は、取得元が Grok であることと
   元の `x.com` URL を明記する。
 
 ## Code Reading

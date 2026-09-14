@@ -8,6 +8,8 @@
   },
   "devDependencies": {
     "@secretlint/secretlint-rule-preset-recommend": "^9.3.4",
-    "secretlint": "^13.0.2"
+    "secretlint": "^13.0.2",
+    "textlint": "^15.8.0",
+    "textlint-rule-preset-ai-words-ja": "^1.2.0"
   }
 }

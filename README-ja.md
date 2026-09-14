@@ -39,7 +39,7 @@ cd ~/Documents/dev/dotfiles
 
 1. Xcode CLT インストール (Apple Silicon 専用、Rosetta は入れない)
 2. Nix 公式 upstream installer 実行 (既に入っていれば skip)
-3. macOS Keychain から CA bundle を `/etc/nix/ca-bundle.pem` に焼き、`launchctl
+3. macOS Keychain から CA bundle を `/etc/nix/ca-bundle.pem` に書き出し、`launchctl
    setenv` で nix-daemon に渡す (社内 VPN の SSL inspection 対策、個人 Mac
    でも害はない)
 4. `flake.nix` の `darwinConfigurations` に存在する host か検証する
@@ -49,7 +49,7 @@ cd ~/Documents/dev/dotfiles
    content」を理由に abort するのを回避)
 6. `sudo -E nix run nix-darwin -- switch --flake ".#<hostname>"` を実行 —
    `nix/darwin/{macos-defaults,keyboard,nix-daemon,system,packages,homebrew}.nix`
-   (system 層 / Nix store CLI / brew / cask) / `nix/home/programs/*.nix`
+   (system レイヤー / Nix store CLI / brew / cask) / `nix/home/programs/*.nix`
    (home-manager 経由の dotfile symlink + VSCode settings/keybindings/extensions
    含む) が一括反映
 7. `mise install` で `~/.config/mise/config.toml` の言語 binary を実体 install
@@ -62,7 +62,7 @@ cd ~/Documents/dev/dotfiles
 
 ### 3. シークレット注入
 
-repo に secrets を tracked しない方針。注入経路は 2 つ:
+repo に secrets を tracked しない方針。注入方法は 2 つ:
 
 #### Claude Code MCP server env (任意)
 
@@ -148,7 +148,13 @@ prek run --all-files      # 既存ファイルを 1 度走査 (任意)
 
 secretlint 本体と rule preset は `package.json` / `package-lock.json` で
 pin、`setup.sh` の `npm ci` で `node_modules/` に install され、hook は
-`npx secretlint` でこれを参照する。
+`npx secretlint` でこれを参照する。同じ lock で textlint と
+`textlint-rule-preset-ai-words-ja` も入り、Claude Code / Codex の PostToolUse hook
+(`tools/claude/hooks/posttooluse-textlint-ai-words.py`) が `.md` 編集で追加した
+本文に NG 語があれば弾く (設定は `tools/textlint/.textlintrc.json`、語の一覧は
+`tools/textlint/ai-words.json`)。
+2 回目以降の依存更新は `nix run .#switch` の `npmCi` activation hook が
+lock の hash 差分で `npm ci` を再実行する。
 
 ### 困ったとき
 
@@ -197,7 +203,7 @@ pin、`setup.sh` の `npm ci` で `node_modules/` に install され、hook は
 | macOS 設定変更 (Dock / Finder / NSGlobalDomain 等) | `nix/darwin/macos-defaults.nix` を編集 → 上記 switch |
 | キーボード remap / 入力ソース shortcut 変更 | `nix/darwin/keyboard.nix` を編集 → 上記 switch |
 | Nix daemon / GC / SSL CA bundle / 環境変数 | `nix/darwin/nix-daemon.nix` を編集 → 上記 switch |
-| user 層の dotfile / `programs.*` 変更 | `nix/home/programs/<tool>.nix` を編集 → 上記 switch (raw text symlink なら switch 不要、編集即反映) |
+| user レイヤーの dotfile / `programs.*` 変更 | `nix/home/programs/<tool>.nix` を編集 → 上記 switch (raw text symlink なら switch 不要、編集即反映) |
 | flake input を個別更新 | `nix flake update <input>` (例: `nixpkgs` / `nix-darwin` / `nix-homebrew` / `home-manager`) |
 | 世代一覧 | `darwin-rebuild --list-generations` |
 | 前世代に戻す | `darwin-rebuild --rollback` |
@@ -328,7 +334,7 @@ LocalHostName` では新 host を検出できない。`setup.sh` は
 
 ## 管理ツールの責務分担
 
-* nix-darwin (system 層、`flake.lock` で pin、`nix/darwin/` 配下に集約):
+* nix-darwin (system レイヤー、`flake.lock` で pin、`nix/darwin/` 配下に集約):
   * `nix/darwin/packages.nix` — Nix store 供給の CLI バイナリ (git / tmux /
     neovim / fzf / ripgrep / jq / gh / kubectl 系 / apm など)
   * `nix/darwin/homebrew.nix` — tap-only formulae / nixpkgs 未収載の formulae
@@ -349,7 +355,7 @@ LocalHostName` では新 host を検出できない。`setup.sh` は
     flake.nix は `./nix/darwin` を 1 つ import するだけで揃う
   * `nix/darwin/hosts/<hostname>.nix` — host 別 override
     (`networking.hostName` 強制 + ホスト固有 brew package)
-* home-manager (user 層、nix-darwin module 統合):
+* home-manager (user レイヤー、nix-darwin module 統合):
   * `nix/home/programs/<tool>.nix` — 1 ファイル 1 ツールで分割。raw text
     symlink (`mkOutOfStoreSymlink`) または declarative module
     (`programs.<tool>.settings`) のいずれかで `~/` 配下を配置
@@ -390,7 +396,7 @@ home-manager の user プロファイルを system プロファイルより前�
 `$HOME/.local/bin` を Homebrew より前に置くのは、Claude Code / Codex の
 native binary を brew / cask より優先させるため (詳細は次節)。
 
-## Claude Code CLI のインストール経路
+## Claude Code CLI のインストール方法
 
 `claude` 本体は Anthropic 公式 native installer で `~/.local/bin/claude`
 に配置している (Node.js 不要の standalone binary、auto-update 内蔵)。
@@ -411,7 +417,7 @@ Claude / Codex 本体の version は戻らない。
 
 社内 VPN SSL inspection 下では `/etc/nix/ca-bundle.pem` を `SSL_CERT_FILE`
 / `CURL_CA_BUNDLE` 経由で curl に inject して TLS 検証を通す
-([apmInstall](#claude-code-skills-via-apm) と同じ経路)。
+([apmInstall](#claude-code-skills-via-apm) と同じ方法)。
 
 brew cask `claude-code` も `nix/darwin/homebrew.nix` で宣言上は残しているが、
 `tools/zsh/.zshrc` の PATH 順で `~/.local/bin` が `/opt/homebrew/bin` より
@@ -421,7 +427,7 @@ brew cask `claude-code` も `nix/darwin/homebrew.nix` で宣言上は残して�
 自動 uninstall されない)。
 
 MCP server 設定 (`tools/claude/setup-mcp.sh`) は `claude mcp add` 経由で動くため
-install 経路の変更とは独立。
+install 方法の変更とは独立。
 
 ## Grok Build CLI
 

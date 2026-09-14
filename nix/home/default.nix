@@ -24,6 +24,7 @@
     ./programs/apm.nix
     ./programs/mise.nix
     ./programs/markdownlint.nix
+    ./programs/node-deps.nix
     ./programs/starship.nix
     ./programs/ghostty.nix
     ./programs/ctags.nix

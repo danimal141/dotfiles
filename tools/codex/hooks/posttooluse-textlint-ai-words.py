@@ -1,0 +1,1 @@
+../../claude/hooks/posttooluse-textlint-ai-words.py

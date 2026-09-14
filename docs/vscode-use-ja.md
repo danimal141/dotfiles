@@ -115,5 +115,5 @@ VSCode に install されているが `extensions.txt` に無いもの / `extens
 
 ## Platform 対応
 
-macOS のみ対応。Linux 用の `~/.config/Code/User/` 経路は home-manager
+macOS のみ対応。Linux 用の `~/.config/Code/User/` 側は home-manager
 module 側で扱っていない (このリポジトリ全体が macOS only 想定)。

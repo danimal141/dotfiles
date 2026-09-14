@@ -56,11 +56,11 @@ shell wrapper で、内部的には `darwin-rebuild switch --flake ".#$(scutil
 
 ## アーキテクチャ図解
 
-### apply 経路全体
+### apply の流れ全体
 
-`nix run .#switch` から system / user 両層へ副作用が降りるまでの俯瞰図。
+`nix run .#switch` から system / user 両レイヤーへ副作用が降りるまでの俯瞰図。
 `hosts` attrset で宣言した値が `specialArgs` で全モジュールに流れ、
-`darwin-rebuild` が nix-darwin (system 層) と home-manager (user 層) を
+`darwin-rebuild` が nix-darwin (system レイヤー) と home-manager (user レイヤー) を
 1 トランザクションで適用する。
 
 ```mermaid
@@ -77,8 +77,8 @@ flowchart TB
     Flake -->|"mkHost → specialArgs<br/>(dotfilesPath ほか)"| Mods["全モジュールに注入"]
     DR --> Mods
 
-    Mods --> Sys["nix-darwin<br/>(system 層)"]:::layer
-    Mods --> Home["home-manager<br/>(user 層)"]:::layer
+    Mods --> Sys["nix-darwin<br/>(system レイヤー)"]:::layer
+    Mods --> Home["home-manager<br/>(user レイヤー)"]:::layer
 
     Sys --> SysOut["system.defaults / keyboard /<br/>nix-daemon / Homebrew /<br/>environment.systemPackages"]:::out
     Home --> HomeOut["~/ 配下の dotfile<br/>(A: symlink / B: text / C: programs.*)"]:::out
@@ -87,11 +87,11 @@ flowchart TB
     HomeOut -.->|home.activation| ActHome["user activation hooks"]:::out
 ```
 
-### 三つの配置パターンと反映経路
+### 三つの配置パターンと反映の流れ
 
-user 層 dotfile が `~/` 配下に届く経路は 3 つ。A だけ `nix run .#switch`
+user レイヤー dotfile が `~/` 配下に届く方法は 3 つ。A だけ `nix run .#switch`
 を介さず repo 編集が即反映される (out-of-store symlink を default に選ぶ
-最大の動機)。B / C は Nix store 経由なので評価 → store 焼き直し →
+最大の動機)。B / C は Nix store 経由なので評価 → store 再生成 →
 `~/` symlink 張り替えに `nix run .#switch` が必要。
 
 ```mermaid
@@ -164,7 +164,7 @@ dotfiles/
 ├── flake.nix                      # darwinConfigurations.{work,personal,...}
 ├── flake.lock
 ├── nix/
-│   ├── darwin/                    # nix-darwin (system 層)
+│   ├── darwin/                    # nix-darwin (system レイヤー)
 │   │   ├── default.nix            # 配下の 7 ファイルを imports
 │   │   ├── macos-defaults.nix     # system.defaults.* (Dock / Finder /
 │   │   │                           # NSGlobalDomain / trackpad / WindowManager
@@ -240,7 +240,7 @@ repo の絶対 path を user 変数 (`/Users/${user}/Documents/dev/dotfiles`) �
 ### B. text 生成 (text =)
 
 `home.file."<path>".text = ''...''`。home-manager が Nix store に実体ファイルを
-焼き、`~/<path>` をそこへの symlink にする。
+書き出し、`~/<path>` をそこへの symlink にする。
 
 * **使い所**: Nix の `${user}` などで内容を user/host 別にレンダリングし、
   かつツールが自走で書き換えない静的 config に向く。codex `config.toml` は
@@ -281,7 +281,7 @@ apm の `~/.apm/apm_modules/`, Grok Build の `~/.grok/config.toml` と
 ## secrets 設計
 
 repo は public 想定で運用しているため secrets を tracked file に置かない。
-注入経路は 2 種類:
+注入方法は 2 種類:
 
 * **MCP server 登録 + `tools/claude/.env`** (Claude Code 側 MCP server の
   env):
@@ -335,7 +335,7 @@ hosts/<hostname>.nix) に流す。マシン追加は 1 entry 足すだけ。
 * 評価フェーズ — `flake.nix` から全モジュールを Nix が評価して derivation
   tree を生成。純粋関数なので副作用なし
 * build フェーズ — derivation を realize して `/nix/store/...` に成果物
-  (config file / binary / script) を焼き込む。Nix sandbox 内なので `~/`
+  (config file / binary / script) を書き込む。Nix sandbox 内なので `~/`
   や macOS defaults は一切触らない
 * activation フェーズ — `/run/current-system` の symlink を新 store path
   に張り替え、付随する activation script を順に発火する。ここで初めて
@@ -346,7 +346,7 @@ hosts/<hostname>.nix) に流す。マシン追加は 1 entry 足すだけ。
 で動くため、`defaults write` / `brew bundle` / `~/` への symlink 張り替え
 のような外界改変は build から呼べない。そこで「成果物を作る (build)」と
 「外界を書き換える (activation)」を分離し、後者を root / user 権限で順序
-付けて発火する経路として activation script という仕組みが用意されている。
+付けて発火する仕組みとして activation script という仕組みが用意されている。
 
 つまり **build 完了 ≠ 反映完了**で、activation が走り切るまで `~/.zshrc`
 も macOS defaults も古いまま、という構造になる。out-of-store symlink
@@ -354,12 +354,12 @@ hosts/<hostname>.nix) に流す。マシン追加は 1 entry 足すだけ。
 symlink 張り替え後は `~/.zshrc` の中身を repo 側で編集するだけで反映され、
 以降の編集に activation を介さなくて良いのが他パターンとの差別化点。
 
-activation 経路で実行する副作用は、責務と発火タイミングに応じて以下の経路
+activation で実行する副作用は、責務と発火タイミングに応じて以下の種類
 に分かれる:
 
 ### home-manager `home.activation.<name>`
 
-home-manager のユーザ activation 経路。`activate` の `writeBoundary` 後に
+home-manager のユーザ activation。`activate` の `writeBoundary` 後に
 ユーザ権限で走る。
 
 * `apmInstall` (apm.nix): `~/.apm/apm.yml` の sha256 を `~/.apm/.apm.yml.hash`
@@ -375,7 +375,7 @@ apm は nix-darwin の `environment.systemPackages` 経由で居るので
 
 ### system `system.activationScripts.postActivation`
 
-nix-darwin の system activation 経路で root 権限で走る (`launchctl asuser`
+nix-darwin の system activation で root 権限で走る (`launchctl asuser`
 と `sudo --user=...` で対象ユーザに切り替えながら個別コマンドを発行する形)。
 
 * 入力ソース切替 shortcut (`AppleSymbolicHotKeys` の ID 60 / 61) を
@@ -388,7 +388,7 @@ nix-darwin の system activation 経路で root 権限で走る (`launchctl asus
 ### `launchd.user.agents.<name>`
 
 activation hook ではなく LaunchAgent として `~/Library/LaunchAgents/`
-配下に plist を配置する経路。`RunAtLoad` で login 直後にコマンドを 1 回
+配下に plist を配置する方式。`RunAtLoad` で login 直後にコマンドを 1 回
 発行する用途。
 
 * `remap-caps-lock`: `system.keyboard.remapCapsLockToControl` の

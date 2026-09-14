@@ -48,6 +48,12 @@
             "statusMessage": "Linting Japanese prose...",
             "timeout": 30,
             "type": "command"
+          },
+          {
+            "command": "python3 ~/.codex/hooks/posttooluse-textlint-ai-words.py",
+            "statusMessage": "Checking AI words (textlint)...",
+            "timeout": 40,
+            "type": "command"
           }
         ],
         "matcher": "^apply_patch$"

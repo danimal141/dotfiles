@@ -37,6 +37,11 @@
             "type": "command",
             "command": "python3 \"$HOME/.claude/hooks/posttooluse-japanese-lint.py\"",
             "timeout": 30
+          },
+          {
+            "type": "command",
+            "command": "python3 \"$HOME/.claude/hooks/posttooluse-textlint-ai-words.py\"",
+            "timeout": 40
           }
         ]
       }

@@ -6,7 +6,7 @@ paths:
 
 # Nix Build Rules
 
-このリポジトリ (nix-darwin + home-manager dotfiles) の適用経路は
+このリポジトリ (nix-darwin + home-manager dotfiles) の適用手段は
 `nix run .#switch` (内部で `darwin-rebuild switch --flake ".#$(LocalHostName)"`)。
 
 ## デバッグフラグ
