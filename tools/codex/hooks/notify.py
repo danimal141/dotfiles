@@ -34,7 +34,7 @@ def main():
             [
                 notifier,
                 "-sender",
-                "com.apple.Terminal",
+                "com.mitchellh.ghostty",
                 "-title",
                 "Codex",
                 "-message",

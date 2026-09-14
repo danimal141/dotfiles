@@ -144,7 +144,6 @@ in
       "avidemux"
       "basictex"
       "chromium"
-      "claude-code"
       "clipy"
       "dash"
       "docker-desktop"

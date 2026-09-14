@@ -15,9 +15,6 @@
 #     ~/.codex/AGENTS.md の両方に即反映される (同じ system instruction を共有)。
 #   * agents/ は repo の tools/codex/agents/ を指す out-of-store symlink。
 #     Codex 固有の custom agent を Claude Code と分離して管理する。
-#   * Claude Code 向けに MDM 配布済みの gws skill は、codexGwsSkills activation
-#     hook が ~/.agents/skills/ へ個別 symlink を張り Codex からも再利用する。
-#     skill 本体は複製せず、配布元が無い環境では何もせず skip する。
 #   * hooks.json / hooks/ は repo の tools/codex/ を指す out-of-store symlink。
 #     破壊コマンド遮断ポリシーは tools/claude/hooks/ と symlink で共有し、
 #     sandbox / approval の補助 guardrail として使う。
@@ -35,10 +32,12 @@
 #     (failed to persist config) で失敗する。そこで settings を Nix の
 #     attribute set として持ち (pkgs.formats.toml で config.toml を生成)、
 #     codexConfig activation hook で ~/.codex/config.toml へ mutable な実
-#     ファイルとして毎回上書きする。switch ごとに codex が書いた [projects]
-#     trust は消えるが、次回 codex 起動で書込可能なため自動再登録される
-#     (プロンプトが 1 度出るだけでエラーにならない)。switch 頻度は低く実害は
-#     小さい。user 変数 (wrapper 絶対パス) は settings 内で値として渡せる。
+#     ファイルとして毎回上書きする。その際、codex が書き込んだ状態テーブル
+#     ([projects] の trust_level と [hooks.state] の trusted_hash) は旧ファイルから
+#     引き継ぐ。特に [hooks.state] を落とすと hooks.json の全 hook が「未 trust」
+#     扱いになり黙って実行されなくなる (codex は managed でない hook を
+#     trusted_hash 一致時しか起動しない)。user 変数 (wrapper 絶対パス) は
+#     settings 内で値として渡せる。
 #     settings のベースは ryoppippi/dotfiles の codex.nix を踏襲している。
 #     難しい作業用の astra.config.toml と設計相談用の sol.config.toml も同じ
 #     activation hook で mutable な profile として配置する。
@@ -46,9 +45,8 @@
 #     ~/.local/bin/codex に配置する (claude.nix と同じ運用)。日常的な
 #     version 更新は codex 内蔵の auto-update が担い、switch hook は
 #     「未 install のときだけ install」を保証する。brew formula (codex) は
-#     homebrew.nix から外したが cleanup="none" のため実機には残り得る。
-#     tools/zsh の PATH 順で ~/.local/bin が /opt/homebrew/bin より勝つので
-#     native が優先される (手動 `brew uninstall codex` で完全に除去可)。
+#     homebrew.nix から外してあり、実機に残っていれば `brew uninstall codex`
+#     で除去する (PATH に古い版が混在するのを避ける)。
 let
   tomlFormat = pkgs.formats.toml { };
 
@@ -70,7 +68,6 @@ let
     model = "gpt-5.6-luna";
     approval_policy = "on-request";
     approvals_reviewer = "auto_review";
-    allow_login_shell = true;
     # approval_policy と組み合わせ、repo 内は自動実行しつつ sandbox 外だけ
     # 承認を求める。CLI の明示指定 (herdr など) がある場合はそちらを優先する。
     sandbox_mode = "workspace-write";
@@ -133,12 +130,6 @@ let
       experimental_use_profile = false;
     };
 
-    features = {
-      goals = true;
-      hooks = true;
-      multi_agent = true;
-    };
-
     tui = {
       notifications = [ "approval-requested" ];
       notification_condition = "unfocused";
@@ -151,7 +142,6 @@ let
       source = "${config.home.homeDirectory}/Documents/dev/dx-platform-workspace";
     };
 
-    plugins."github@openai-curated".enabled = true;
     plugins."dev-ops@dx-platform-workspace".enabled = true;
     plugins."setup@dx-platform-workspace".enabled = true;
     plugins."toil@dx-platform-workspace".enabled = true;
@@ -260,52 +250,39 @@ in
 
   # apm (--target claude,codex) の skill は ~/.codex/skills/ ではなく cross-agent
   # 標準の ~/.agents/skills/ に配布され、codex がそこを auto-discover する
-  # (~/.codex/skills/ は codex 内蔵の .system 専用)。通常の skill は apm が管理し、
-  # MDM 配布済みの gws skill だけは下の activation hook で同じ場所へ追加する。
-
-  # Claude Code 用 marketplace に MDM 配布済みの gws skill を Codex からも使える
-  # よう ~/.agents/skills/ へ個別 symlink する。Codex は user-scope skill directory
-  # と symlinked skill folder の両方を公式にサポートしている。apm install の後に
-  # 実行し、apm が ~/.agents/skills/ を更新しても最終状態に link が残るようにする。
-  # 配布元が無い個人端末では skip し、同名の実 directory がある場合は上書きしない。
-  home.activation.codexGwsSkills = lib.hm.dag.entryAfter [ "apmInstall" ] ''
-    GWS_SKILLS_SOURCE="/Library/Application Support/ClaudeCode/marketplace/gws-skills/plugins/gws/skills"
-    CODEX_SKILLS_TARGET="$HOME/.agents/skills"
-
-    if [ ! -d "$GWS_SKILLS_SOURCE" ]; then
-      echo "[codexGwsSkills] skip (managed gws skills not found)"
-    else
-      $DRY_RUN_CMD ${pkgs.coreutils}/bin/mkdir -p "$CODEX_SKILLS_TARGET"
-      for GWS_SKILL_SOURCE in "$GWS_SKILLS_SOURCE"/gws-*; do
-        [ -d "$GWS_SKILL_SOURCE" ] || continue
-        GWS_SKILL_NAME="''${GWS_SKILL_SOURCE##*/}"
-        GWS_SKILL_TARGET="$CODEX_SKILLS_TARGET/$GWS_SKILL_NAME"
-
-        if [ -e "$GWS_SKILL_TARGET" ] && [ ! -L "$GWS_SKILL_TARGET" ]; then
-          echo "[codexGwsSkills] skip $GWS_SKILL_NAME (non-symlink target exists)" >&2
-          continue
-        fi
-        $DRY_RUN_CMD ${pkgs.coreutils}/bin/ln -sfn "$GWS_SKILL_SOURCE" "$GWS_SKILL_TARGET"
-      done
-    fi
-  '';
+  # (~/.codex/skills/ は codex 内蔵の .system 専用)。
 
   # config.toml を mutable な実ファイルとして毎回上書き配置する (read-only
   # symlink だと codex の trust 書込が code -32603 で失敗する。冒頭コメント
-  # 参照)。前世代の read-only symlink が残っていても install が辿らないよう先に
-  # 除去する。coreutils は activation の minimal PATH に無いので絶対パスで呼ぶ。
-  # ~/.codex は自前で mkdir し home.file の link 順に依存しない。
+  # 参照)。codex が追記する状態テーブル ([projects.*] / [hooks.state*]) は
+  # 旧ファイルから抜き出して生成物の末尾に足す。生成側の settings にこれらの
+  # key は無いので重複しない。前世代の read-only symlink が残っていても install
+  # が辿らないよう先に除去する。coreutils / gawk は activation の minimal PATH に
+  # 無いので絶対パスで呼ぶ。~/.codex は自前で mkdir し home.file の link 順に
+  # 依存しない。
   home.activation.codexConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    codex_place_config() {
+      GENERATED="$1"
+      TARGET="$2"
+      STATE=""
+      if [ -f "$TARGET" ]; then
+        # [projects...] / [hooks.state...] のテーブルだけを、次の別テーブル
+        # ヘッダまで丸ごと拾う。
+        STATE=$(${pkgs.gawk}/bin/awk '
+          /^\[/ { keep = ($0 ~ /^\[(projects|hooks\.state)(\.|\])/) }
+          keep { print }
+        ' "$TARGET")
+      fi
+      $DRY_RUN_CMD ${pkgs.coreutils}/bin/rm -f "$TARGET"
+      $DRY_RUN_CMD ${pkgs.coreutils}/bin/install -m 644 "$GENERATED" "$TARGET"
+      if [ -n "$STATE" ] && [ -z "$DRY_RUN_CMD" ]; then
+        printf '\n%s\n' "$STATE" >> "$TARGET"
+      fi
+    }
     $DRY_RUN_CMD ${pkgs.coreutils}/bin/mkdir -p "$HOME/.codex"
-    $DRY_RUN_CMD ${pkgs.coreutils}/bin/rm -f "$HOME/.codex/config.toml"
-    $DRY_RUN_CMD ${pkgs.coreutils}/bin/install -m 644 \
-      ${tomlFormat.generate "codex-config.toml" settings} "$HOME/.codex/config.toml"
-    $DRY_RUN_CMD ${pkgs.coreutils}/bin/rm -f "$HOME/.codex/sol.config.toml"
-    $DRY_RUN_CMD ${pkgs.coreutils}/bin/install -m 644 \
-      ${tomlFormat.generate "codex-sol-profile.toml" solProfile} "$HOME/.codex/sol.config.toml"
-    $DRY_RUN_CMD ${pkgs.coreutils}/bin/rm -f "$HOME/.codex/astra.config.toml"
-    $DRY_RUN_CMD ${pkgs.coreutils}/bin/install -m 644 \
-      ${tomlFormat.generate "codex-astra-profile.toml" astraProfile} "$HOME/.codex/astra.config.toml"
+    codex_place_config ${tomlFormat.generate "codex-config.toml" settings} "$HOME/.codex/config.toml"
+    codex_place_config ${tomlFormat.generate "codex-sol-profile.toml" solProfile} "$HOME/.codex/sol.config.toml"
+    codex_place_config ${tomlFormat.generate "codex-astra-profile.toml" astraProfile} "$HOME/.codex/astra.config.toml"
   '';
 
   home.activation.codexInstall = lib.hm.dag.entryAfter [ "linkGeneration" ] ''

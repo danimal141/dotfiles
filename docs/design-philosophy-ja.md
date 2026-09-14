@@ -208,7 +208,7 @@ dotfiles/
 │   ├── zsh/.zshrc
 │   ├── tmux/{.tmux.conf, .tmux_start_dir, bin/tmux-start}
 │   ├── nvim/{init.lua, lazy-lock.json, lua/{options,mappings,autocmds}.lua, lua/plugins/*.lua, after/ftplugin/*.lua}
-│   ├── claude/{CLAUDE.md, settings.json, hooks/, rules/, skills/.gitignore, .env.example, setup-mcp.sh}
+│   ├── claude/{CLAUDE.md, settings.json, hooks/, rules/, scripts/, setup-mcp.sh}
 │   ├── codex/{AGENTS.md (→ ../claude/CLAUDE.md)}
 │   ├── mcp/servers.json              # claude/codex 共有の MCP server 定義 (single source of truth)
 │   ├── apm/{apm.yml, apm.lock.yaml, .gitignore}
@@ -233,7 +233,7 @@ repo の絶対 path を user 変数 (`/Users/${user}/Documents/dev/dotfiles`) �
 * **編集体験**: `nvim ~/.zshrc` で repo 内ファイルを開いて編集 → `source ~/.zshrc` で即反映
 * **`nix run .#switch` 不要**: ファイルの中身変更だけなら symlink target の中身が変わるだけ
 * **使い所**: zsh / tmux / nvim / claude (CLAUDE.md / settings.json /
-  hooks / rules / mcp-servers.json) / codex AGENTS.md / apm (apm.yml /
+  hooks / rules / scripts) / codex AGENTS.md / apm (apm.yml /
   apm.lock.yaml / .gitignore) / tools/mise/config.toml / markdownlint /
   ghostty / google-ime / ctags
 
@@ -290,8 +290,8 @@ repo は public 想定で運用しているため secrets を tracked file に�
   `~/.claude/.env` ではなく **repo 内の `tools/claude/.env`** を読む点に注意
   (= setup-mcp.sh が `cd tools/claude && ./setup-mcp.sh` で実行されることを
   前提に `${SCRIPT_DIR}/.env` を見ている)。`tools/claude/.env` は gitignore で
-  除外、`tools/claude/.env.example` を template として tracked。template に
-  どの env 変数が含まれるかは `tools/claude/.env.example` を直接参照。
+  除外。必要な変数は `tools/mcp/servers.json` 内の `${VAR}` 参照から分かる
+  (現状は env を要求する server が無い)。
 * **手書き dispatcher + overrides** (work git identity):
   repo の `programs.git.includes` は `~/.gitconfig.local` (user 手書き、
   repo 外) を unconditional に include するだけで、条件分岐 (どの remote
@@ -299,8 +299,8 @@ repo は public 想定で運用しているため secrets を tracked file に�
   の `[user]` ブロック) はどちらも user 側で記述する。所属組織名や業務
   メールが repo に出ない構成。手順は README 参照。
 
-`.env` 系は repo に `.env.example` のみ tracked、新マシンでは copy + 値埋めの
-手動 1 ステップ。将来 sops-nix / agenix で declarative にしたければ独立 task。
+`.env` 系は repo に置かず、必要になった新マシンで値を手書きする 1 ステップ。
+将来 sops-nix / agenix で declarative にしたければ独立 task。
 
 ## ホスト別分岐
 

@@ -43,6 +43,11 @@ in
   home.file.".apm/.gitignore".source = config.lib.file.mkOutOfStoreSymlink "${apmDir}/.gitignore";
 
   home.activation.apmInstall = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+    # subshell で囲む: activation script は全 hook を単一ファイルに inline 展開し
+    # set -eu で実行するため top-level の `return` は不正 (activation 全体が中断)。
+    # early-exit は `exit` で表現し、export (PATH / GITHUB_APM_PAT 等) も後続 hook
+    # へ漏らさない。
+    (
     # home-manager の activation hook はデフォルト PATH に nix-darwin の
     # system profile (/run/current-system/sw/bin) を含まない。apm は
     # nix-darwin の environment.systemPackages 経由でそこに居るため、
@@ -58,7 +63,7 @@ in
     # ファイルが存在しない場合は skip する。
     if [ ! -f "$HOME/.apm/apm.yml" ]; then
       echo "[apmInstall] skip (apm.yml not found)"
-      return 0
+      exit 0
     fi
     # apm.yml の内容に加えて deploy target も hash に含める。deps 不変でも
     # target を変えれば hash が変わり再配布が走る (target 追加時の配布漏れ防止)。
@@ -100,5 +105,6 @@ in
     else
       echo "[apmInstall] skip (hash unchanged or apm missing; apm=$APM_BIN)"
     fi
+    )
   '';
 }

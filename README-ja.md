@@ -73,14 +73,13 @@ inject する。`servers.json` 内の server が env を要求していない時
 必要なときは:
 
 ```shell
-cp tools/claude/.env.example tools/claude/.env
+printf 'SOME_API_KEY=...\n' > tools/claude/.env   # servers.json が ${SOME_API_KEY} で参照する変数
 chmod 600 tools/claude/.env
-$EDITOR tools/claude/.env   # .env.example の各キーに値を埋める
 cd tools/claude && ./setup-mcp.sh
 ```
 
-`tools/claude/.env` は repo の `.gitignore` で除外、`.env.example` のみ
-tracked。
+`tools/claude/.env` は repo の `.gitignore` で除外される (現状の servers.json は
+context7 のみで env を要求しないため、template も置いていない)。
 
 #### work GitHub org の git identity (任意)
 
@@ -541,9 +540,6 @@ apm.yml` の sha256 を比較し、差分があるときだけ `apm install --ta
 claude,codex` を発火する (冪等。hash は target も含むので target 変更時も
 再配布される)。skill は claude が `~/.claude/skills/`、codex が cross-agent
 標準の `~/.agents/skills/` (codex がそこを auto-discover) に配布される。
-加えて、社内 MDM が Claude Code 用に配布した GWS Skill が存在する場合は、
-`home.activation.codexGwsSkills` が同じ `~/.agents/skills/` へ symlink し、
-Skill 本体を複製せず Codex からも利用可能にする。
 手動で再実行する場合:
 
 ```shell

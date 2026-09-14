@@ -80,14 +80,13 @@ same directory and injects the values as the `env:` of each server in
 when no registered server requires env vars. When some do:
 
 ```shell
-cp tools/claude/.env.example tools/claude/.env
+printf 'SOME_API_KEY=...\n' > tools/claude/.env   # a var referenced as ${SOME_API_KEY} in servers.json
 chmod 600 tools/claude/.env
-$EDITOR tools/claude/.env   # fill in values for each key in .env.example
 cd tools/claude && ./setup-mcp.sh
 ```
 
-`tools/claude/.env` is excluded by the repo's `.gitignore`; only
-`.env.example` is tracked.
+`tools/claude/.env` is excluded by the repo's `.gitignore` (the current
+servers.json has only context7, which needs no env, so no template is kept).
 
 #### Work GitHub org git identity (optional)
 
@@ -584,9 +583,7 @@ the sha256 of `~/.apm/apm.yml` (plus the deploy targets) and fires
 `apm install --target claude,codex` only when it changed (idempotent; a
 target change also re-deploys). Skills go to `~/.claude/skills/` for claude
 and to the cross-agent `~/.agents/skills/` for codex (which auto-discovers
-it). When company MDM has already deployed the GWS skills for Claude Code,
-`home.activation.codexGwsSkills` links them into `~/.agents/skills/` so Codex
-can reuse the same files without copying them. To rerun manually:
+it). To rerun manually:
 
 ```shell
 cd ~/.apm

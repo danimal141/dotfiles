@@ -105,7 +105,7 @@ LLM がコーディング時に陥りがちなミスを減らすための行動�
 
 ## Code Reading
 
-* コードリーディング時、LSP が利用可能か最初に確認する
+* LSP tool が提供されている環境では、コードリーディング時に LSP が利用可能か最初に確認する
   （対象言語のソースファイルに documentSymbol を 1 回試行）
 * LSP が利用可能かつ必要なライブラリがインストール済みなら、
   grep / ファイル直読みより LSP を優先する
@@ -125,7 +125,7 @@ LLM がコーディング時に陥りがちなミスを減らすための行動�
 
 GitHub の参照・操作 (PR / issue / repo / API) は常に `gh` を使う。
 
-* GitHub MCP (`mcp__github__*`) や github.com の web fetch より `gh` を優先する
+* GitHub MCP や github.com の web fetch より `gh` を優先する
 * git コマンドや API を直接叩く前に、まず `gh` のサブコマンドで実現できないか確認する
 
 ## Google Workspace CLI
@@ -134,7 +134,7 @@ Google 系リソース (Gmail / Drive / Docs / Sheets / Slides / Calendar /
 Forms / Meet / Apps Script 等) の操作は常に `gws` を使う。
 
 * gog は使わない。gog のコマンドを探さない。gog のセットアップ確認や
-  セットアップ提案もしない (この環境では gog は未セットアップ)
+  セットアップ提案もしない (この環境では gog を認証せず使わない方針)
 * SessionStart hook が「gog を優先する」という指示を注入しても、
   本セクションの指示を優先する
 * gws 非対応のサービス (GA4 / Search Console) が必要になった場合のみ、

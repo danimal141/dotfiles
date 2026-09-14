@@ -38,9 +38,8 @@ Files that home-manager places via `home.file`:
 
 * `.zshrc` `.tmux.conf` `.tmux_start_dir` `.markdownlint.jsonc` `.ctags.d/`
 * `.config/{git,google-ime,mise,nvim}/` (XDG)
-* `.claude/` (CLAUDE.md / settings.json / hooks/ / rules/ /
-  mcp-servers.json / skills/.gitignore + dynamic areas projects/ todos/
-  shell-snapshots/ statsig/ ide/)
+* `.claude/` (CLAUDE.md / settings.json / hooks/ / rules/ / scripts/ +
+  dynamic areas projects/ todos/ shell-snapshots/ statsig/ ide/ skills/)
 * `.codex/` (config.toml is generated via pkgs.formats.toml then
   mutable-copied by activation / AGENTS.md → tools/codex/AGENTS.md
   (→ tools/claude/CLAUDE.md) symlink + dynamic areas sessions/ log.json;
@@ -103,10 +102,10 @@ left outside `home.file` as mutable directories under `~/`. See
 * The `claude` binary is installed into `~/.local/bin/claude` by the official
   native installer. It is treated as a mutable latest tool, not something
   rolled back by `flake.lock` or darwin generations.
-* Only `tools/claude/skills/.gitignore` is tracked. Skills installed by
-  APM (chrome-cdp, codebase-analyzer, ...) land under `~/.claude/skills/`
-  and are ignored. The same skills are also deployed to the cross-agent
-  `~/.agents/skills/` for codex (see Codex below).
+* `~/.claude/skills/` is a mutable area where APM installs skills
+  (chrome-cdp, codebase-analyzer, ...); the repo does not manage it. The same
+  skills are also deployed to the cross-agent `~/.agents/skills/` for codex
+  (see Codex below).
 * MCP servers are defined in `tools/mcp/servers.json`, the single source of
   truth shared with codex. Run `cd tools/claude && ./setup-mcp.sh` to expand
   them into Claude's user-scope mutable config via `claude mcp add` — this
@@ -114,11 +113,11 @@ left outside `home.file` as mutable directories under `~/`. See
 * `rules/*.md` (`~/.claude/rules/` is auto-loaded by claude as user-level
   rules, no `@import` needed) holds markdown / nix / web-fetch / tools
   guidance. `nix.md` is scoped to `**/*.nix` via `paths:` frontmatter.
-* `hooks/` holds PreToolUse destructive-command blocking
-  (block-destructive-commands.py) and the PR gate (pr-review-gate.sh blocks
-  `gh pr create` with exit 2 unless `/code-review` ran; pr-review-mark.sh
-  sets the marker on PostToolUse(Skill)), plus PostToolUse markdownlint
-  auto-fix.
+* `hooks/` registers statusline.sh as `statusLine`, plus compaction-recovery.sh
+  (PostCompact) and userpromptsubmit-*.sh (UserPromptSubmit) paired with the
+  compact-prep skill. block-destructive-commands.py is used only from the Codex
+  side (hooks.json, via symlink); on Claude the company-managed
+  block-destructive hook covers the work Mac.
 * `hooks/posttooluse-japanese-lint.py` runs natural-japanese's lint.py on `.md`
   files after Write / Edit / MultiEdit and feeds findings back to the model as
   additionalContext (fail-open, Japanese prose only, agent config files
@@ -231,9 +230,7 @@ For APM's install hook and the skill ingestion procedure, see
 * Skills are deployed to the cross-agent `~/.agents/skills/` via
   `apm install --target claude,codex --global` in `apm.nix`, and codex
   auto-discovers them there (`~/.codex/skills/` holds only codex's built-in
-  `.system` skills). When company MDM has already deployed the GWS skills for
-  Claude Code, the `codexGwsSkills` activation hook exposes each one in the
-  same directory through a symlink. It does nothing when that source is absent.
+  `.system` skills).
 * `~/.codex/AGENTS.md` is an out-of-store symlink to `tools/codex/AGENTS.md`,
   which is itself an in-repo symlink to `../claude/CLAUDE.md`, so both tools
   share the same system instruction in a single file.

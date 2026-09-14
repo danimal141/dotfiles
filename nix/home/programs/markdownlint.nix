@@ -5,8 +5,8 @@
 # パターンで、`vim ~/.markdownlint.jsonc` で repo 内ファイルを直接
 # 編集できる。
 #
-# このファイルは Claude Code hook (claude/hooks/markdownlint-checker.sh)
-# / pre-commit / 手元の editor から共通参照されるグローバル設定。
+# このファイルは `markdownlint` CLI (手動実行) / 手元の editor から共通参照される
+# グローバル設定。
 {
   home.file.".markdownlint.jsonc".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/markdownlint/.markdownlint.jsonc";

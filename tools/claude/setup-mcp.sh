@@ -49,6 +49,23 @@ Examples:
 EOF
 }
 
+# Function to print colored output
+print_info() {
+    echo -e "${GREEN}[INFO]${NC} $1"
+}
+
+print_warn() {
+    echo -e "${YELLOW}[WARN]${NC} $1"
+}
+
+print_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+print_skip() {
+    echo -e "${YELLOW}[SKIP]${NC} $1"
+}
+
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -74,23 +91,6 @@ if [[ "$SCOPE" != "user" && "$SCOPE" != "project" ]]; then
     usage
     exit 1
 fi
-
-# Function to print colored output
-print_info() {
-    echo -e "${GREEN}[INFO]${NC} $1"
-}
-
-print_warn() {
-    echo -e "${YELLOW}[WARN]${NC} $1"
-}
-
-print_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
-
-print_skip() {
-    echo -e "${YELLOW}[SKIP]${NC} $1"
-}
 
 # Check if required files exist
 if [[ ! -f "$MCP_CONFIG" ]]; then

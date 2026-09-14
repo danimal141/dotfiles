@@ -221,7 +221,7 @@ dotfiles/
 │   ├── zsh/.zshrc
 │   ├── tmux/{.tmux.conf, .tmux_start_dir, bin/tmux-start}
 │   ├── nvim/{init.lua, lazy-lock.json, lua/{options,mappings,autocmds}.lua, lua/plugins/*.lua, after/ftplugin/*.lua}
-│   ├── claude/{CLAUDE.md, settings.json, hooks/, rules/, skills/.gitignore, .env.example, setup-mcp.sh}
+│   ├── claude/{CLAUDE.md, settings.json, hooks/, rules/, scripts/, setup-mcp.sh}
 │   ├── codex/{AGENTS.md (→ ../claude/CLAUDE.md)}
 │   ├── mcp/servers.json              # MCP server definitions shared by claude/codex (single source of truth)
 │   ├── apm/{apm.yml, apm.lock.yaml, .gitignore}
@@ -249,7 +249,7 @@ directly to the repo file.
 * **No `nix run .#switch` needed**: content changes update only the
   symlink target's body
 * **Where to use**: zsh / tmux / nvim / claude (CLAUDE.md /
-  settings.json / hooks / rules / mcp-servers.json) / codex AGENTS.md /
+  settings.json / hooks / rules / scripts) / codex AGENTS.md /
   apm (apm.yml / apm.lock.yaml / .gitignore) / tools/mise/config.toml /
   markdownlint / ghostty / google-ime / ctags
 
@@ -314,10 +314,9 @@ injection paths exist:
   **the in-repo `tools/claude/.env`**, not `~/.claude/.env` (because
   the script expects to be run as
   `cd tools/claude && ./setup-mcp.sh` and reads `${SCRIPT_DIR}/.env`).
-  `tools/claude/.env` is in `.gitignore`;
-  `tools/claude/.env.example` is tracked as the template. For the
-  list of env vars actually used, look at
-  `tools/claude/.env.example` directly.
+  `tools/claude/.env` is in `.gitignore`. The vars needed are the
+  `${VAR}` references in `tools/mcp/servers.json` (currently no server
+  requires any).
 * **Handwritten dispatcher + overrides** (work git identity):
   the repo's `programs.git.includes` only unconditionally includes
   `~/.gitconfig.local` (user-handwritten, outside the repo). Both the
@@ -326,9 +325,9 @@ injection paths exist:
   written on the user side. The organization name and work email never
   appear in the repo. See README for the procedure.
 
-`.env` files are tracked only as `.env.example`; new machines need one
-manual step of copy + filling in values. If we ever want declarative
-secrets via sops-nix / agenix, that is a separate task.
+`.env` files are never tracked; a new machine writes the values by hand
+when a server needs them. If we ever want declarative secrets via
+sops-nix / agenix, that is a separate task.
 
 ## Per-host branching
 

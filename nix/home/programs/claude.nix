@@ -13,18 +13,17 @@
 # repo 内に流れ込む。declarative に管理したい部分だけ個別 symlink にして、
 # 動的領域は home.file 対象外で mutable のまま残す。
 #
-# skills/ 配下は `.gitignore` のみ symlink で配置し、APM (apm.yml 経由)
-# が install する skill ディレクトリ群 (chrome-cdp/ 等) は対象外。
-# skills/.gitignore 自体が APM 産物を ignore する役割を果たす。
+# skills/ 配下は APM (apm.yml 経由) が install する mutable 領域なので
+# home.file では触らない。
 #
 # setup-mcp.sh は ~/.claude には配置せず、repo 内で `cd tools/claude &&
 # ./setup-mcp.sh` で直接呼ぶ運用。
 #
 # claude binary 本体は Anthropic 公式 native installer を取得して
-# ~/.local/bin/claude に配置する。brew cask (claude-code) も宣言上は残しているが、
-# tools/zsh の PATH 順で ~/.local/bin が /opt/homebrew/bin より勝つように設定して
-# native を優先させる。日常的なバージョン更新は native binary 内蔵の
-# auto-update が担う (switch では「未 install のときだけ install」を保証)。
+# ~/.local/bin/claude に配置する。brew cask (claude-code) は古い版が PATH に
+# 混在する二重 install になるため宣言しない。日常的なバージョン更新は native
+# binary 内蔵の auto-update が担う (switch では「未 install のときだけ install」
+# を保証)。
 let
   claudeDir = "${dotfilesPath}/tools/claude";
 in
@@ -32,19 +31,10 @@ in
   home.file = {
     ".claude/CLAUDE.md".source = config.lib.file.mkOutOfStoreSymlink "${claudeDir}/CLAUDE.md";
     ".claude/settings.json".source = config.lib.file.mkOutOfStoreSymlink "${claudeDir}/settings.json";
-    # MCP server 定義は codex と共有する tools/mcp/servers.json を single
-    # source of truth とする (情報用ミラー。実際の登録は setup-mcp.sh が repo
-    # の同ファイルを直接読んで `claude mcp add` する)。
-    ".claude/mcp-servers.json".source =
-      config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/tools/mcp/servers.json";
-    ".claude/.env.example".source = config.lib.file.mkOutOfStoreSymlink "${claudeDir}/.env.example";
 
     ".claude/hooks".source = config.lib.file.mkOutOfStoreSymlink "${claudeDir}/hooks";
     ".claude/rules".source = config.lib.file.mkOutOfStoreSymlink "${claudeDir}/rules";
     ".claude/scripts".source = config.lib.file.mkOutOfStoreSymlink "${claudeDir}/scripts";
-
-    ".claude/skills/.gitignore".source =
-      config.lib.file.mkOutOfStoreSymlink "${claudeDir}/skills/.gitignore";
   };
 
   home.activation.claudeCodeInstall = lib.hm.dag.entryAfter [ "linkGeneration" ] ''

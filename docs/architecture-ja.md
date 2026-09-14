@@ -35,9 +35,8 @@
 
 * `.zshrc` `.tmux.conf` `.tmux_start_dir` `.markdownlint.jsonc` `.ctags.d/`
 * `.config/{git,google-ime,herdr,mise,nvim}/` (XDG)
-* `.claude/` (CLAUDE.md / settings.json / hooks/ / rules/ /
-  mcp-servers.json / skills/.gitignore + 動的領域 projects/ todos/
-  shell-snapshots/ statsig/ ide/)
+* `.claude/` (CLAUDE.md / settings.json / hooks/ / rules/ / scripts/ +
+  動的領域 projects/ todos/ shell-snapshots/ statsig/ ide/ skills/)
 * `.codex/` (config.toml は pkgs.formats.toml 生成物を activation で mutable
   コピー / AGENTS.md → tools/codex/AGENTS.md (→ tools/claude/CLAUDE.md) symlink
   * 動的領域 sessions/ log.json。apm skill は ~/.agents/skills/ 側に入る)
@@ -94,10 +93,9 @@
 * `claude` 本体は公式 native installer で `~/.local/bin/claude` に入れる。
   これは mutable latest tool として扱い、`flake.lock` や darwin generation の
   rollback 対象にはしない
-* `tools/claude/skills/.gitignore` のみ tracked、APM が install する skill
-  (chrome-cdp, codebase-analyzer, ...) は `~/.claude/skills/` 配下に展開され
-  gitignore で ignore される (codex にも同一 skill が cross-agent 標準の
-  `~/.agents/skills/` に配布される。下記 Codex 参照)
+* `~/.claude/skills/` は APM が install する skill (chrome-cdp, codebase-analyzer,
+  ...) が展開される mutable 領域で、repo では管理しない (codex にも同一 skill が
+  cross-agent 標準の `~/.agents/skills/` に配布される。下記 Codex 参照)
 * MCP server 設定は codex と共有する `tools/mcp/servers.json` を single source
   of truth とし、`tools/claude/setup-mcp.sh` を `cd tools/claude &&
   ./setup-mcp.sh` で実行して `claude mcp add` 経由で user-scope の mutable
@@ -105,10 +103,10 @@
 * `rules/*.md` (`~/.claude/rules/` は claude が `@import` 不要で自動ロードする
   user-level rule) に markdown / nix / web-fetch / tools の指針を置く。`nix.md` は
   `paths:` frontmatter で `**/*.nix` にスコープする
-* `hooks/` に PreToolUse の破壊コマンド遮断 (block-destructive-commands.py) と
-  PR 作成ゲート (pr-review-gate.sh: `/code-review` 未実行なら `gh pr create` を
-  exit 2 でブロック / pr-review-mark.sh が PostToolUse(Skill) で marker 設置)、
-  PostToolUse の markdownlint 自動修正を配置
+* `hooks/` の statusline.sh を `statusLine` に、compaction-recovery.sh (PostCompact) と
+  userpromptsubmit-*.sh (UserPromptSubmit) を compact-prep skill と組で登録する。
+  block-destructive-commands.py は Codex 側 (hooks.json) からだけ symlink 経由で
+  使い、Claude 側は会社 Mac の managed-settings が配布する block-destructive に任せる
 * `hooks/posttooluse-japanese-lint.py` は PostToolUse (Write / Edit / MultiEdit)
   で `.md` に natural-japanese の lint.py を走らせ、finding を additionalContext で
   モデルへ返す (fail-open、日本語を含む文書のみ、エージェント設定ファイルは除外)。
@@ -208,9 +206,6 @@ APM の install hook / skill 取り込み手順は
 * skill は `apm.nix` の `apm install --target claude,codex --global` で
   cross-agent 標準の `~/.agents/skills/` に配布され、codex がそこを
   auto-discover する (`~/.codex/skills/` は codex 内蔵の `.system` 専用)。
-  社内 MDM が Claude Code 用に配布した GWS Skill は、`codexGwsSkills`
-  activation hook が同じ場所へ個別 symlink して再利用する。配布元が無い
-  環境では何もしない
 * `~/.codex/AGENTS.md` は `tools/codex/AGENTS.md` への out-of-store symlink。
   `tools/codex/AGENTS.md` 自体が `../claude/CLAUDE.md` への in-repo symlink な
   ので、claude と同じ system instruction を 1 ファイルで共有する
