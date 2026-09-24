@@ -4,6 +4,7 @@
     "CLAUDE_CODE_ENABLE_EXPERIMENTAL_ADVISOR_TOOL": "1"
   },
   "permissions": {
+    "defaultMode": "auto",
     "allow": [
       "Edit(//tmp/claude-compact-state/**)"
     ]
