@@ -1,5 +1,5 @@
 lockfile_version: '1'
-generated_at: '2026-09-20T05:12:58.282377+00:00'
+generated_at: '2026-09-24T04:30:15.808449+00:00'
 apm_version: 0.12.4
 dependencies:
 - repo_url: coji/natural-japanese
@@ -99,3 +99,234 @@ dependencies:
   - .agents/skills/japanese-tech-writing
   - .claude/skills/japanese-tech-writing
   content_hash: sha256:ecac12dbccd2abefbd580dc5df3b208455291630f10d8f4d88efa1b5d52ae1e0
+- repo_url: googleworkspace/cli
+  host: github.com
+  resolved_commit: 705fb0ecac6f4249679958f6325b809b63fdde17
+  resolved_ref: v0.22.5
+  virtual_path: skills/gws-calendar
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/gws-calendar
+  - .claude/skills/gws-calendar
+  content_hash: sha256:0c5956e1069552444b00bf45381f08ffa9a7bca9810fefb1801866216008bcfc
+- repo_url: googleworkspace/cli
+  host: github.com
+  resolved_commit: 705fb0ecac6f4249679958f6325b809b63fdde17
+  resolved_ref: v0.22.5
+  virtual_path: skills/gws-calendar-agenda
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/gws-calendar-agenda
+  - .claude/skills/gws-calendar-agenda
+  content_hash: sha256:794bca1f324fa3a29dd1b98be990c690bcf9e36807fba8634042a36439d26c3e
+- repo_url: googleworkspace/cli
+  host: github.com
+  resolved_commit: 705fb0ecac6f4249679958f6325b809b63fdde17
+  resolved_ref: v0.22.5
+  virtual_path: skills/gws-calendar-insert
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/gws-calendar-insert
+  - .claude/skills/gws-calendar-insert
+  content_hash: sha256:6cfef1caf4117b716e73a5ee4c3ab017bcf72617e9291c2812c052a77281bfbb
+- repo_url: googleworkspace/cli
+  host: github.com
+  resolved_commit: 705fb0ecac6f4249679958f6325b809b63fdde17
+  resolved_ref: v0.22.5
+  virtual_path: skills/gws-docs
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/gws-docs
+  - .claude/skills/gws-docs
+  content_hash: sha256:10dc2a8aa8cb28524a9d285ddba5602c24c21cbb640718fce522b58d90ee7b97
+- repo_url: googleworkspace/cli
+  host: github.com
+  resolved_commit: 705fb0ecac6f4249679958f6325b809b63fdde17
+  resolved_ref: v0.22.5
+  virtual_path: skills/gws-docs-write
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/gws-docs-write
+  - .claude/skills/gws-docs-write
+  content_hash: sha256:fdf46eb60dcdd455a8d8c13dc70cbc855c97063be7d2071cd8c3defee62e60d6
+- repo_url: googleworkspace/cli
+  host: github.com
+  resolved_commit: 705fb0ecac6f4249679958f6325b809b63fdde17
+  resolved_ref: v0.22.5
+  virtual_path: skills/gws-drive
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/gws-drive
+  - .claude/skills/gws-drive
+  content_hash: sha256:d637ff849b82a9fc195bcfedea260cffe94eaa31b843b28cd04313b1720bb153
+- repo_url: googleworkspace/cli
+  host: github.com
+  resolved_commit: 705fb0ecac6f4249679958f6325b809b63fdde17
+  resolved_ref: v0.22.5
+  virtual_path: skills/gws-drive-upload
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/gws-drive-upload
+  - .claude/skills/gws-drive-upload
+  content_hash: sha256:0a5cb1978c1eb483bb223363a316dc6a73998b4158c0f4ebcf18882155a57bc8
+- repo_url: googleworkspace/cli
+  host: github.com
+  resolved_commit: 705fb0ecac6f4249679958f6325b809b63fdde17
+  resolved_ref: v0.22.5
+  virtual_path: skills/gws-forms
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/gws-forms
+  - .claude/skills/gws-forms
+  content_hash: sha256:1f8a7f74106e00fa51a6505f16cf58d5e63c12dc90099920c3d2ed7a67cad6ea
+- repo_url: googleworkspace/cli
+  host: github.com
+  resolved_commit: 705fb0ecac6f4249679958f6325b809b63fdde17
+  resolved_ref: v0.22.5
+  virtual_path: skills/gws-gmail
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/gws-gmail
+  - .claude/skills/gws-gmail
+  content_hash: sha256:5e5b5fdb4b4f347310d929657ed773abcaf528b5ac0a68deee12d3d38d307642
+- repo_url: googleworkspace/cli
+  host: github.com
+  resolved_commit: 705fb0ecac6f4249679958f6325b809b63fdde17
+  resolved_ref: v0.22.5
+  virtual_path: skills/gws-gmail-read
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/gws-gmail-read
+  - .claude/skills/gws-gmail-read
+  content_hash: sha256:fb90ad1652e456d953e8d2094bffa955df171e362c7d31590797ec9ca84b3727
+- repo_url: googleworkspace/cli
+  host: github.com
+  resolved_commit: 705fb0ecac6f4249679958f6325b809b63fdde17
+  resolved_ref: v0.22.5
+  virtual_path: skills/gws-gmail-triage
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/gws-gmail-triage
+  - .claude/skills/gws-gmail-triage
+  content_hash: sha256:404d060677fd09d2ddb4c4008817b430114a60a97e99cd94cf1308ec9b26db97
+- repo_url: googleworkspace/cli
+  host: github.com
+  resolved_commit: 705fb0ecac6f4249679958f6325b809b63fdde17
+  resolved_ref: v0.22.5
+  virtual_path: skills/gws-gmail-watch
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/gws-gmail-watch
+  - .claude/skills/gws-gmail-watch
+  content_hash: sha256:ecba93f87ac43d64f154e337c3a6be2139fc4a2e78263b880169ce220398f4c7
+- repo_url: googleworkspace/cli
+  host: github.com
+  resolved_commit: 705fb0ecac6f4249679958f6325b809b63fdde17
+  resolved_ref: v0.22.5
+  virtual_path: skills/gws-meet
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/gws-meet
+  - .claude/skills/gws-meet
+  content_hash: sha256:7186520b77ca74133bc1d6c9dedbe2502bad70a095d0c2881859324a45d120f1
+- repo_url: googleworkspace/cli
+  host: github.com
+  resolved_commit: 705fb0ecac6f4249679958f6325b809b63fdde17
+  resolved_ref: v0.22.5
+  virtual_path: skills/gws-script
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/gws-script
+  - .claude/skills/gws-script
+  content_hash: sha256:799025ea93e295538fdecdff445dc2c054c388e1ecaebafeb3195fb5607b2f97
+- repo_url: googleworkspace/cli
+  host: github.com
+  resolved_commit: 705fb0ecac6f4249679958f6325b809b63fdde17
+  resolved_ref: v0.22.5
+  virtual_path: skills/gws-script-push
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/gws-script-push
+  - .claude/skills/gws-script-push
+  content_hash: sha256:e4103e5221d03fd90d77b1ce3864dafaa8f104de3420187d9aaf566fe1f83b0e
+- repo_url: googleworkspace/cli
+  host: github.com
+  resolved_commit: 705fb0ecac6f4249679958f6325b809b63fdde17
+  resolved_ref: v0.22.5
+  virtual_path: skills/gws-shared
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/gws-shared
+  - .claude/skills/gws-shared
+  content_hash: sha256:b197590681ce3d5a52e9c15a68652b5445d111dbfc0dc453f68fb0785aac443c
+- repo_url: googleworkspace/cli
+  host: github.com
+  resolved_commit: 705fb0ecac6f4249679958f6325b809b63fdde17
+  resolved_ref: v0.22.5
+  virtual_path: skills/gws-sheets
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/gws-sheets
+  - .claude/skills/gws-sheets
+  content_hash: sha256:21c951f8bf399bb941740ab8b048157b43088ad96b743976e88abb0046d263d2
+- repo_url: googleworkspace/cli
+  host: github.com
+  resolved_commit: 705fb0ecac6f4249679958f6325b809b63fdde17
+  resolved_ref: v0.22.5
+  virtual_path: skills/gws-sheets-append
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/gws-sheets-append
+  - .claude/skills/gws-sheets-append
+  content_hash: sha256:ac524f45fce60078364fcab4a473272b3dd91bba98c2422f60e33e61bac4e32e
+- repo_url: googleworkspace/cli
+  host: github.com
+  resolved_commit: 705fb0ecac6f4249679958f6325b809b63fdde17
+  resolved_ref: v0.22.5
+  virtual_path: skills/gws-sheets-read
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/gws-sheets-read
+  - .claude/skills/gws-sheets-read
+  content_hash: sha256:082f6b6ee503a7438b12338024471f772f90193326cca3b6428e2450879785ff
+- repo_url: googleworkspace/cli
+  host: github.com
+  resolved_commit: 705fb0ecac6f4249679958f6325b809b63fdde17
+  resolved_ref: v0.22.5
+  virtual_path: skills/gws-slides
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/gws-slides
+  - .claude/skills/gws-slides
+  content_hash: sha256:5018c4b5578fae15b5c5212ad5a68263721c59c40e4bbecd8f4494cc93cb5471
+- repo_url: googleworkspace/cli
+  host: github.com
+  resolved_commit: 705fb0ecac6f4249679958f6325b809b63fdde17
+  resolved_ref: v0.22.5
+  virtual_path: skills/gws-workflow
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/gws-workflow
+  - .claude/skills/gws-workflow
+  content_hash: sha256:f123bdb9dd59271e93f0c04469a55ca9b0dbf599fc9722944659a083ed1e66ce

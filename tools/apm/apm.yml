@@ -13,6 +13,27 @@ dependencies:
   - danimal141/skilltree/skills/japanese-tech-writing#v0.19.0
   - danimal141/skilltree/skills/compact-prep#v0.19.0
   - coji/natural-japanese#v1.5.0
+  - googleworkspace/cli/skills/gws-shared#v0.22.5
+  - googleworkspace/cli/skills/gws-calendar#v0.22.5
+  - googleworkspace/cli/skills/gws-calendar-agenda#v0.22.5
+  - googleworkspace/cli/skills/gws-calendar-insert#v0.22.5
+  - googleworkspace/cli/skills/gws-docs#v0.22.5
+  - googleworkspace/cli/skills/gws-docs-write#v0.22.5
+  - googleworkspace/cli/skills/gws-drive#v0.22.5
+  - googleworkspace/cli/skills/gws-drive-upload#v0.22.5
+  - googleworkspace/cli/skills/gws-forms#v0.22.5
+  - googleworkspace/cli/skills/gws-gmail#v0.22.5
+  - googleworkspace/cli/skills/gws-gmail-read#v0.22.5
+  - googleworkspace/cli/skills/gws-gmail-triage#v0.22.5
+  - googleworkspace/cli/skills/gws-gmail-watch#v0.22.5
+  - googleworkspace/cli/skills/gws-meet#v0.22.5
+  - googleworkspace/cli/skills/gws-script#v0.22.5
+  - googleworkspace/cli/skills/gws-script-push#v0.22.5
+  - googleworkspace/cli/skills/gws-sheets#v0.22.5
+  - googleworkspace/cli/skills/gws-sheets-append#v0.22.5
+  - googleworkspace/cli/skills/gws-sheets-read#v0.22.5
+  - googleworkspace/cli/skills/gws-slides#v0.22.5
+  - googleworkspace/cli/skills/gws-workflow#v0.22.5
   mcp: []
 includes: auto
 scripts: {}
