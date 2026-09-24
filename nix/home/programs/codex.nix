@@ -137,18 +137,6 @@ let
 
     notice.fast_default_opt_out = false;
 
-    marketplaces."dx-platform-workspace" = {
-      source_type = "local";
-      source = "${config.home.homeDirectory}/Documents/dev/dx-platform-workspace";
-    };
-
-    plugins."dev-ops@dx-platform-workspace".enabled = true;
-    plugins."setup@dx-platform-workspace".enabled = true;
-    plugins."toil@dx-platform-workspace".enabled = true;
-    plugins."harness@dx-platform-workspace".enabled = true;
-    plugins."auto-approve@dx-platform-workspace".enabled = true;
-    plugins."session-tmpdir@dx-platform-workspace".enabled = true;
-
     # MCP server は claude (setup-mcp.sh) と共有する tools/mcp/servers.json を
     # single source of truth として読み込む (上の mcpServers / mkCodexMcp 参照)。
     mcp_servers = lib.mapAttrs mkCodexMcp mcpServers;
