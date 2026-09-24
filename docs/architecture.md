@@ -174,7 +174,7 @@ For APM's install hook and the skill ingestion procedure, see
   settings you must `nix run .#switch`.
 * Model usage uses Luna for implementation, Sol for design, planning, and review,
   and Astra for difficult end-to-end integration. The default is
-  `gpt-5.6-luna` / max, and the root agent keeps max for implementation. Custom
+  `gpt-6-luna` / max, and the root agent keeps max for implementation. Custom
   agents use worker (Luna / max), explorer (Luna / medium), verifier and
   architect (Sol / high), while unspecified subagents default to Luna / high.
   Built-in `/review` also uses Sol. For multi-step work with
@@ -187,7 +187,7 @@ For APM's install hook and the skill ingestion procedure, see
   instructions, avoiding unnecessary conversation inheritance and duplicate
   research.
 * When Luna needs a design decision it consults the custom agent `architect`
-  (gpt-5.6-sol / high / read-only), and when the whole task is a design
+  (gpt-6-sol / high / read-only), and when the whole task is a design
   discussion, use `codex -p sol` (advisor mode). Astra owns design and consults
   Sol on unresolved decisions. For behavior spanning multiple files, high-risk
   changes, or runtime configuration, data, or compatibility changes, run the

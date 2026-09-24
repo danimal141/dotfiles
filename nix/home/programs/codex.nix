@@ -65,7 +65,7 @@ let
   # codexConfig hook が mutable な実ファイルとして配置する。ベースは
   # ryoppippi/dotfiles の codex.nix。
   settings = {
-    model = "gpt-5.6-luna";
+    model = "gpt-6-luna";
     approval_policy = "on-request";
     approvals_reviewer = "auto_review";
     # approval_policy と組み合わせ、repo 内は自動実行しつつ sandbox 外だけ
@@ -73,7 +73,7 @@ let
     sandbox_mode = "workspace-write";
     model_reasoning_effort = "max";
     # /review は、実装用 Luna と別視点の Sol に分ける。
-    review_model = "gpt-5.6-sol";
+    review_model = "gpt-6-sol";
     web_search = "live";
     personality = "pragmatic";
     project_doc_fallback_filenames = [ "CLAUDE.md" ];
@@ -118,7 +118,7 @@ let
     # key 名を間違えると parse error になる (`codex exec --strict-config` で検証済み)。
     agents = {
       max_concurrent_threads_per_session = 8;
-      default_subagent_model = "gpt-5.6-luna";
+      default_subagent_model = "gpt-6-luna";
       default_subagent_reasoning_effort = "high";
     };
 
@@ -164,7 +164,7 @@ let
   # profile ファイルにも [projects] trust 等の状態を追記するため、config.toml と
   # 同じく codexConfig hook で mutable な実ファイルとして毎回上書き配置する。
   solProfile = {
-    model = "gpt-5.6-sol";
+    model = "gpt-6-sol";
     model_reasoning_effort = "high";
     sandbox_mode = "read-only";
     # profile の developer_instructions は base config のものを完全に置き換える

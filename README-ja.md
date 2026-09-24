@@ -475,14 +475,14 @@ transcript 内部形式に依存するため、`~/.grok/managed_config.toml` で
 Codex は実装を Luna、設計・方針策定とレビューを Sol、難しい end-to-end の統合を
 Astra に分ける。
 
-* 通常の `codex` は `gpt-5.6-luna` / max で起動し、実装・調査・検証を root が
+* 通常の `codex` は `gpt-6-luna` / max で起動し、実装・調査・検証を root が
   直接行う
 * custom agent は用途ごとに推論量を分ける。`worker` は Luna / max、軽量な
   コード探索・ログ確認の `explorer` は Luna / medium、`verifier` は Sol / high、
   設計相談の `architect` も Sol / high とする。未指定の subagent は Luna / high。
   built-in の `/review` は `review_model` で Sol を使う
 * 設計判断が必要になったら root が custom agent `architect`
-  (gpt-5.6-sol / high / read-only) に相談する。既存方針に沿う機械的変更は、
+  (gpt-6-sol / high / read-only) に相談する。既存方針に沿う機械的変更は、
   複数ファイルでも相談不要
 * 複数段階で不確実性や失敗コストが高い実装・調査は `codex -p astra` で起動する。
   `gpt-6-astra` / medium の root が設計・方針策定・統合を担当し、実働は Luna の

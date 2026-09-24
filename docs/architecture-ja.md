@@ -158,7 +158,7 @@ APM の install hook / skill 取り込み手順は
   trust を config.toml へ追記するため read-only symlink にはできない
   (書込が code -32603 で失敗する)。設定の編集後は `nix run .#switch` 必須
 * モデル運用は実装を Luna、設計・方針策定とレビューを Sol、難しい end-to-end の
-  統合を Astra に分ける。デフォルトは `gpt-5.6-luna` / max で、root の実装は
+  統合を Astra に分ける。デフォルトは `gpt-6-luna` / max で、root の実装は
   max を維持する。custom agent は `worker` が Luna / max、`explorer` が Luna /
   medium、`verifier` と `architect` が Sol / high、未指定の subagent は Luna /
   high とする。built-in の `/review` も Sol を使う
@@ -169,7 +169,7 @@ APM の install hook / skill 取り込み手順は
   継承し、実働を Luna の worker / explorer と Sol の verifier にまとまった単位で
   渡す。委譲時は自己完結した指示を渡し、不要な会話履歴の引き継ぎや重複調査を避ける
 * Luna で設計判断が必要になったら custom agent `architect`
-  (gpt-5.6-sol / high / read-only) に相談し、タスク全体が設計検討なら
+  (gpt-6-sol / high / read-only) に相談し、タスク全体が設計検討なら
   `codex -p sol` (advisor モード) を使う。Astra は設計を担当し、未解決の論点だけ
   Sol に相談する。複数ファイルにまたがる振る舞い、高リスク、実行時設定・データ・
   互換性の変更は、実装後に `verifier` agent が成功条件ごとの証拠と

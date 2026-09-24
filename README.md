@@ -507,14 +507,14 @@ configuration details.
 Codex uses Luna for implementation, Sol for design, planning, and review, and
 Astra for difficult end-to-end integration.
 
-* A plain `codex` starts on `gpt-5.6-luna` / max, and the root agent
+* A plain `codex` starts on `gpt-6-luna` / max, and the root agent
   implements, explores, and verifies directly.
 * Custom agents use different reasoning budgets by role: `worker` stays on Luna /
   max, the read-heavy `explorer` uses Luna / medium, `verifier` uses Sol / high,
   and `architect` also uses Sol / high. Unspecified subagents default to Luna /
   high. Built-in `/review` uses Sol through `review_model`.
 * When a design decision is needed, the root consults the custom agent
-  `architect` (gpt-5.6-sol / high / read-only). Mechanical changes following an
+  `architect` (gpt-6-sol / high / read-only). Mechanical changes following an
   established approach need no consultation, even across multiple files.
 * For multi-step implementation or research with substantial uncertainty or
   failure cost, start `codex -p astra`. The `gpt-6-astra` / medium root owns
