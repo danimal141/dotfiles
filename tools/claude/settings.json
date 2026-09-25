@@ -10,7 +10,6 @@
     "defaultMode": "auto"
   },
   "model": "claude-opus-5-5",
-  "useAutoModeDuringPlan": true,
   "hooks": {
     "SessionStart": [
       {
@@ -88,7 +87,17 @@
     "gopls-lsp@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": true,
     "pyright-lsp@claude-plugins-official": true,
-    "ruby-lsp@claude-plugins-official": true
+    "ruby-lsp@claude-plugins-official": true,
+    "gog@gog-skills": true
   },
-  "effortLevel": "high"
+  "extraKnownMarketplaces": {
+    "gog-skills": {
+      "source": {
+        "source": "directory",
+        "path": "/Library/Application Support/ClaudeCode/marketplace/gog-skills"
+      }
+    }
+  },
+  "effortLevel": "high",
+  "useAutoModeDuringPlan": true
 }
