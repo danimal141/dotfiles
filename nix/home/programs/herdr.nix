@@ -6,7 +6,7 @@
 
 # herdr (AI coding agent 向け terminal workspace manager) の設定。
 #
-#   * binary は nixpkgs 未収載のため Homebrew 供給 (nix/darwin/homebrew.nix)。
+#   * binary は nixpkgs 未収載のため mise 供給 (tools/mise/config.toml)。
 #   * config.toml は out-of-store symlink (配置パターン A)。live reload される
 #     ので switch を挟まない。ただし herdr 自身が config.toml を書き換えうる
 #     (onboarding の選択 / `herdr channel set` / `herdr config reset-keys`) ため、

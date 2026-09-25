@@ -1,4 +1,4 @@
-{ ... }:
+{ user, ... }:
 
 # herdr server を login 時常駐の LaunchAgent として declarative に上げる。
 #
@@ -19,16 +19,16 @@
 #   server 寿命側にあり、常駐化が正しい対処になる。
 #
 # Homebrew formula との関係:
-#   herdr の formula は `service do / run [herdr, "server"] / keep_alive true` を
-#   持つ。本 agent はそれを nix-darwin の declarative agent へ写したもの。
-#   したがって launchd サポートは repo 側で完結しており `brew services start
-#   herdr` は不要 (むしろ併用禁止: launchd plist が 2 枚になり同じ socket を
-#   奪い合って server が二重起動する)。
+#   本 agent は Homebrew formula の `service do / run [herdr, "server"] /
+#   keep_alive true` を nix-darwin の declarative agent へ写したもの。binary を
+#   mise 供給へ移した今も常駐はこの agent に一本化する (brew 版が残っている
+#   マシンで `brew services start herdr` を併用すると launchd plist が 2 枚に
+#   なり同じ socket を奪い合って server が二重起動する)。
 #
-# update 手順 (`brew upgrade herdr` だけでは不十分):
-#   `brew upgrade herdr` は disk 上の binary を差し替えるだけで、launchd 上で
+# update 手順 (`mise install` だけでは不十分):
+#   tools/mise/config.toml の version を上げて `mise install` しても、launchd 上で
 #   実行中の旧 server プロセスはそのまま残る。新 CLI と旧 server が並存し、
-#   protocol 非互換のある更新では操作不能になりうる。upgrade 後に
+#   protocol 非互換のある更新では操作不能になりうる。install 後に
 #   `herdr server stop` で旧 server を落とすと KeepAlive が即座に新 binary で
 #   server を上げ直す。最後に `herdr status server` の version で反映を確認する。
 #
@@ -41,14 +41,15 @@
 #   launchd 管理の 1 本だけが上がる (bare `herdr` は socket が生きていれば
 #   server を新規起動せず attach するだけなので衝突しない)。
 {
-  # herdr binary は nixpkgs 未収載で Homebrew 供給 (nix/darwin/homebrew.nix)。
-  # Apple Silicon の Homebrew prefix を直接指す。Cellar への symlink なので
-  # `brew upgrade herdr` してもこの path は不変。
+  # herdr binary は nixpkgs 未収載で mise 供給 (tools/mise/config.toml)。
+  # mise の shim を指すので version を上げてもこの path は不変 (shim が global
+  # config から version を解決する)。新規マシンでは setup.sh の `mise install`
+  # が終わるまで binary が無く、agent は KeepAlive で起動を繰り返す。
   launchd.user.agents.herdr-server = {
     serviceConfig = {
       Label = "org.danimal141.herdr-server";
       ProgramArguments = [
-        "/opt/homebrew/bin/herdr"
+        "/Users/${user}/.local/share/mise/shims/herdr"
         "server"
       ];
       # formula の keep_alive true と同義。落ちても login 時も常に 1 本上げる。

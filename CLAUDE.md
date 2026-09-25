@@ -42,8 +42,9 @@ raw symlink vs declarative module (`programs.<tool>.{enable,settings}`)
   (`~/.config/herdr/config.toml` へ symlink)。live reload されるので switch は
   不要 (`herdr server reload-config` か prefix+shift+r)。`herdr channel set` /
   `herdr config reset-keys` は config.toml を書き換えて repo を直接汚すので
-  使わない。更新は `brew upgrade herdr` (herdr は Homebrew 管理下の binary を
-  検出して self-update を拒否する)。なお `herdr config check` は TOML の構文しか
+  使わない。binary は mise 供給 (`tools/mise/config.toml` の
+  `github:ogulcancelik/herdr`)。更新は version を上げて `mise install` し、
+  herdr 自身の self-update は使わない。なお `herdr config check` は TOML の構文しか
   見ず未知キーや不正な theme 名を検出しないため、キー追加時は
   `herdr --default-config` と突き合わせる
 * herdr の agent-state 連携は `herdr integration install claude` / `... codex`
@@ -55,7 +56,7 @@ raw symlink vs declarative module (`programs.<tool>.{enable,settings}`)
 * herdr server は `nix/darwin/herdr.nix` の `launchd.user.agents.herdr-server`
   で login 時常駐 (KeepAlive)。boot 直後に server が居らず初回 `herdr-start` が
   `detached from server` を出す問題への対処。`brew services start herdr` は
-  併用禁止 (launchd plist が二重化し socket 衝突)。初回だけ既存 ad-hoc server を
+  (brew 版が残っていても) 併用禁止 (launchd plist が二重化し socket 衝突)。初回だけ既存 ad-hoc server を
   `herdr server stop` で止めてから `nix run .#switch` する
 * Neovim の LSP は各 server に `cmd` を明示し、PATH 上に binary が無い
   場合は enable を skip する設計 (`tools/nvim/lua/plugins/lsp.lua`)

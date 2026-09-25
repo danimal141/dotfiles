@@ -24,3 +24,7 @@ deno = "1.40.5"
 terraform = "1.8.3"
 kubectl = "1.33.9"
 awscli = "2.19.0"
+# herdr は mise registry 未収載なので GitHub Release の binary を直接取る。
+# Homebrew は Sonoma (Tier 3) 向け bottle を出さなくなったため brew から移した。
+# 更新はここの version を上げて `mise install` (herdr 自身の self-update は使わない)。
+"github:ogulcancelik/herdr" = "0.9.1"

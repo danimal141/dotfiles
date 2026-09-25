@@ -337,7 +337,7 @@ LocalHostName` では新 host を検出できない。`setup.sh` は
   * `nix/darwin/packages.nix` — Nix store 供給の CLI バイナリ (git / tmux /
     neovim / fzf / ripgrep / jq / gh / kubectl 系 / apm など)
   * `nix/darwin/homebrew.nix` — tap-only formulae / nixpkgs 未収載の formulae
-    (herdr) / GUI cask / macOS 統合の強い formulae
+    / GUI cask / macOS 統合の強い formulae
   * `nix/darwin/macos-defaults.nix` — `system.defaults.*` (Dock / Finder /
     NSGlobalDomain (KeyRepeat / 自動補完 OFF 等) / trackpad / WindowManager
     / menuExtraClock / CustomUserPreferences で Kotoeri / 言語等)
@@ -603,7 +603,8 @@ login 時常駐 (KeepAlive + RunAtLoad)。boot 直後に server が居らず初�
   KeepAlive で再起動ループになる。先に `herdr server stop` で止めてから
   `nix run .#switch` する (nix-darwin は switch 時に agent を即 load するため、
   次回 login を待たず server が上がる)。
-* 更新は `brew upgrade herdr` の後に `herdr server stop` まで行う。upgrade は
+* 更新は `tools/mise/config.toml` の `github:ogulcancelik/herdr` の version を
+  上げて `mise install` した後に `herdr server stop` まで行う。install は
   binary を差し替えるだけで実行中の旧 server は残り、新 CLI と protocol 非互換に
   なりうる。stop すると KeepAlive が新 binary で server を上げ直すので、
   `herdr status server` の version で反映を確認する。

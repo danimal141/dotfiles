@@ -234,15 +234,18 @@ secrets 注入の仕組み全体の設計は
 AI coding agent 向けの terminal workspace manager。tmux の代替ではなく併用で、
 tmux prefix は `C-t`、herdr prefix は default の `ctrl+b` なので衝突しない。
 
-* binary は nixpkgs 未収載のため Homebrew 供給 (`nix/darwin/homebrew.nix`)。
-  更新は `brew upgrade herdr` の後に `herdr server stop` (常駐 server の項参照)。
-  herdr は Homebrew 管理下の binary を検出すると self-update を拒否して brew へ
-  誘導するので、更新手段は 1 本に保たれる
+* binary は nixpkgs 未収載のため mise 供給 (`tools/mise/config.toml` の
+  `github:ogulcancelik/herdr`。GitHub Release の binary を取る)。以前は
+  Homebrew だったが、Sonoma 向け bottle が出なくなったため移した。更新は
+  version を上げて `mise install` した後に `herdr server stop` (常駐 server の
+  項参照)。mise 配下では Homebrew と違い herdr の self-update が拒否されない
+  ため、self-update は使わず更新手段を mise の 1 本に保つ
 * server は `nix/darwin/herdr.nix` の `launchd.user.agents.herdr-server`
   (KeepAlive + RunAtLoad) で login 時常駐。boot 直後に server が居らず初回
-  `herdr-start` が `detached from server` を出す race への対処。formula の
-  `service do / keep_alive true` を declarative agent へ写したもので、
-  `brew services start herdr` は併用禁止 (socket を奪い合う)。初回だけ既存の
+  `herdr-start` が `detached from server` を出す race への対処。Homebrew
+  formula の `service do / keep_alive true` を declarative agent へ写したもので、
+  起動 path は mise の shim。`brew services start herdr` は併用禁止 (socket を
+  奪い合う)。初回だけ既存の
   ad-hoc server を `herdr server stop` で止めてから switch する手動 bootstrap が
   要る (詳細は README-ja.md#herdr-server-の常駐-launchagent)
 * `~/.config/herdr/config.toml` は `tools/herdr/config.toml` への out-of-store

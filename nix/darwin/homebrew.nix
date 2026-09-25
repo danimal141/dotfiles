@@ -98,10 +98,10 @@ in
     # * Ruby ecosystem            — ruby-build (mise 経由 Ruby のビルド helper)
     # * cloud / automation CLI     — googleworkspace-cli, ansible, azure-cli
     # * build dependency           — readline
-    # * nixpkgs 未収載             — herdr (AI coding agent 向け terminal workspace
-    #                              manager)。更新は `brew upgrade herdr`
-    #                              (herdr は Homebrew 管理下の binary を検出して
-    #                              self-update を拒否し brew へ誘導する)
+    #
+    # herdr は Sonoma 向け bottle が出なくなったため mise (GitHub Release の
+    # binary) へ移した (tools/mise/config.toml)。cleanup="none" のため実機の
+    # brew 版は残り得るので、手動で `brew uninstall herdr` を実行する。
     #
     # codex は OpenAI 公式 native installer (~/.local/bin/codex) に移行したため
     # brews から外した (詳細は nix/home/programs/codex.nix)。cleanup="none" の
@@ -115,7 +115,6 @@ in
       "ffmpeg"
       "fujiwara/tap/tfstate-lookup"
       "googleworkspace-cli"
-      "herdr"
       "im-select"
       "imagemagick"
       "k1LoW/tap/tbls"
