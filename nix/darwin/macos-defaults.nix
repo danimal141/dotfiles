@@ -1,4 +1,4 @@
-{ ... }:
+{ lib, user, ... }:
 
 # `system.defaults.*` — `defaults write` 経路で macOS の domain (Dock /
 # Finder / NSGlobalDomain / Trackpad / WindowManager / menuExtraClock /
@@ -190,6 +190,13 @@
       "com.apple.finder" = {
         FXArrangeGroupViewBy = "Date Added";
       };
+
+      # Desktop & Dock > ウィジェット > デスクトップ上 を OFF にする。
+      # Stage Manager 内の表示は上の WindowManager.StageManagerHideWidgets で別管理。
+      # 未対応の macOS では未知の preference key として無視される。
+      "com.apple.WindowManager" = {
+        StandardHideWidgets = true;
+      };
     };
 
     # ============================================================
@@ -239,4 +246,24 @@
       ShowSeconds = false;
     };
   };
+
+  # macOS 27 はアップグレード後に追加済み Desktop Widget の配置を
+  # NotificationCenter の private preference に保持する。表示フラグだけでは
+  # desktop を表示したときに再び出るため、27 系では配置データも消す。
+  # 現時点の配置 schema を検出できる場合だけ実行し、他の macOS は変更しない。
+  system.activationScripts.postActivation.text = lib.mkAfter ''
+    case "$(/usr/bin/sw_vers -productVersion)" in
+      27.*)
+        widgetPrefs="/Users/${user}/Library/Containers/com.apple.notificationcenterui/Data/Library/Preferences/com.apple.notificationcenterui.plist"
+        if [ -f "$widgetPrefs" ] \
+          && /usr/bin/plutil -extract widgets.instances xml1 -o /dev/null "$widgetPrefs" 2>/dev/null \
+          && /usr/bin/plutil -extract widgets.DesktopWidgetPlacementStorage xml1 -o /dev/null "$widgetPrefs" 2>/dev/null; then
+          USER_UID=$(id -u -- ${user})
+          AS_USER="launchctl asuser $USER_UID sudo --user=${user} --"
+          $AS_USER /usr/bin/plutil -remove widgets "$widgetPrefs"
+          $AS_USER /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u 2>/dev/null || true
+        fi
+        ;;
+    esac
+  '';
 }
