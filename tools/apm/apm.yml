@@ -4,14 +4,14 @@ description: APM project for hideaki.ishii
 author: danimal141
 dependencies:
   apm:
-  - danimal141/skilltree/skills/dig#v0.21.0
-  - danimal141/skilltree/skills/git-commit#v0.21.0
-  - danimal141/skilltree/skills/create-pr#v0.21.0
-  - danimal141/skilltree/skills/codebase-analyzer#v0.21.0
-  - danimal141/skilltree/skills/infra-codebase-analyzer#v0.21.0
-  - danimal141/skilltree/skills/chrome-cdp#v0.21.0
-  - danimal141/skilltree/skills/japanese-tech-writing#v0.21.0
-  - danimal141/skilltree/skills/compact-prep#v0.21.0
+  - danimal141/skilltree/skills/dig#v0.22.0
+  - danimal141/skilltree/skills/git-commit#v0.22.0
+  - danimal141/skilltree/skills/create-pr#v0.22.0
+  - danimal141/skilltree/skills/codebase-analyzer#v0.22.0
+  - danimal141/skilltree/skills/infra-codebase-analyzer#v0.22.0
+  - danimal141/skilltree/skills/chrome-cdp#v0.22.0
+  - danimal141/skilltree/skills/japanese-tech-writing#v0.22.0
+  - danimal141/skilltree/skills/compact-prep#v0.22.0
   - coji/natural-japanese#v1.5.0
   - googleworkspace/cli/skills/gws-shared#v0.22.5
   - googleworkspace/cli/skills/gws-calendar#v0.22.5

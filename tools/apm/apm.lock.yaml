@@ -1,5 +1,5 @@
 lockfile_version: '1'
-generated_at: '2026-09-28T02:28:35.985951+00:00'
+generated_at: '2026-09-29T03:20:09.596390+00:00'
 apm_version: 0.12.4
 dependencies:
 - repo_url: coji/natural-japanese
@@ -13,19 +13,19 @@ dependencies:
   content_hash: sha256:e5fd05ce9452763c97d9b0d4550f179c7ccd005f48e57efaf825fb1fc7f9fc0d
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: d3574b3d21a4593400bb0dc0388deeb58738e14a
-  resolved_ref: v0.21.0
+  resolved_commit: 50b9056a53703b7960ed2f522320b57bebc94dc9
+  resolved_ref: v0.22.0
   virtual_path: skills/chrome-cdp
   is_virtual: true
   package_type: claude_skill
   deployed_files:
   - .agents/skills/chrome-cdp
   - .claude/skills/chrome-cdp
-  content_hash: sha256:8fa2e8873ca2fca8d4e230532784ba30b15f92988970e7edd460767e98e388dd
+  content_hash: sha256:884a41eb5e36047af5a4e6a7a478b094120b636fa2fa01394d786962fa8523bb
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: d3574b3d21a4593400bb0dc0388deeb58738e14a
-  resolved_ref: v0.21.0
+  resolved_commit: 50b9056a53703b7960ed2f522320b57bebc94dc9
+  resolved_ref: v0.22.0
   virtual_path: skills/codebase-analyzer
   is_virtual: true
   package_type: claude_skill
@@ -35,8 +35,8 @@ dependencies:
   content_hash: sha256:9b606f04b2e7ca282cec9491647ba5b3b0ab4c0b679ae0e84dc6bf5a62cbe5c1
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: d3574b3d21a4593400bb0dc0388deeb58738e14a
-  resolved_ref: v0.21.0
+  resolved_commit: 50b9056a53703b7960ed2f522320b57bebc94dc9
+  resolved_ref: v0.22.0
   virtual_path: skills/compact-prep
   is_virtual: true
   package_type: claude_skill
@@ -46,8 +46,8 @@ dependencies:
   content_hash: sha256:06169e3d1b064a24d5d3336cd019295cf66de00f3437ba614f9e0956c43b45b6
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: d3574b3d21a4593400bb0dc0388deeb58738e14a
-  resolved_ref: v0.21.0
+  resolved_commit: 50b9056a53703b7960ed2f522320b57bebc94dc9
+  resolved_ref: v0.22.0
   virtual_path: skills/create-pr
   is_virtual: true
   package_type: claude_skill
@@ -57,8 +57,8 @@ dependencies:
   content_hash: sha256:a000b27cb796b824e9147bc8f7fe0499678dfdeca0e511958ebdca7aed0f9179
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: d3574b3d21a4593400bb0dc0388deeb58738e14a
-  resolved_ref: v0.21.0
+  resolved_commit: 50b9056a53703b7960ed2f522320b57bebc94dc9
+  resolved_ref: v0.22.0
   virtual_path: skills/dig
   is_virtual: true
   package_type: claude_skill
@@ -68,8 +68,8 @@ dependencies:
   content_hash: sha256:4d68f165b2477d7615257f3434d0957226e511aa0b4b39b6599af987a330a09f
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: d3574b3d21a4593400bb0dc0388deeb58738e14a
-  resolved_ref: v0.21.0
+  resolved_commit: 50b9056a53703b7960ed2f522320b57bebc94dc9
+  resolved_ref: v0.22.0
   virtual_path: skills/git-commit
   is_virtual: true
   package_type: claude_skill
@@ -79,8 +79,8 @@ dependencies:
   content_hash: sha256:46e2f905ff61634f3e0eca3b18451ccfedce8d223dc56e6777a72070299f171d
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: d3574b3d21a4593400bb0dc0388deeb58738e14a
-  resolved_ref: v0.21.0
+  resolved_commit: 50b9056a53703b7960ed2f522320b57bebc94dc9
+  resolved_ref: v0.22.0
   virtual_path: skills/infra-codebase-analyzer
   is_virtual: true
   package_type: claude_skill
@@ -90,8 +90,8 @@ dependencies:
   content_hash: sha256:cfee68e9552d003593a3c079c40b9ab649bfeddef1fc8f7101dadd6aea05d7e7
 - repo_url: danimal141/skilltree
   host: github.com
-  resolved_commit: d3574b3d21a4593400bb0dc0388deeb58738e14a
-  resolved_ref: v0.21.0
+  resolved_commit: 50b9056a53703b7960ed2f522320b57bebc94dc9
+  resolved_ref: v0.22.0
   virtual_path: skills/japanese-tech-writing
   is_virtual: true
   package_type: claude_skill
