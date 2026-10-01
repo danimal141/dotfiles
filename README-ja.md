@@ -482,7 +482,7 @@ Astra に分ける。
   設計相談の `architect` も Sol / high とする。未指定の subagent は Luna / high。
   built-in の `/review` は `review_model` で Sol を使う
 * 設計判断が必要になったら root が custom agent `architect`
-  (gpt-6-sol / high / read-only) に相談する。既存方針に沿う機械的変更は、
+  (gpt-6.1-sol / high / read-only) に相談する。既存方針に沿う機械的変更は、
   複数ファイルでも相談不要
 * 複数段階で不確実性や失敗コストが高い実装・調査は `codex -p astra` で起動する。
   `gpt-6-astra` / medium の root が設計・方針策定・統合を担当し、実働は Luna の

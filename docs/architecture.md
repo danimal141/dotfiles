@@ -187,7 +187,7 @@ For APM's install hook and the skill ingestion procedure, see
   instructions, avoiding unnecessary conversation inheritance and duplicate
   research.
 * When Luna needs a design decision it consults the custom agent `architect`
-  (gpt-6-sol / high / read-only), and when the whole task is a design
+  (gpt-6.1-sol / high / read-only), and when the whole task is a design
   discussion, use `codex -p sol` (advisor mode). Astra owns design and consults
   Sol on unresolved decisions. For behavior spanning multiple files, high-risk
   changes, or runtime configuration, data, or compatibility changes, run the

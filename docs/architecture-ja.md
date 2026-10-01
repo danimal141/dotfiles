@@ -169,7 +169,7 @@ APM の install hook / skill 取り込み手順は
   継承し、実働を Luna の worker / explorer と Sol の verifier にまとまった単位で
   渡す。委譲時は自己完結した指示を渡し、不要な会話履歴の引き継ぎや重複調査を避ける
 * Luna で設計判断が必要になったら custom agent `architect`
-  (gpt-6-sol / high / read-only) に相談し、タスク全体が設計検討なら
+  (gpt-6.1-sol / high / read-only) に相談し、タスク全体が設計検討なら
   `codex -p sol` (advisor モード) を使う。Astra は設計を担当し、未解決の論点だけ
   Sol に相談する。複数ファイルにまたがる振る舞い、高リスク、実行時設定・データ・
   互換性の変更は、実装後に `verifier` agent が成功条件ごとの証拠と

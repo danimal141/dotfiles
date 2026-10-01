@@ -73,7 +73,7 @@ let
     sandbox_mode = "workspace-write";
     model_reasoning_effort = "max";
     # /review は、実装用 Luna と別視点の Sol に分ける。
-    review_model = "gpt-6-sol";
+    review_model = "gpt-6.1-sol";
     web_search = "live";
     personality = "pragmatic";
     project_doc_fallback_filenames = [ "CLAUDE.md" ];
@@ -152,7 +152,7 @@ let
   # profile ファイルにも [projects] trust 等の状態を追記するため、config.toml と
   # 同じく codexConfig hook で mutable な実ファイルとして毎回上書き配置する。
   solProfile = {
-    model = "gpt-6-sol";
+    model = "gpt-6.1-sol";
     model_reasoning_effort = "high";
     sandbox_mode = "read-only";
     # profile の developer_instructions は base config のものを完全に置き換える

@@ -514,7 +514,7 @@ Astra for difficult end-to-end integration.
   and `architect` also uses Sol / high. Unspecified subagents default to Luna /
   high. Built-in `/review` uses Sol through `review_model`.
 * When a design decision is needed, the root consults the custom agent
-  `architect` (gpt-6-sol / high / read-only). Mechanical changes following an
+  `architect` (gpt-6.1-sol / high / read-only). Mechanical changes following an
   established approach need no consultation, even across multiple files.
 * For multi-step implementation or research with substantial uncertainty or
   failure cost, start `codex -p astra`. The `gpt-6-astra` / medium root owns
