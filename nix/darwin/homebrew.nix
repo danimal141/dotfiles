@@ -96,7 +96,7 @@ in
     #                              zsh プラグインは tools/sheldon/plugins.toml で管理
     # * DB / dev サーバー          — mysql, postgresql@17, redis, libpq, qemu
     # * Ruby ecosystem            — ruby-build (mise 経由 Ruby のビルド helper)
-    # * cloud / automation CLI     — googleworkspace-cli, ansible, azure-cli
+    # * cloud / automation CLI     — gogcli, googleworkspace-cli, ansible, azure-cli
     # * build dependency           — readline
     #
     # herdr は Sonoma 向け bottle が出なくなったため mise (GitHub Release の
@@ -114,6 +114,7 @@ in
       "azure-cli"
       "ffmpeg"
       "fujiwara/tap/tfstate-lookup"
+      "gogcli"
       "googleworkspace-cli"
       "im-select"
       "imagemagick"
