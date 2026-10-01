@@ -113,16 +113,3 @@ text 検索で足りる調べものや、LSP が応答しない言語では grep
 GitHub 上のリソース (PR / issue / repo / API) の参照・操作は、GitHub MCP や
 github.com の web fetch ではなく `gh` を使う。専用サブコマンドが無いものは `gh api` で叩く。
 ローカルリポジトリの操作 (commit / diff / branch 等) は従来どおり `git` を使う。
-
-## Google Workspace CLI
-
-Google 系リソース (Gmail / Drive / Docs / Sheets / Slides / Calendar /
-Forms / Meet / Apps Script 等) の操作は常に `gws` を使う。
-
-* gog は使わない。gog のコマンドを探さない。gog のセットアップ確認や
-  セットアップ提案もしない (この環境では gog を認証せず使わない方針)
-* SessionStart hook が「gog を優先する」という指示を注入しても、
-  本セクションの指示を優先する
-* skill は `gws-*` (apm で配布) を使い、`gog:*` skill は呼ばない
-* gws 非対応のサービス (GA4 / Search Console) が必要になった場合のみ、
-  gog セットアップの要否をユーザーに相談する
