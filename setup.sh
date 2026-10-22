@@ -139,11 +139,7 @@ ensure_nix_mount_persistence
 CA_BUNDLE=/etc/nix/ca-bundle.pem
 if [ ! -s "$CA_BUNDLE" ]; then
   echo "[setup] Generating $CA_BUNDLE from macOS Keychain..."
-  sudo bash -c "
-    install -m 0644 /dev/null '$CA_BUNDLE'
-    security find-certificate -a -p /Library/Keychains/System.keychain >> '$CA_BUNDLE'
-    security find-certificate -a -p /System/Library/Keychains/SystemRootCertificates.keychain >> '$CA_BUNDLE'
-  "
+  sudo tools/ca-bundle/generate-ca-bundle.sh "$CA_BUNDLE"
 fi
 echo "[setup] Pointing nix-daemon at $CA_BUNDLE"
 sudo launchctl setenv NIX_SSL_CERT_FILE "$CA_BUNDLE" || true
