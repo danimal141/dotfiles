@@ -21,6 +21,9 @@ if [[ -f /etc/nix/ca-bundle.pem ]]; then
   export NIX_SSL_CERT_FILE=/etc/nix/ca-bundle.pem
   export SSL_CERT_FILE=/etc/nix/ca-bundle.pem
   export CURL_CA_BUNDLE=/etc/nix/ca-bundle.pem
+  # AWS CLI 同梱の CA は AAA Certificate Services を含み、eMudhra 中間 CA の
+  # 相互署名経路を信頼してしまうため、同じ bundle に揃える。
+  export AWS_CA_BUNDLE=/etc/nix/ca-bundle.pem
 fi
 # Deno 2 は既定で同梱の Mozilla CA だけを見るため、Keychain の社内 CA を
 # 信頼させる。問題のある CA (eMudhra 中間 CA 等) は Deno 側の個別拒否で弾かれる。
