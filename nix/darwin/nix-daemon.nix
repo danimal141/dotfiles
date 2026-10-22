@@ -13,13 +13,9 @@
   #
   # NIX_SSL_CERT_FILE: 社内 VPN の SSL inspection 対策 (下の
   # `nix.settings.ssl-cert-file` と同じ bundle を user shell にも見せる)。
-  #
-  # DENO_TLS_CA_STORE: Deno 2 は既定で同梱の Mozilla CA だけを見るため、
-  # Keychain の社内 CA を信頼させる。問題のある CA は Deno 側の個別拒否で弾かれる。
   environment.variables = {
     HOMEBREW_FORBIDDEN_FORMULAE = "node python python3 pip npm pnpm yarn claude";
     NIX_SSL_CERT_FILE = "/etc/nix/ca-bundle.pem";
-    DENO_TLS_CA_STORE = "system";
   };
 
   nix = {

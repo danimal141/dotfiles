@@ -21,7 +21,7 @@ python = "3.12.13"
 go = "1.23.2"
 rust = "1.76.0"
 # Deno 2 は既定で OS の CA を見ないため、DENO_TLS_CA_STORE=system を
-# nix/darwin/nix-daemon.nix で渡して社内 CA を信頼させる。
+# tools/zsh/.zshrc で渡して社内 CA を信頼させる。
 deno = "2.9.8"
 # uv は nix (nix/darwin/packages.nix) でも入るが、nixpkgs の版が eMudhra 中間 CA
 # 問題の修正版 (0.13.4) に届くまでは mise 版を PATH で優先させる。

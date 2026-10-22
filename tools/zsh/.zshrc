@@ -22,6 +22,9 @@ if [[ -f /etc/nix/ca-bundle.pem ]]; then
   export SSL_CERT_FILE=/etc/nix/ca-bundle.pem
   export CURL_CA_BUNDLE=/etc/nix/ca-bundle.pem
 fi
+# Deno 2 は既定で同梱の Mozilla CA だけを見るため、Keychain の社内 CA を
+# 信頼させる。問題のある CA (eMudhra 中間 CA 等) は Deno 側の個別拒否で弾かれる。
+export DENO_TLS_CA_STORE=system
 
 # -------------------------------------
 # path
