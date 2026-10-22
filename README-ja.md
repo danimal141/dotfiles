@@ -212,8 +212,10 @@ wrapper で、内部的には `darwin-rebuild switch --flake ".#$(scutil --get
 LocalHostName)"` を呼ぶ (= 素の `darwin-rebuild` を直接打っても等価)。
 wrapper の付加価値は次の 3 点:
 
-* `scutil --get LocalHostName` 経由で host を自動解決 (`work` / `personal`
-  を 1 コマンドで兼ねる)
+* host を自動解決 (`work` / `personal` を 1 コマンドで兼ねる)。前回 apply
+  した host 名 (`/etc/dotfiles-host`) を優先し、無ければ `scutil --get
+  LocalHostName` を使う。IT 部門の管理ツール等で LocalHostName が元の名前に
+  戻されても switch が通る
 * TTY 実行時のみ `nix-output-monitor` (nom) で進捗を整形、AI agent
   (`CLAUDECODE` / `CODEX_SANDBOX` 等の env 検出) では生 output に切替
 * `darwin-rebuild` は flake input から絶対 path で解決するので、

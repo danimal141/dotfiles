@@ -222,8 +222,10 @@ by each `.md` edit and rejects the words listed in `tools/textlint/ai-words.json
 `darwin-rebuild switch --flake ".#$(scutil --get LocalHostName)"` (so a raw
 `darwin-rebuild` invocation is equivalent). The wrapper adds three things:
 
-* Auto-resolves the host via `scutil --get LocalHostName` (= one command
-  covers `work` / `personal`)
+* Auto-resolves the host (= one command covers `work` / `personal`). It
+  prefers the host name recorded at the last apply (`/etc/dotfiles-host`) and
+  falls back to `scutil --get LocalHostName`, so switch keeps working even if
+  IT management tools reset the LocalHostName to its original value
 * When run from a TTY, formats progress with `nix-output-monitor` (nom);
   falls back to raw output when an AI agent env (`CLAUDECODE` /
   `CODEX_SANDBOX` / etc.) is detected

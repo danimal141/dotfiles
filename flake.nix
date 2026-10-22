@@ -139,6 +139,10 @@
             # 機能ごとの分割理由は `nix/darwin/default.nix` の header を参照。
             ./nix/darwin
             (./nix/darwin/hosts + "/${hostname}.nix")
+            # `nix run .#switch` / `.#build` が host を決める手がかり。
+            # LocalHostName は IT 部門の管理ツール等で書き換えられることがあるため
+            # (下の hostnameSnippet 参照)、apply した host 名を別に残しておく。
+            { environment.etc."dotfiles-host".text = hostname; }
 
             nix-homebrew.darwinModules.nix-homebrew
             {
@@ -218,9 +222,11 @@
       };
 
       # 現在の Mac の hostname を `darwinConfigurations.<host>` の host 名に
-      # 揃えるための shell snippet。`scutil --get LocalHostName` は
-      # nix-darwin が apply 時に強制した名前 (work / personal / ...) を返す。
-      hostnameSnippet = "HOST=$(/usr/sbin/scutil --get LocalHostName)";
+      # 揃えるための shell snippet。前回 apply した host 名 (/etc/dotfiles-host)
+      # を優先する。LocalHostName は nix-darwin が apply 時に work / personal に
+      # 揃えるが、その後 IT 部門の管理ツール等で元の名前 (MacBook-Pro 等) に
+      # 戻されることがあるため、/etc/dotfiles-host が無い初回だけのフォールバック。
+      hostnameSnippet = "HOST=$(cat /etc/dotfiles-host 2>/dev/null || /usr/sbin/scutil --get LocalHostName)";
 
       darwinRebuild = "${nix-darwin.packages.aarch64-darwin.darwin-rebuild}/bin/darwin-rebuild";
     in
