@@ -24,8 +24,8 @@ rust = "1.76.0"
 # tools/zsh/.zshrc で渡して社内 CA を信頼させる。
 deno = "2.9.8"
 # uv は nix (nix/darwin/packages.nix) でも入るが、nixpkgs の版が eMudhra 中間 CA
-# 問題の修正版 (0.13.4) に届くまでは mise 版を PATH で優先させる。
-uv = "0.13.4"
+# 問題の修正版 (0.13.5) に届くまでは mise 版を PATH で優先させる。
+uv = "0.13.5"
 terraform = "1.8.3"
 kubectl = "1.33.9"
 awscli = "2.37.5"
